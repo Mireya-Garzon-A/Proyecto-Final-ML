@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import pandas as pd
@@ -6,18 +7,22 @@ import Reg_Logis as ReLogistica
 import Relineal
 
 # Inicialización
-app = Flask(__name__)
+# use absolute paths for templates and static to avoid issues when cwd changes
+BASE_DIR = Path(__file__).resolve().parent
+app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
 app.secret_key = 'clave_segura_para_sesion'
 
 # Configuración de base de datos SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicializar base de datos
-db = SQLAlchemy(app)
+# Inicializar base de datos usando la instancia compartida
+from database import db
+db.init_app(app)
 
-# Importar modelo después de crear db
-from models import User
+# Importar modelo después de inicializar db (evita import circular)
+with app.app_context():
+    from models import User
 
 # Configurar Flask-Login
 login_manager = LoginManager(app)
@@ -59,13 +64,15 @@ def register():
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            return "❌ El correo ya está registrado"
+            flash('El correo ya está registrado', 'danger')
+            return redirect(url_for('register'))
 
         new_user = User(name=name, email=email)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-        return "✅ Usuario registrado correctamente"
+        flash('Usuario registrado correctamente. Por favor inicie sesión.', 'success')
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 #====================================================

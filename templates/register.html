@@ -1,22 +1,44 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
-</head>
-<body>
-    <h2>Registrar nuevo usuario</h2>
-    <form method="POST">
-        <label>Nombre:</label><br>
-        <input type="text" name="name" required><br><br>
+{% extends "base.html" %}
 
-        <label>Correo electrónico:</label><br>
-        <input type="email" name="email" required><br><br>
+{% block title %}Registro{% endblock %}
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="password" required><br><br>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-success bg-opacity-25 text-center rounded-top-4">
+                    <h3><i class="bi bi-person-plus"></i> Crear cuenta</h3>
+                </div>
+                <div class="card-body bg-light">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, msg in messages %}
+                          <div class="alert alert-{{ category }}">{{ msg }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
 
-        <button type="submit">Registrar</button>
-    </form>
-</body>
-</html>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

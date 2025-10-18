@@ -20,7 +20,8 @@
             <span class="me-2">👋 Bienvenida, {{ session['usuario'] }}</span>
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Cerrar sesión</a>
         {% else %}
-            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm">Iniciar sesión</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm me-2">Iniciar sesión</a>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-success btn-sm">Registrarse</a>
         {% endif %}
     </div>
 
