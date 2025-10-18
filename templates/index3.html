@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Casos de Éxito - ML en Finanzas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+   
+
+    <!-- Título -->
+    <h2 class="text-center border bg-primary bg-opacity-25 text-dark p-3 mb-4 rounded">
+       <strong>🏦 Machine Learning en el Sector Financiero 🏦</strong> 
+    </h2>
+
+    <!-- Contenido -->
+    <div class="bg-light border p-4 rounded" style="text-align: justify;">
+        <p>
+            El Machine Learning en el sector financiero se aplica para 
+            detección de fraudes, evaluación de riesgo crediticio, trading algorítmico y optimización de carteras de inversión. 
+            Gracias a algoritmos predictivos, las instituciones financieras pueden tomar decisiones más informadas y reducir riesgos.
+        </p>
+
+        <h4>Aplicaciones del Machine Learning en el sector financiero:</h4>
+        
+        <ul>
+            <li><strong>Detección y Prevención de Fraudes</strong></li>
+            <p>
+                El Machine Learning permite a las instituciones financieras identificar transacciones fraudulentas 
+                en tiempo real, analizando patrones de comportamiento, ubicaciones geográficas y montos de transacciones. 
+                Los algoritmos aprenden de datos históricos para detectar anomalías y actividades sospechosas, protegiendo 
+                tanto a las instituciones como a sus clientes de pérdidas financieras.
+            </p>
+
+            <li><strong>Scoring Crediticio y Evaluación de Riesgos</strong></li>
+            <p>
+                El Machine Learning revoluciona la forma en que se evalúa el riesgo crediticio al analizar 
+                no solo los datos financieros tradicionales, sino también información alternativa como comportamiento 
+                en redes sociales, historial de navegación y patrones de gasto. Esto permite una evaluación más precisa 
+                del riesgo y abre oportunidades de crédito a poblaciones tradicionalmente subatendidas.
+            </p>
+
+            <li><strong>Trading Algorítmico y Análisis de Mercado</strong></li>
+            <p>
+                El Machine Learning permite analizar grandes volúmenes de datos de mercado en tiempo real, 
+                identificando patrones y tendencias que serían imperceptibles para el ojo humano. Los algoritmos 
+                pueden ejecutar operaciones automáticamente basándose en condiciones predefinidas, maximizando 
+                rendimientos y minimizando riesgos.
+            </p>
+
+            <li><strong>Optimización de Carteras de Inversión</strong></li>
+            <p>
+                El Machine Learning ayuda a los gestores de fondos a optimizar carteras de inversión 
+                mediante el análisis de correlaciones entre activos, previsión de rendimientos y evaluación de riesgos. 
+                Los algoritmos pueden rebalancear automáticamente las carteras en respuesta a cambios en las condiciones 
+                del mercado.
+            </p>
+        </ul>
+    
+        <h4>Caso Real: PayPal - Detección de Fraudes</h4>
+        <p>
+            <strong>El Problema:</strong> PayPal procesa millones de transacciones diarias, con un riesgo constante 
+            de fraude que podría resultar en pérdidas millonarias. Necesitaban un sistema capaz de detectar 
+            transacciones fraudulentas en milisegundos sin afectar la experiencia del usuario legítimo.
+        </p>
+        <p>
+            PayPal implementó un sistema de Machine Learning que analiza más de 1000 variables en tiempo real 
+            para evaluar el riesgo de cada transacción. El sistema combina modelos supervisados y no supervisados 
+            para adaptarse continuamente a nuevas formas de fraude (Lindauer, 2019).
+        </p>
+        <p>
+            <strong>Algoritmos:</strong> Se aplicaron modelos supervisados como <em>Random Forest</em> y 
+            <em>Gradient Boosting (XGBoost)</em>, complementados con técnicas de aprendizaje no supervisado 
+            para detectar patrones emergentes de fraude.
+        </p>
+        <p>
+            <strong>Beneficios:</strong>
+        </p>
+
+        <ul>
+            <li>Reducción del 50% en pérdidas por fraude</li>
+            <li>Disminución significativa de falsos positivos (transacciones legítimas bloqueadas incorrectamente)</li>
+            <li>Capacidad de adaptación continua a nuevas modalidades de fraude</li>
+            <li>Mejora en la experiencia del cliente al reducir interrupciones innecesarias</li>
+        </ul>
+
+        <h4>Caso Real: Upstart - Evaluación de Riesgo Crediticio</h4>
+        <p>
+            <strong>El Problema:</strong> Los modelos tradicionales de scoring crediticio dejaban fuera a millones 
+            de personas potencialmente solventes pero con historial crediticio limitado o atípico.
+        </p>
+        <p>
+            Upstart desarrolló una plataforma de préstamos que utiliza Machine Learning para evaluar el riesgo 
+            crediticio analizando más de 1000 variables, incluyendo educación, área de estudio y experiencia laboral, 
+            además de los datos financieros tradicionales (Upstart Holdings, Inc., 2021).
+        </p>
+        <p>
+            <strong>Algoritmos:</strong> Se utilizaron principalmente <em>Regresión Logística</em> y 
+            <em>Máquinas de Soporte Vectorial (SVM)</em> para clasificar a los solicitantes según su riesgo crediticio.
+        </p>
+        <p>
+            <strong>Beneficios:</strong>
+        </p>
+
+        <ul>
+            <li>Mayor precisión en la evaluación de riesgo crediticio</li>
+            <li>Reducción de impagos en un 25% compared to traditional models</li>
+            <li>Ampliación del acceso al crédito para poblaciones subatendidas</li>
+            <li>Tasas de interés más justas basadas en una evaluación más precisa del riesgo</li>
+        </ul>
+
+        <div class="mt-4 p-3 bg-info bg-opacity-10 rounded">
+            <h5>Referencias:</h5>
+            <p class="mb-1">Lindauer, C. (2019). How PayPal is using machine learning to fight fraud. PayPal Stories.</p>
+            <p>Upstart Holdings, Inc. (2021). Annual Report. SEC Filing Form 10-K.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

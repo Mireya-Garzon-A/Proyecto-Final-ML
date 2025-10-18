@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+
+   <!-- Título -->
+    <h2 class="text-center border bg-success bg-opacity-25 text-dark p-3 mb-4 rounded">
+        <strong>🫁 Predicción de Saturación de Oxígeno en Sangre</strong> 
+    </h2>
+
+    <!-- Descripción inicial -->
+    <p class="text-center bg-white border rounded p-3 mx-auto" style="max-width: 700px;">
+        Esta herramienta estima la <b>saturación de oxígeno en sangre (SpO₂ %)</b>.
+    </p>    
+
+    <!-- Explicación técnica -->
+    <div class="bg-white border rounded p-4 mx-auto mt-4" style="max-width: 700px;">
+        <h4 class="text-center fw-bold mb-3"><strong>¿Cómo se calcula?</strong></h4>
+        <p>
+            Se aplica <b>regresión lineal múltiple</b>, una técnica matemática que encuentra la relación 
+            entre varias variables para predecir un resultado.
+        </p>
+
+        <ul>
+            <li><b>Variables de entrada (independientes):</b>
+                <ul>
+                    <li>Altitud (metros sobre el nivel del mar)</li>
+                    <li>Frecuencia respiratoria (respiraciones por minuto)</li>
+                </ul>
+            </li>
+            <li><b>Variable de salida (dependiente):</b>
+                <ul>
+                    <li>Saturación de oxígeno en sangre (SpO₂ %)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="mt-3">
+            El modelo aprende una ecuación del tipo:
+            <br>
+            <code>SpO₂ = a × Altitud + b × Frecuencia + c</code>
+        </p>
+
+        <p>
+            Donde:
+            <br>
+            <b>a</b> y <b>b</b> → indican cuánto varía la saturación de oxígeno con los cambios en altitud o frecuencia. <br>
+            <b>c</b> → es una constante (intercepto).
+        </p>
+
+        <h5 class="fw-bold mt-4"><strong>Proceso</strong></h5>
+        <ol>
+            <li>El usuario ingresa altitud y frecuencia respiratoria.</li>
+            <li>El modelo inserta esos valores en la ecuación.</li>
+            <li>Se calcula el resultado.</li>
+            <li>Se devuelve la predicción estimada.</li>
+        </ol>
+    </div>
+
+    <!-- Formulario -->
+    <form method="post" class="text-center mt-5">
+        <div class="mb-3">
+            <label for="altitud" class="form-label fw-bold"><strong>Altitud (metros)</strong></label>
+            <input type="number" step="any" name="altitud" id="altitud" class="form-control w-25 mx-auto" required>
+        </div>
+        <div class="mb-3">
+            <label for="frecuencia" class="form-label fw-bold"><strong>Frecuencia Respiratoria (resp/min)</strong></label>
+            <input type="number" step="any" name="frecuencia" id="frecuencia" class="form-control w-25 mx-auto" required>
+        </div>
+        <button type="submit" class="btn btn-success"><b>Calcular</b></button>
+    </form>
+
+    <!-- Resultado -->
+    {% if result is not none %}
+    <div class="alert alert-info text-center bg-success bg-opacity-25 mt-4">
+        <h4><strong>Saturación de Oxígeno Estimada:</strong> 
+            <span class="fw-bold">{{ result }} %</span>
+        </h4>
+
+        <div class="text-center mt-4">
+            <img src="{{ url_for('static', filename='images/regresion.png') }}" 
+                 alt="Gráfico predicción saturación de oxígeno" class="img-fluid border rounded">
+        </div>
+    </div>
+    {% endif %}
+
+  
+
+</div>
+{% endblock %}

@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Caso 1 - Salud{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Título centrado con fondo blanco -->
+    <h2 class="text-center border bg-success bg-opacity-25 text-dark p-3 mb-4 rounded">
+        <b>Conceptos Básicos</b>
+    </h2>
+
+    <!-- Contenido del texto con fondo blanco y borde -->
+    <div class="bg-light border p-4 rounded" style="text-align: justify;">
+        <p>
+            <center>
+            <h3>¿Qué es la regresión lineal?</h3>
+
+            <img src="/static/images/RL.png" alt="Regreción Lineal" class="img-fluid mb-4">
+            </center>
+                <p>
+                La regresión lineal es una técnica de análisis de datos que predice el valor de datos desconocidos 
+                mediante el uso de otro valor de datos relacionado y conocido. Modela matemáticamente la variable 
+                desconocida o dependiente y la variable conocida o independiente como una ecuación lineal. 
+                Por ejemplo, supongamos que tiene datos sobre sus gastos e ingresos del año pasado. 
+                Las técnicas de regresión lineal analizan estos datos y determinan que tus gastos son la mitad de 
+                tus ingresos. Luego calculan un gasto futuro desconocido al reducir a la mitad un ingreso conocido 
+                futuro.
+                </p> 
+
+            <h3>Historia</h3>
+                <p>
+                La primera forma de regresión lineal documentada fue el método de los mínimos cuadrados que fue publicada
+                por Legendre en 1805, Gauss publicó un trabajo en donde desarrollaba de manera más profunda el método de 
+                los mínimos cuadrados,[1] y en donde se incluía una versión del teorema de Gauss-Márkov.
+                </p>
+
+                <p>
+                El término regresión se utilizó por primera vez en el estudio de variables antropométricas: al comparar 
+                la estatura de padres e hijos, donde resultó que los hijos cuyos padres tenían una estatura muy superior 
+                al valor medio, tendían a igualarse a este, mientras que aquellos cuyos padres eran muy bajos tendían a 
+                reducir su diferencia respecto a la estatura media; es decir, "regresaban" al promedio.[2] La constatación 
+                empírica de esta propiedad se vio reforzada más tarde con la justificación teórica de ese fenómeno.
+                </p>
+
+                <p>
+                El término lineal se emplea para distinguirlo del resto de técnicas de regresión, que emplean modelos basados
+                en cualquier clase de función matemática. Los modelos lineales son una explicación simplificada de la realidad,
+                mucho más ágiles y con un soporte teórico mucho más extenso por parte de la matemática y la estadística.
+                </p>
+
+            <h3>¿Por qué es importante la regresión lineal?</h3>
+                <p>
+                    Los modelos de regresión lineal son relativamente simples y proporcionan una fórmula matemática fácil 
+                    de interpretar para generar predicciones. La regresión lineal es una técnica estadística establecida 
+                    y se aplica fácilmente al software y a la computación. Las empresas lo utilizan para convertir datos 
+                    sin procesar de manera confiable y predecible en inteligencia empresarial y conocimiento práctico. 
+                    Los científicos de muchos campos, incluidas la biología y las ciencias del comportamiento, ambientales 
+                    y sociales, utilizan la regresión lineal para realizar análisis de datos preliminares y predecir 
+                    tendencias futuras. Muchos métodos de ciencia de datos, como el machine learning y la inteligencia 
+                    artificial, utilizan la regresión lineal para resolver problemas complejos.
+                </p>
+
+            <h3>¿Cómo funciona la regresión lineal?</h3>
+                <P>
+                     En esencia, una técnica de regresión lineal simple intenta trazar un gráfico lineal entre dos variables de datos, x e y. Como
+                     variable independiente, x se traza a lo largo del eje horizontal. Las variables independientes también se denominan variables 
+                    explicativas o variables predictivas. La variable dependiente, y, se traza en el eje vertical. También puede hacer referencia
+                    a los valores y como variables de respuesta o variables pronosticadas.
+
+                </P>
+
+            <h3>¿Qué es la regresión lineal en el machine learning?</h3>
+                <p>
+                    En el machine learning, los programas de computación denominados algoritmos analizan grandes conjuntos 
+                    de datos y trabajan hacia atrás a partir de esos datos para calcular la ecuación de regresión lineal. 
+                    Los científicos de datos primero entrenan el algoritmo en conjuntos de datos conocidos o etiquetados y, 
+                    a continuación, utilizan el algoritmo para predecir valores desconocidos. Los datos de la vida real son 
+                    más complicados que el ejemplo anterior. Es por eso que el análisis de regresión lineal debe modificar o 
+                    transformar matemáticamente los valores de los datos para cumplir con los siguientes cuatro supuestos. <br>
+                       
+                    <h4>Relación lineal</h4> <br>
+                    <p>
+                    Debe existir una relación lineal entre las variables independientes y las dependientes. Para determinar 
+                    esta relación, los científicos de datos crean una gráfica de dispersión (una colección aleatoria de valores 
+                    x e y) para ver si caen a lo largo de una línea recta. De lo contrario, puede aplicar funciones no lineales, 
+                    como la raíz cuadrada o el registro, para crear matemáticamente la relación lineal entre las dos variables. <br>
+                    </p>
+                                     
+                    <h4>Independencia residual</h4> <br>
+                    
+                    <p>
+                        Los científicos de datos utilizan residuos para medir la precisión de la predicción. Un residuo es la diferencia 
+                    entre los datos observados y el valor previsto. Los residuos no deben tener un patrón identificable entre ellos. 
+                    Por ejemplo, no querrá que los residuos crezcan con el tiempo. Puede utilizar diferentes pruebas matemáticas, como 
+                    la prueba de Durbin-Watson, para determinar la independencia residual. Puede usar datos ficticios para reemplazar 
+                    cualquier variación de datos, como los datos estacionales. <br>
+                    </p>
+                    
+                    <h4>Normalidad</h4> <br>
+                    <P>
+                        Las técnicas de representación gráfica, como las gráficas Q-Q, determinan si los residuos se distribuyen normalmente. 
+                    Los residuos deben caer a lo largo de una línea diagonal en el centro de la gráfica. Si los residuos no están normalizados, 
+                    puede probar los datos para detectar valores atípicos aleatorios o valores que no sean típicos. Eliminar los valores atípicos 
+                    o realizar transformaciones no lineales puede solucionar el problema. <br>
+                    </P>
+                    
+                    
+                    <h4>Homocedasticidad</h4> <br>
+                    <P>
+                        La homocedasticidad supone que los residuos tienen una variación constante o desviación estándar de la media para cada valor 
+                    de x. De lo contrario, es posible que los resultados del análisis no sean precisos. Si no se cumple esta suposición, es posible 
+                    que tenga que cambiar la variable dependiente. Dado que la variación se produce de forma natural en grandes conjuntos de datos, 
+                    tiene sentido cambiar la escala de la variable dependiente. Por ejemplo, en lugar de usar el tamaño de la población para predecir 
+                    la cantidad de estaciones de bomberos en una ciudad, podría usar el tamaño de la población para predecir la cantidad de estaciones 
+                    de bomberos por persona.<br>
+
+                    </P>
+            <h3>¿Cuáles son los tipos de regresión lineal?</h3>
+                <P>
+                    Algunos tipos de análisis de regresión son más adecuados que otros para gestionar conjuntos de datos complejos. A continuación
+                    se muestran algunos ejemplos:
+
+                </P>   
+
+                <h4>Regresión lineal simple</h4> <br>
+                    <p>
+                    La regresión lineal simple se define mediante la función lineal:
+                    Y= β0*X + β1 + ε 
+                    β0 y β1 son dos constantes desconocidas que representan la pendiente de regresión, mientras que ε (épsilon) es el término de error.<br>
+                    </p>
+
+                    <p>
+                    Puede utilizar la regresión lineal simple para modelar la relación entre dos variables, como las siguientes:
+                    </p>
+
+                    <ul>
+                        <li>Lluvia y rendimiento de los cultivos</li>
+                        <li>Edad y estatura en niños</li>
+                        <li>Temperatura y expansión del mercurio metálico en un termómetro</li>
+                    </ul>
+
+                <h4>Regresión lineal múltiple</h4> <br>
+                     <p>
+                     En el análisis de regresión lineal múltiple, el conjunto de datos contiene una variable dependiente y múltiples variables independientes. 
+                     La función de línea de regresión lineal cambia para incluir más factores, de la siguiente manera:
+                     Y = β0*x0 + β1x1 + β2x2+…… βNxN+ ε <br>
+                    </p> 
+
+                    <p>
+                    A medida que aumenta el número de variables predictivas, las constantes β también aumentan en consecuencia, La regresión lineal múltiple modela múltiples variables y su impacto en un ejemplo para:
+                    </p>
+                    
+                    <ul>
+                        <li>Lluvia, temperatura y uso de fertilizantes en el rendimiento de los cultivos</li>
+                        <li>Dieta y ejercicio sobre enfermedades cardíacas</li>
+                        <li>Crecimiento salarial e inflación en las tasas de préstamos hipotecarios</li>
+                    </ul>
+
+                <h4>Regresión logística</h4> <br>
+                    <p>
+                    Los científicos de datos utilizan la regresión logística para medir la probabilidad de que se produzca un evento. La predicción es un 
+                    valor entre 0 y 1, donde 0 indica un evento que es poco probable que ocurra y 1 indica una probabilidad máxima de que suceda. Las ecuaciones logísticas usan funciones logarítmicas para calcular la línea de regresión.<br>
+                    </p>
+
+                    <p>
+                    A continuación, se indican algunos ejemplos:
+                    </p>
+
+                    <ul>
+                        <li>La probabilidad de ganar o perder en un partido deportivo</li>
+                        <li>La probabilidad de aprobar o reprobar una prueba</li>
+                        <li>La probabilidad de que una imagen sea una fruta o un animal</li>
+                    </ul>
+                </p>
+
+            <h3>Condiciones para la regresión Lineal</h3>
+                <P>
+                    Para que un modelo de regresión lineal por mínimos cuadrados, y las conclusiones derivadas de él, sean completamente válidas, se 
+                    deben verificar que se cumplen las asunciones sobre las que se basa su desarrollo matemático. En la práctica, rara vez se cumplen, 
+                    o se puede demostrar que se cumplen todas, sin embargo esto no significa que el modelo no sea útil. Lo importante es ser consciente 
+                    de ellas y del impacto que esto tiene en las conclusiones que se extraen del modelo.
+
+                </P> 
+                <h4>No colinealidad o multicolinealidad:</h4> <br> 
+                <P>
+                    En los modelos lineales múltiples, los predictores deben ser independientes, no debe de haber colinealidad entre ellos. La colinealidad 
+                    ocurre cuando un predictor está linealmente relacionado con uno o varios de los otros predictores del modelo. Como consecuencia de la 
+                    colinealidad, no se puede identificar de forma precisa el efecto individual que tiene cada predictor sobre la variable respuesta, lo que
+                     se traduce en un incremento de la varianza de los coeficientes de regresión estimados hasta el punto de que resulta imposible establecer 
+                     su significancia estadística. Además, pequeños cambios en los datos, provocan grandes cambios en las estimaciones de los coeficientes. 
+                     Si bien la colinealidad propiamente dicha existe solo si el coeficiente de correlación simple o múltiple entre predictores es 1, cosa que 
+                     raramente ocurre en la realidad, es frecuente encontrar la llamada casi-colinealidad o multicolinealidad no perfecta
+
+                </P> 
+                <P>
+                    No existe un método estadístico concreto para determinar la existencia de colinealidad o multicolinealidad entre los predictores de un modelo
+                    de regresión, sin embargo, se han desarrollado numerosas reglas prácticas que tratan de determinar en qué medida afectan al modelo. Los pasos
+                    recomendados a seguir son:
+                </P>
+                <P>
+                 <ul>
+                        <li>Si el coeficiente de determinación R2 es alto pero ninguno de los predictores resulta significativo, hay indicios de colinealidad</li>
+                        <li>Crear una matriz de correlación en la que se calcula la relación lineal entre cada par de predictores. Es importante tener en cuenta que,
+                            a pesar de no obtenerse ningún coeficiente de correlación alto, no está asegurado que no exista multicolinealidad. Se puede dar el caso de 
+                            tener una relación lineal casi perfecta entre tres o más variables y que las correlaciones simples entre pares de estas mismas variables no 
+                            sean mayores que 0.5.</li>
+                        <li>Generar un modelo de regresión lineal simple entre cada uno de los predictores frente al resto. Si en alguno de los modelos el *coeficiente 
+                            de determinación R2 es alto, estaría señalando a una posible colinealidad.</li>
+                        <li>Tolerancia (TOL) y Factor de Inflación de la Varianza (VIF). Se trata de dos parámetros que vienen a cuantificar lo mismo (uno es el inverso del otro). </li>
+                </ul>
+                </P>
+
+                <P>
+                    En caso de encontrar colinealidad entre predictores, hay dos posibles soluciones. La primera es excluir uno de los predictores problemáticos intentando conservar
+                    el que, a juicio del investigador, está influyendo realmente en la variable respuesta. Esta medida no suele tener mucho impacto en el modelo en cuanto a su capacidad 
+                    predictiva ya que, al existir colinealidad, la información que aporta uno de los predictores es redundante en presencia del otro. La segunda opción consiste en combinar
+                    las variables colineales en un único predictor, aunque con el riesgo de perder su interpretación.
+                    Cuando se intenta establecer relaciones causa-efecto, la colinealidad puede llevar a conclusiones muy erróneas, haciendo creer que una variable es la causa cuando,
+                    en realidad, es otra la que está influenciando sobre ese predictor.
+                </P>
+
+                <h4>Relación lineal entre los predictores numéricos y la variable respuesta:</h4> <br> 
+                <P>
+                    Cada predictor numérico tiene que estar linealmente relacionado con la variable respuesta y mientras los demás predictores se mantienen constantes, de lo contrario no se 
+                    deben introducir en el modelo. La forma más recomendable de comprobarlo es representando los residuos del modelo frente a cada uno de los predictores. Si la relación es lineal,
+                    los residuos se distribuyen de forma aleatoria en torno a cero. Estos análisis son solo aproximados, ya que no hay forma de saber si realmente la relación es lineal cuando el resto de predictores se mantienen constantes
+                </P> 
+
+            <h3>Valores atípicos (outliers)</h3>
+                <P>
+                    Independientemente de que el modelo se haya podido aceptar, siempre es conveniente identificar si hay algún posible outlier, observación con alto leverage o influyente,
+                    puesto que podría estar condicionando en gran medida el modelo. La eliminación de este tipo de observaciones debe de analizarse con detalle y dependiendo de la finalidad del modelo. Si el fin es predictivo, un modelo
+                    sin outliers ni observaciones altamente influyentes suele ser capaz de predecir mejor la mayoría de casos. Sin embargo, es muy importante prestar atención a estos valores ya que, de no tratarse de errores de medida,
+                    pueden ser los casos más interesantes. El modo adecuado de proceder cuando se sospecha de algún posible valor atípico o influyente es calcular el modelo de regresión incluyendo y excluyendo dicho valor.
+
+                </P> 
+
+             <h3>Aplicaciones de la regresión lineal</h3>
+                <P>
+                    El modelo de regresión lineal es aplicado en un gran número de campos, desde el ámbito científico hasta el ámbito social, pasando por aplicaciones industriales ya que en multitud de situaciones se encuentran 
+                    comportamientos lineales. Estos son algunos ejemplos aplicados a diversos campos
+
+                </P>
+                <P>
+                 <ul>
+                        <li>Medicina:</li>
+                        <P>
+                            En medicina, las primeras evidencias relacionando la mortalidad con el fumar tabaco[7] vinieron de estudios que utilizaban la regresión lineal. Los investigadores incluyen una gran cantidad de variables en su
+                            análisis de regresión en un esfuerzo por eliminar factores que pudieran producir correlaciones espurias.
+                        </P>
+
+                        <li>Química:</li>
+                        <P>
+
+                            La concentración de un elemento es uno de los parámetros de mayor importancia en los procesos químicos aplicados en la industria. Esta cuantificación se puede obtener mediante un espectrofotómetro, dispositivo
+                            que requiere se calibrado. Para ello se elabora una recta de calibración que se obtiene a partir de la correlación entre la absorbancia de un patrón y la concentración de la sustancia a controla
+                        </P>
+
+                        <li>Mecánica:</li>
+                        <P>
+                            En esta rama se utiliza la Regresión Lineal entre otros para ajustar la recta de Paris , una ecuación que sirve para estudiar elementos sometidos a fatiga en función del número de ciclos a los que se somete un
+                            material. La bondad del ajuste se comprueba representando el conjunto de valores discretos a-Nm obtenidos experimentalmente, frente a la curva correspondiente a la recta de Paris definida por los valores “C” y “m”11
+                        </P>
+
+                        <li>Electricidad:</li>
+                        <P>
+                            En electricidad se puede obtener el valor de una resistencia en un circuito y su error mediante un ajuste de regresión lineal de pares de datos experimentales de voltaje e intensidad obtenidos mediante un voltímetro
+                            y un amperímetro
+                        </P>
+
+                        <li>Construcción:</li>
+                        <P>
+                            Mediante técnicas de regresión lineal se caracterizarán diversas cualidades del hormigón. A partir del módulo de elasticidad es posible predecir la resistencia a la compresión de una determinada composición de un hormigón.
+                            También se puede determinar la succión capilar a partir del volumen absorbido por una muestra y el tiempo que ha durado la succión.
+                        </P>
+
+                </ul>
+                </P>
+
+        
+        </p>
+        <!--Agregar mas parrafo -->
+    </div>
+
+    <h5>Referencias:</h5>
+            <li>
+                <span class="author">Amazon Web Services.</span>
+                <span class="year">(s. f.).</span>
+                <em class="title">¿Qué es la regresión lineal?</em>
+                <span class="retrieval">Recuperado el 10 de septiembre de 2025, de</span>
+                <a href="https://aws.amazon.com/es/what-is/linear-regression/" target="_blank" rel="noopener noreferrer">
+                    https://aws.amazon.com/es/what-is/linear-regression/
+                </a>
+            </li>
+            
+            <li>
+                <span class="author">Ciencia de Datos.</span>
+                <span class="year">(s. f.).</span>
+                <em class="title">Regresión lineal en Python.</em>
+                <a href="https://cienciadedatos.net/documentos/py10-regresion-lineal-python#Condiciones_para_la_regresi%C3%B3n_lineal" 
+                 target="_blank" rel="noopener noreferrer">
+                https://cienciadedatos.net/documentos/py10-regresion-lineal-python#Condiciones_para_la_regresi%C3%B3n_lineal
+                </a>
+
+             <li>
+                <span class="author">Wikipedia.</span>
+                <span class="year">(s. f.).</span>
+                <em class="title">Regresión lineal.</em>
+                 <a href="https://es.wikipedia.org/wiki/Regresi%C3%B3n_lineal"
+                target="_blank" rel="noopener noreferrer">
+                 https://es.wikipedia.org/wiki/Regresi%C3%B3n_lineal
+                </a>
+
+             </li>
+</li>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Menú Principal{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Menú horizontal con submenús -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <ul class="navbar-nav mx-auto">
+
+                <!-- Casos de Uso -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-outline-primary me-2" href="#" role="button" data-bs-toggle="dropdown">
+                        📁 Casos de Uso
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/index1">📈 Salud</a></li>
+                        <li><a class="dropdown-item" href="/index2">🛒 Retail</a></li>
+                        <li><a class="dropdown-item" href="/index3">🏦 Financiero</a></li>
+                        <li><a class="dropdown-item" href="/index4">🚘 Automotriz</a></li>
+                    </ul>
+                </li>
+
+                <!-- Regresión Lineal -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-outline-success me-2" href="#" role="button" data-bs-toggle="dropdown">
+                        📊 Regresión Lineal
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/conceptos">📘 Conceptos</a></li>
+                        <li><a class="dropdown-item" href="/LR">📝 Ejercicio práctico</a></li>
+                    </ul>
+                </li>
+
+                <!-- Regresión Logística -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-outline-warning me-2" href="#" role="button" data-bs-toggle="dropdown">
+                        📉 Regresión Logística
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/conceptos_reg_logistica">📘 Conceptos</a></li>
+                        <li><a class="dropdown-item" href="/ejercicio_reg_logistica">📝 Ejercicio práctico</a></li>
+                    </ul>
+                </li>
+
+                <!-- K-NN -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-outline-info me-2" href="#" role="button" data-bs-toggle="dropdown">
+                        🔍 K-NN
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/conceptos_knn">📘 Tipos de Algoritmos</a></li>
+                        <li><a class="dropdown-item" href="/ejercicio_knn">📝 Ejercicio práctico</a></li>
+                    </ul>
+                </li>
+
+                <!-- Inicio -->
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-secondary" href="/">🏠 Inicio</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Explicación general -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body bg-light">
+            <h4 class="text-success"><i class="bi bi-robot"></i> ¿Qué hace esta aplicación?</h4>
+            <p>Explora cómo se aplican algoritmos supervisados en distintos sectores. Cada sección del menú te lleva a un módulo con explicación y ejercicio práctico.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
