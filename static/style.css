@@ -1,133 +1,142 @@
+/* =========================
+   ESTILOS GENERALES
+   ========================= */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    scroll-behavior: smooth;
 }
 
-body{
-    font-family: Arial, sans-serif;
-    background-image: url("/static/images/vacas.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center center;
-    min-height: 100vh;
-    position: relative;
-   
+body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: #fdfdfd; /* fondo blanco elegante */
+    color: #212529;
 }
 
+/* --- ENCABEZADOS --- */
 h1, h2, h3, h4, h5, h6 {
-    color: #000407;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+    color: #043927;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-.bg-texto-blanco {
+/* --- TARJETAS Y CONTENEDORES --- */
+.card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.card-body {
     background-color: white;
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem; /* igual que Bootstrap rounded */
+    border-radius: 1rem;
 }
 
- body {
-            overflow-x: hidden;
-            background-color: #f8f9fa;
-        }
+/* --- BOTONES --- */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
 
-        /* Sidebar oculto por defecto */
-        #sidebar {
-            width: 250px;
-            background-color: #f8f9fa;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            transform: translateX(-100%); /* Totalmente oculto */
-        }
+.btn-outline-info {
+    border-color: #198754;
+    color: #198754;
+}
+.btn-outline-info:hover {
+    background-color: #198754;
+    color: white;
+}
 
-        /* Sidebar visible */
-        #sidebar.show {
-            transform: translateX(0);
-        }
+/* --- NAVBAR --- */
+.navbar {
+    background-color: #043927 !important; /* Verde institucional oscuro */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
 
-        /* Contenido principal */
-        #content {
-            margin-left: 0;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
-        /* Cuando sidebar está abierto, contenido se mueve */
-        #content.shifted {
-            margin-left: 250px;
-        }
+.navbar .btn {
+    transition: all 0.2s ease-in-out;
+}
 
-        /* Botón toggle flotante */
-        #sidebarToggleBtn {
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            z-index: 1050;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 0 8px 8px 0;
-            padding: 12px 6px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
+.navbar .btn:hover {
+    transform: scale(1.05);
+}
 
-        #sidebarToggleBtn:hover {
-            background-color: #218838;
-        }
+/* --- FOOTER --- */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #198754;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 3px solid #146c43;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
 
-        /* Footer */
-        footer {
-            margin-left: 0;
-            transition: margin-left 0.3s ease;
-        }
+/* --- CONTENIDO --- */
+.container {
+    z-index: 2;
+    position: relative;
+    padding-bottom: 100px; /* espacio para el footer */
+}
 
-        footer.shifted {
-            margin-left: 250px;
-        }
+/* --- IMAGEN BANNER --- */
+.banner-img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-        /* Header del sidebar */
-        .sidebar-header {
-            padding: 20px;
-            background-color: #28a745;
-            color: white;
-            text-align: center;
-        }
+/* --- ENLACES --- */
+a {
+    color: #198754;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
 
-        /* Estilo de los enlaces */
-        .sidebar-link {
-            color: #212529;
-            font-weight: 500;
-            padding: 12px 20px;
-            display: block;
-            text-decoration: none;
-            border-left: 4px solid transparent;
-        }
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #198754;
+    border-radius: 4px;
+}
 
-        .sidebar-link:hover {
-            background-color: #e9ecef;
-            color: #157347;
-            border-left: 4px solid #28a745;
-        }
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .navbar .btn {
+        margin-bottom: 5px;
+    }
 
-        /* Submenús */
-        .submenu .dropdown-item {
-            padding-left: 2.5rem;
-            font-size: 0.95rem;
-            color: #495057;
-        }
+    footer {
+        font-size: 0.8rem;
+        padding: 8px 0;
+    }
 
-        .submenu .dropdown-item:hover {
-            background-color: #e9ecef;
-            color: #157347;
-        }
+    .banner-img {
+        border-radius: 0;
+    }
+}

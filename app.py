@@ -3,8 +3,7 @@ from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import pandas as pd
-import Reg_Logis as ReLogistica
-import Relineal
+
 
 # Inicialización
 # use absolute paths for templates and static to avoid issues when cwd changes
@@ -95,106 +94,13 @@ def menu():
 
 # Casos de uso
 @app.route('/index1')
-@login_required
+
 def index1():
     return render_template('index1.html')
 
-@app.route('/index2')
-@login_required
-def index2():
-    return render_template('index2.html')
 
-@app.route('/index3')
-@login_required
-def index3():
-    return render_template('index3.html')
 
-@app.route('/index4')
-@login_required
-def index4():
-    return render_template('index4.html')
 
-# Regresión Lineal
-@app.route('/conceptos')
-@login_required
-def conceptos():
-    return render_template('conceptos.html')
-
-@app.route('/LR', methods=["GET", "POST"])
-@login_required
-def LR():
-    calculateResult = None
-    if request.method == "POST":
-        try:
-            altitud = float(request.form["altitud"])
-            frecuencia = float(request.form["frecuencia"])
-            calculateResult = Relineal.CalculateOxygen(altitud, frecuencia)
-
-            import time
-            time.sleep(0.1)
-            Relineal.save_plot(altitud, frecuencia, calculateResult)
-        except ValueError:
-            return "Por favor ingrese valores numéricos válidos"
-        except Exception as e:
-            return f"Error: {str(e)}"
-
-    return render_template("rl.html", result=calculateResult)
-
-# Regresión Logística
-ReLogistica.evaluate()
-
-@app.route('/conceptos_reg_logistica')
-@login_required
-def conceptos_reg_logistica():
-    return render_template('conceptos_reg_logistica.html')
-
-@app.route('/ejercicio_reg_logistica', methods=['GET', 'POST'])
-@login_required
-def ejercicio_reg_logistica():
-    result = None
-    if request.method == 'POST':
-        try:
-            edad = float(request.form['edad'])
-            tiempo = float(request.form['tiempo'])
-            tipo = request.form['tipo'].lower()
-            visitas = float(request.form['visitas'])
-
-            entrada = pd.DataFrame([{
-                "edad_mascota": edad,
-                "tiempo_adopcion": tiempo,
-                "visitas_recibidas": visitas,
-                "tipo_mascota": tipo
-            }])
-
-            entrada = pd.get_dummies(entrada, columns=["tipo_mascota"], drop_first=True)
-
-            for col in ReLogistica.x.columns:
-                if col not in entrada.columns:
-                    entrada[col] = 0
-            entrada = entrada[ReLogistica.x.columns]
-
-            features = entrada.values[0]
-            etiqueta, probabilidad = ReLogistica.predict_label(features)
-
-            result = {
-                "etiqueta": etiqueta,
-                "probabilidad": probabilidad
-            }
-
-        except ValueError:
-            result = {"error": "Por favor ingrese valores válidos"}
-        except Exception as e:
-            result = {"error": f"Error: {str(e)}"}
-
-    return render_template('ejercicio_reg_logistica.html', result=result)
-
-# Cargar datos CSV
-try:
-    data = pd.read_csv('./DataSheet/data.csv', delimiter=';')
-except FileNotFoundError:
-    print("Error: El archivo data.csv no se encontró.")
-except Exception as e:
-    print(f"Error al cargar datos: {e}")
 
 # Crear la base de datos si no existe
 with app.app_context():

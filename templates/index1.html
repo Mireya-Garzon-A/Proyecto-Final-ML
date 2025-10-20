@@ -1,64 +1,122 @@
 {% extends "base.html" %}
-
-{% block title %}Caso 1 - Salud{% endblock %}
+{% block title %}Información General - Proyecto Leche Cruda{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
 
-
-
-    <!-- Título centrado con fondo blanco -->
-    <h2 class="text-center border bg-info bg-opacity-25 text-dark p-3 mb-4 rounded">
-        <strong>Conceptos del Proyecto 🐂 </strong> 
-    </h2>
-
-    <!-- Contenido del texto con fondo blanco y borde -->
-    <div class="bg-light border border-success p-4 rounded" style="text-align: justify;">
-        <p>
-            <strong>Plantemiento del problema</strong> 
-            Informacion
-        </p>
-        <p>
-            <strong>Obejtivo Principal</strong> 
-            Informacion
-        </p>
-        <p>
-            <strong>Obejtivos Secundarios</strong> 
-            Informacion
-        </p>
-        <p>
-           Mas datos
-        </p>
-
-        
-        <p>
-            <strong>Algoritmos:</strong> 
-        </p>
-        <p>
-            Informacion
-        </p>
-    <div style="text-align: center; font-size: 32px;">
-    <p>||||||||||   👩🏻‍⚕️   ||||||||||</p>
+    <!-- Contextualización del Proyecto -->
+    <div class="card border-0 shadow-lg rounded-4 mb-5">
+        <div class="card-body p-4 bg-light">
+            <h4 class="text-success mb-3"><i class="bi bi-bar-chart"></i> Contextualización del Proyecto</h4>
+            <h5 class="fw-bold mb-3">Del campo al algoritmo: Explorando el comportamiento de la producción de leche en Colombia</h5>
+            <p class="fs-6">
+                La producción de leche cruda constituye una de las principales actividades económicas del sector agropecuario colombiano. 
+                Miles de familias campesinas dependen directamente de esta labor, la cual aporta significativamente al desarrollo regional, 
+                la seguridad alimentaria y la economía nacional.
+            </p>
+            <p class="fs-6">
+                Factores como la variabilidad de precios, los cambios climáticos, las diferencias entre razas de ganado 
+                y la disparidad en los niveles de acopio por departamento generan incertidumbre en la toma de decisiones de los productores.
+            </p>
+            <p class="fs-6">
+                El proyecto <strong>“Del campo al algoritmo”</strong> surge como una propuesta innovadora que combina el conocimiento del campo 
+                con el poder del análisis de datos. Mediante el uso de técnicas de <em>Machine Learning supervisado</em>, 
+                se busca identificar patrones y tendencias en la producción y el precio de la leche en Colombia.
+            </p>
+            <p class="fs-6">
+                A través de una plataforma interactiva, las personas registradas podrán ingresar información sobre la raza de sus vacas y el departamento donde operan, 
+                obteniendo recomendaciones personalizadas sobre las épocas del año más favorables para el acopio y la venta de su leche. 
+                De esta manera, el proyecto promueve una producción más eficiente y rentable, basada en evidencia científica y tecnológica.
+            </p>
+            <p class="fs-6 mb-0"><strong>🌿 Contribución a los Objetivos de Desarrollo Sostenible (ODS)</strong></p>
+            <ul class="fs-6 mb-0">
+                <li><strong>ODS 2: Hambre Cero</strong> – Promueve una agricultura sostenible al proporcionar herramientas tecnológicas que fortalecen la seguridad alimentaria y apoyan a los pequeños productores rurales.</li>
+                <li><strong>ODS 9: Industria, Innovación e Infraestructura</strong> – Fomenta la innovación en el sector agroindustrial mediante algoritmos de aprendizaje automático, contribuyendo al desarrollo de soluciones tecnológicas que transforman el campo colombiano.</li>
+            </ul>
+        </div>
     </div>
 
-    <div class="container mt-5">
-    <div class="card">
-    <div class="card-header bg-light text-success">
-      <p>
-            <strong>Referencias Bibliográficas</strong> 
-        </p>
-        <div style= "font-size: 0.7rem; line-height: 2;">
-        <ul>
-            <li>Analitika, P. (2023, julio 14). Aplicaciones innovadoras de Machine Learning: Casos de uso en salud, finanzas y energía. Analitika. https://analitikacentroamerica.com/aplicaciones-innovadoras-de-machine-learning-casos-de-uso-en-salud-finanzas-y-energia/</li>
-            <li>Diez casos de uso cotidiano del machine learning. (2025, febrero 21). Ibm.com. https://www.ibm.com/mx-es/think/topics/machine-learning-use-cases</li>
-            <li>Starr, D. (2018, julio 26). Current use cases for machine learning in healthcare. Microsoft Azure Blog. https://azure.microsoft.com/en-us/blog/current-use-cases-for-machine-learning-in-healthcare/</li>
-            <li>(S/f). Plainconcepts.com. Recuperado el 4 de septiembre de 2025, de https://www.plainconcepts.com/es/inteligencia-artificial-sector-salud-ejemplos/</li>
-            <li>(S/f). Scielo.cl. Recuperado el 4 de septiembre de 2025, de https://www.scielo.cl/scielo.php?pid=S0034-98872021000200248&script=sci_arttext</li>
-        </ul>  
-     </div>
+    <!-- Objetivo Principal -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-4 bg-light">
+            <h4 class="text-success mb-3"><i class="bi bi-bullseye"></i> Objetivo Principal</h4>
+            <p class="fs-6">
+                Desarrollar un modelo de <strong>machine learning</strong> que permita predecir el 
+                <strong>precio por litro</strong> y el <strong>volumen de leche captado</strong> según el mes y la región,
+                con el fin de apoyar la toma de decisiones en <em>políticas agropecuarias</em>, 
+                <em>logística industrial</em> y <em>educación comunitaria</em>.
+            </p>
+        </div>
     </div>
-  </div>
 
+    <!-- Objetivos Secundarios -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h4 class="text-primary mb-3"><i class="bi bi-list-check"></i> Objetivos Secundarios</h4>
+            <ul class="fs-6">
+                <li>Identificar patrones en los meses y regiones en la producción y precios de leche cruda.</li>
+                <li>Predecir fluctuaciones que afecten a productores, distribuidores y consumidores en el día a día.</li>
+                <li>Generar visualizaciones y recursos educativos que faciliten la comprensión de los datos por parte de comunidades rurales, estudiantes y tomadores de decisiones.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Preguntas Clave -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h4 class="text-primary mb-3"><i class="bi bi-question-circle"></i> Preguntas Clave del Proyecto</h4>
+            <ul class="fs-6">
+                <li><strong>¿Cómo varía el precio de la leche según el mes y el departamento?</strong><br>
+                    Nuestro modelo puede ayudar a comprender la fluctuación del precio en diferentes lugares. 
+                    <em>(Predicción numérica – regresión)</em>
+                </li>
+                <li class="mt-2"><strong>¿Qué regiones tienen mayor volumen de producción en ciertos periodos?</strong><br>
+                    El modelo identifica las regiones con mayor producción según los datos históricos. 
+                    <em>(Predicción y ranking)</em>
+                </li>
+                <li class="mt-2"><strong>¿Existen patrones estacionales o anomalías en los datos?</strong><br>
+                    Se analizan patrones en producción y precios durante el año. 
+                    <em>(Análisis exploratorio y visual)</em>
+                </li>
+                <li class="mt-2"><strong>¿Qué variables explican mejor las variaciones de precio y volumen?</strong><br>
+                    Se determinan las variables más influyentes en la producción de leche cruda. 
+                    <em>(Importancia de variables – interpretabilidad)</em>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Evaluación de Datos -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h4 class="text-primary mb-3"><i class="bi bi-database"></i> Evaluación de Datos</h4>
+            <p><strong>Fuente de Datos:</strong> Ministerio de Agricultura y Desarrollo Rural – Unidad de Seguimiento de Precios de Leche Cruda Bovina.</p>
+            <p><strong>Tablas:</strong></p>
+            <ul class="fs-6">
+                <li>Volumen de Acopios Directos</li>
+                <li>Precio Pagado al Productor</li>
+            </ul>
+            <p><strong>Aspectos a evaluar:</strong></p>
+            <ul class="fs-6">
+                <li>Historial: disponibilidad de años y meses suficientes para detectar patrones.</li>
+                <li>Datos por zonas: cobertura completa de los departamentos relevantes.</li>
+                <li>Formato: estructuras limpias (CSV, Excel) y sin valores faltantes.</li>
+                <li>Consistencia: unidades claras (litros, pesos) y sin errores tipográficos.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Viabilidad -->
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4">
+            <h4 class="text-primary mb-3"><i class="bi bi-check2-circle"></i> Viabilidad</h4>
+            <p class="fs-6">
+                La viabilidad del proyecto es <strong>alta</strong>, ya que se basa en datos oficiales del 
+                <em>Ministerio de Agricultura de Colombia</em>. Esto garantiza una base sólida para desarrollar el modelo. 
+                El éxito depende del manejo adecuado de la información, la segmentación regional y el análisis estadístico riguroso.
+            </p>
+        </div>
+    </div>
 
 </div>
 {% endblock %}

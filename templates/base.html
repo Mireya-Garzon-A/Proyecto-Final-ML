@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Machine Learning Supervisado{% endblock %}</title>
+    <title>{% block title %}Leche Cruda - Colombia{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,27 +12,42 @@
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body style="padding-top: 70px; padding-bottom: 60px;"> <!-- Espacios para header y footer fijos -->
 
-    <!-- Encabezado de sesión -->
-    <div class="container-fluid mt-3 mb-2 text-end pe-4">
-        {% if 'usuario' in session %}
-            <span class="me-2">👋 Bienvenida, {{ session['usuario'] }}</span>
-            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Cerrar sesión</a>
-        {% else %}
-            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm me-2">Iniciar sesión</a>
-            <a href="{{ url_for('register') }}" class="btn btn-outline-success btn-sm">Registrarse</a>
-        {% endif %}
-    </div>
+    <!-- Encabezado fijo -->
+    <nav class="navbar navbar-dark bg-dark fixed-top shadow-sm">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Nombre del proyecto -->
+            <span class="navbar-brand mb-0 h6 text-white">Producción de leche en Colombia</span>
+
+            <!-- Botones -->
+            <div>
+                <a href="{{ url_for('index1') }}" class="btn btn-outline-info btn-sm me-2">Información general</a>
+                {% if 'usuario' in session %}
+                    <span class="text-white me-3">👋 Bienvenida, {{ session['usuario'] }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">Iniciar sesión</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-light text-dark btn-sm">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
 
     <!-- Contenido principal -->
-    <main class="container-fluid mt-2">
+    <main class="container mt-4">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-success text-white text-center py-3 border-top mt-5">
-        © 2025 - Investigación Machine Learning Supervisado
+    <!-- Footer fijo -->
+    <footer class="bg-success text-white text-center py-3 border-top fixed-bottom">
+        <li>Universidad De Cundinamarca
+            Ingeniería De Sistemas Y Computación
+            Machine Learning
+            Proyecto Final - 2025
+        </li>
+
+        
     </footer>
 
     <!-- Bootstrap JS -->
