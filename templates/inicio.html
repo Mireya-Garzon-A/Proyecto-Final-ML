@@ -2,104 +2,171 @@
 {% block title %}Inicio - Del campo al algoritmo{% endblock %}
 
 {% block content %}
-
-<!-- Título principal -->
-<div class="container mt-5 mb-4 text-center">
-    <h1 class="display-5 fw-bold text-success">
-        🐄 Del campo al algoritmo
-    </h1>
-    <h5 class="text-muted">Explorando el comportamiento de la producción de leche en Colombia</h5>
-    <!-- Línea separadora profesional -->
-    <div class="mx-auto my-2" style="height:3px; width:60px; background-color:#28a745; border-radius:2px;"></div>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <!-- Línea decorativa superior -->
+            <div class="border-top border-primary border-3 mb-4 mx-auto" style="width: 80px;"></div>
+            
+            <h1 class="fw-bold text-dark mb-3 display-6">
+                🐄 Del campo al algoritmo
+            </h1>
+            
+            <h5 class="text-secondary mb-4 lh-base">
+                Explorando el comportamiento de la producción de leche en Colombia
+            </h5>
+            
+            <!-- Línea decorativa inferior -->
+            <div class="border-bottom border-success border-3 mt-4 mx-auto" style="width: 60px;"></div>
+        </div>
+    </div>
 </div>
 
-<!-- Contextualización con imagen al lado -->
-<div class="container mb-5">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        <div class="row g-0">
-            <!-- Imagen alineada a la izquierda -->
-            <div class="col-md-6 p-3">
+
+    <div class="card contextualizacion-card mb-5">
+    <div class="row g-0 align-items-stretch">
+        <!-- Imagen -->
+        <div class="col-md-6">
+            <div class="image-container h-100">
                 <img src="{{ url_for('static', filename='images/vacas.jpg') }}" 
-                     class="img-fluid h-100 w-100 rounded" 
+                     class="contextualizacion-imagen w-100 h-100" 
                      alt="Producción de leche en Colombia">
+                <div class="image-overlay"></div>
             </div>
-
-            <!-- Texto al lado derecho -->
-            <div class="col-md-6 p-4 bg-white">
-                <p>
-                    La producción de leche cruda representa una de las principales actividades económicas del sector agropecuario en Colombia. 
-                    Miles de familias rurales dependen de esta labor para su sustento, y factores como el <strong>clima, la raza bovina y la ubicación geográfica</strong> 
-                    influyen directamente en la cantidad de leche producida y en el precio pagado al productor.
-                </p>
-                <p>
-                    Sin embargo, los productores enfrentan dificultades para anticipar los periodos de mayor o menor acopio, lo que limita su capacidad de planificación 
-                    y puede afectar su rentabilidad. 
-                    <strong>Del campo al algoritmo</strong> busca aprovechar el poder del <em>Machine Learning</em> para analizar y predecir los comportamientos del mercado lácteo colombiano.
-                </p>
+        </div>
+        
+        <!-- Contenido -->
+        <div class="col-md-6">
+            <div class="contextualizacion-contenido h-100 p-4 p-lg-5">
+                <h3 class="titulo-seccion mb-4">Contexto de la Producción Lechera</h3>
+                
+                <div class="contextualizacion-texto">
+                    <p class="mb-4">
+                        La producción de leche cruda representa una de las principales actividades económicas 
+                        del sector agropecuario en Colombia. Miles de familias rurales dependen de esta labor 
+                        para su sustento, y factores como el <strong>clima, la raza bovina y la ubicación geográfica</strong> 
+                        influyen directamente en la cantidad de leche producida y en el precio pagado al productor.
+                    </p>
+                    
+                    <p class="mb-4">
+                        Sin embargo, los productores enfrentan dificultades para anticipar los periodos de 
+                        mayor o menor acopio, lo que limita su capacidad de planificación y puede afectar 
+                        su rentabilidad.
+                    </p>
+                    
+                    <div class="proyecto-destacado p-3 rounded-3 mt-4">
+                        <p class="mb-0">
+                            <strong>Del campo al algoritmo</strong> busca aprovechar el poder del 
+                            <em>Machine Learning</em> para analizar y predecir los comportamientos 
+                            del mercado lácteo colombiano.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Alineación ODS 8 -->
-<div class="container mb-5">
-    <div class="card shadow-lg border-0 rounded-4 p-4 bg-light">
-        <h3 class="text-primary mb-3">
-            <i class="bi bi-globe2"></i> Alineación con el ODS 8: Trabajo decente y crecimiento económico
-        </h3>
-        <p>
-            Este proyecto se articula con el <strong>Objetivo de Desarrollo Sostenible 8</strong> de la Agenda 2030, que busca 
-            <em>promover el crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo, y el trabajo decente para todos</em>.
+    <!-- ODS 2, 8 y 9 en contenedor con fondo suave -->
+<div class="ods-container p-4 rounded-4 mb-4">
+  <div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center">
+
+        <!-- Imagen ODS -->
+        <div class="mb-3">
+          <img src="{{ url_for('static', filename='images/ods2.png') }}" alt="ODS 2: Hambre Cero" style="height: 80px;">
+        </div>
+
+        <!-- Título -->
+        <h5 class="text-success mb-2">ODS 2: Hambre Cero</h5>
+
+        <!-- Texto -->
+        <p class="fs-6 text-muted">
+          Promueve una agricultura sostenible y la seguridad alimentaria mediante herramientas tecnológicas que fortalecen la productividad del sector lácteo. 
+          Apoya a pequeños productores rurales a mejorar sus ingresos y garantizar alimentos de calidad.
         </p>
-        <p>
-            Al brindar herramientas tecnológicas a los pequeños y medianos productores, se fomenta:
-        </p>
-        <ul>
-            <li>La <strong>eficiencia y competitividad</strong> en el sector lácteo.</li>
-            <li>El uso de <strong>datos inteligentes</strong> para la toma de decisiones productivas.</li>
-            <li>El <strong>fortalecimiento económico</strong> de las zonas rurales, contribuyendo al bienestar y la estabilidad laboral del campo colombiano.</li>
-        </ul>
+      </div>
     </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center">
+        <div class="mb-3">
+          <img src="{{ url_for('static', filename='images/0ds08.png') }}" alt="ODS 8: Trabajo decente y crecimiento económico" style="height: 80px;">
+        </div>
+        <h5 class="text-primary mb-2">ODS 8: Trabajo decente y crecimiento económico</h5>
+        <p class="fs-6 text-muted">
+          Fomenta el crecimiento económico sostenible y el trabajo decente mediante el uso de datos inteligentes, fortaleciendo la competitividad del sector lácteo 
+          y el bienestar de los productores rurales.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center">
+        <div class="mb-3">
+          <img src="{{ url_for('static', filename='images/ods09.jpg') }}" alt="ODS 9: Industria, innovación e infraestructura" style="height: 80px;">
+        </div>
+        <h5 class="text-warning mb-2">ODS 9: Industria, innovación e infraestructura</h5>
+        <p class="fs-6 text-muted">
+          Impulsa la innovación tecnológica en el sector agroindustrial mediante algoritmos de aprendizaje automático, generando soluciones que transforman el campo colombiano.
+        </p>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- Funcionalidades con explicación y botón discreto -->
-<div class="container mb-5">
+    <!-- Funcionalidades -->
+<div class="container mt-5 mb-5 funcionalidades-container">
     <h3 class="mb-4 text-success text-center"><i class="bi bi-lightbulb"></i> Funcionalidades del Sistema</h3>
+    <p class="fs-6 text-center mb-4">
+        Explora el comportamiento de la producción de leche en Colombia usando datos públicos de la USP Leche. 
+        Los usuarios pueden investigar periodos de mayor acopio, analizar la influencia de la raza y el departamento, y recibir recomendaciones personalizadas.
+    </p>
 
-    <!-- Funcionalidad 1 -->
-    <div class="card shadow-lg border-0 rounded-4 mb-4 p-4">
-        <h5 class="text-primary"><i class="bi bi-bar-chart-line"></i> Consultar épocas de mayor acopio y mejores precios</h5>
-        <p>Permite visualizar los periodos del año donde la leche alcanza su mayor volumen de acopio y los precios más favorables, ayudando a la planificación estratégica.</p>
-        <div class="text-end">
-            <a href="{{ url_for('login') }}" class="btn btn-success btn-md shadow-sm py-1 mt-2">
-                Ir a inicio de sesión
-            </a>
-        </div>
-    </div>
+    <div class="row justify-content-center g-4">
 
-    <!-- Funcionalidad 2 -->
-    <div class="card shadow-lg border-0 rounded-4 mb-4 p-4">
-        <h5 class="text-primary"><i class="bi bi-droplet-half"></i> Analizar influencia de raza y departamento</h5>
-        <p>Los usuarios pueden ingresar la raza de las vacas y el departamento para conocer cómo estas variables afectan la producción de leche.</p>
-        <div class="text-end">
-            <a href="{{ url_for('login') }}" class="btn btn-success btn-md shadow-sm py-1 mt-2">
-                Ir a inicio de sesión
-            </a>
+        <!-- Funcionalidad 1 -->
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card" onclick="alert('Para acceder a esta información, debe iniciar sesión.')">
+                <img src="{{ url_for('static', filename='images/Imagen1.png') }}" alt="Funcionalidad 1" class="img-fluid mx-auto mb-3" style="max-height: 80px;">
+                <h5 class="card-title mb-2">Épocas de mayor acopio</h5>
+                <p class="card-text fs-6">Visualiza los periodos del año con mayor volumen y mejor precio de la leche.</p>
+            </div>
         </div>
-    </div>
 
-    <!-- Funcionalidad 3 -->
-    <div class="card shadow-lg border-0 rounded-4 mb-4 p-4">
-        <h5 class="text-primary"><i class="bi bi-check2-circle"></i> Recibir recomendaciones personalizadas</h5>
-        <p>El sistema sugiere la mejor época para vender la leche según la raza y la región, ayudando a maximizar ingresos y eficiencia sin sobrecargar al usuario.</p>
-        <div class="text-end">
-            <a href="{{ url_for('login') }}" class="btn btn-success btn-md shadow-sm py-1 mt-2">
-                Ir a inicio de sesión
-            </a>
+        <!-- Funcionalidad 2 -->
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card" onclick="alert('Para acceder a esta información, debe iniciar sesión.')">
+                <img src="{{ url_for('static', filename='images/foto_ordeno.jpg') }}" 
+                    alt="Influencia de raza y departamento" 
+                    class="img-fluid mx-auto mb-3" 
+                    style="max-height: 80px; border-radius: 8px;">
+                <h5 class="card-title mb-2">Influencia de raza y departamento</h5>
+                <p class="card-text fs-6">Analiza cómo la raza de la vaca y la ubicación geográfica afectan la producción.</p>
+            </div>
         </div>
+
+        <!-- Funcionalidad 3 -->
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card" onclick="alert('Para acceder a esta información, debe iniciar sesión.')">
+                <img src="{{ url_for('static', filename='images/Imagen2.jpg') }}" 
+                    alt="Recomendaciones personalizadas" 
+                    class="img-fluid mx-auto mb-3" 
+                    style="max-height: 80px; border-radius: 8px;">
+                <h5 class="card-title mb-2">Recomendaciones personalizadas</h5>
+                <p class="card-text fs-6">Recibe sugerencias sobre los mejores momentos para vender la leche según tus datos.</p>
+            </div>
+        </div>
+
     </div>
 </div>
+        </div>
+    </div>
 
+</div>
 {% endblock %}
 
 {% block styles %}
@@ -110,29 +177,38 @@ body {
     color: #212529;
 }
 
-/* Cards - recuadros elegantes */
+/* Títulos */
+h1, h3, h5 {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Cards generales */
 .card {
     border-radius: 1rem;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    background-color: #ffffff;
+    transition: all 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-}
-
-/* Imagen dentro de card */
+/* Imagen contextualización */
 .card img {
-    border-radius: 0.75rem;
-    object-fit: cover;
+    border-radius: 1rem;
 }
 
-/* Encabezados */
-h1, h3 {
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+/* Efecto de zoom personalizado en funcionalidades */
+.hover-scale-wrapper {
+    overflow: hidden;
+    border-radius: 1rem;
+}
+
+.hover-scale {
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+    transform-origin: center center;
+}
+
+.hover-scale:hover {
+    transform: scale(1.08);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    z-index: 10;
+    position: relative;
 }
 
 /* Listas elegantes */
@@ -143,19 +219,6 @@ ul {
 ul li::before {
     content: "✔️ ";
     color: #28a745;
-}
-
-/* Botones navbar */
-.navbar .btn {
-    min-width: 130px;
-    font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-}
-.navbar .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 </style>
 {% endblock %}

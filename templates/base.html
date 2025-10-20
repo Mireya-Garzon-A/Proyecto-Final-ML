@@ -11,43 +11,99 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        .navbar-brand-custom {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .footer-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        main {
+            min-height: calc(100vh - 140px);
+        }
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+    </style>
 </head>
-<body style="padding-top: 70px; padding-bottom: 60px;"> <!-- Espacios para header y footer fijos -->
+<body style="padding-top: 70px; padding-bottom: 80px;">
 
-    <!-- Encabezado fijo -->
-    <nav class="navbar navbar-dark bg-dark fixed-top shadow-sm">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
+    <!-- Encabezado fijo mejorado -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
+        <div class="container">
             <!-- Nombre del proyecto -->
-            <span class="navbar-brand mb-0 h6 text-white">Producción de leche en Colombia</span>
+            <a class="navbar-brand navbar-brand-custom" href="{{ url_for('index1') }}">
+                🐄 Producción de Leche en Colombia
+            </a>
 
-            <!-- Botones -->
-            <div>
-                <a href="{{ url_for('index1') }}" class="btn btn-outline-info btn-sm me-2">Información general</a>
-                {% if 'usuario' in session %}
-                    <span class="text-white me-3">👋 Bienvenida, {{ session['usuario'] }}</span>
-                    <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">Iniciar sesión</a>
-                    <a href="{{ url_for('register') }}" class="btn btn-light text-dark btn-sm">Registrarse</a>
-                {% endif %}
+            <!-- Botón para móviles -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menú colapsable -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto d-flex align-items-center">
+                    <a href="{{ url_for('index1') }}" class="btn btn-outline-light btn-sm me-2">
+                        <i class="bi bi-info-circle"></i> Información general
+                    </a>
+                    
+                    {% if 'usuario' in session %}
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ session['usuario'] }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Mi perfil</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up"></i> Mis datos</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-sm">
+                            <i class="bi bi-person-plus"></i> Registrarse
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Contenido principal -->
-    <main class="container mt-4">
+    <main class="container mt-4 py-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer fijo -->
-    <footer class="bg-success text-white text-center py-3 border-top fixed-bottom">
-        <li>Universidad De Cundinamarca
-            Ingeniería De Sistemas Y Computación
-            Machine Learning
-            Proyecto Final - 2025
-        </li>
-
-        
+    <!-- Footer mejorado -->
+    <footer class="bg-dark text-white text-center py-3 fixed-bottom">
+        <div class="container">
+            <div class="footer-content">
+                <strong>Universidad De Cundinamarca</strong> | 
+                Ingeniería De Sistemas Y Computación | 
+                Machine Learning | 
+                Proyecto Final - 2025
+            </div>
+            <small class="text-muted">Del campo al algoritmo - Explorando la producción lechera</small>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->

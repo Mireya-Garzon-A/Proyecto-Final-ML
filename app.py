@@ -6,7 +6,6 @@ import pandas as pd
 
 
 # Inicialización
-# use absolute paths for templates and static to avoid issues when cwd changes
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
 app.secret_key = 'clave_segura_para_sesion'
@@ -36,24 +35,28 @@ def load_user(user_id):
 def inicio():
     return render_template('inicio.html')
 
-# Login
+# Login CORREGIDO - usuario = email
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
+        # El campo "usuario" en el formulario es el correo electrónico
         email = request.form['usuario']
         contrasena = request.form['contrasena']
 
+        # Buscar usuario por email (correo electrónico)
         user = User.query.filter_by(email=email).first()
+        
         if user and user.check_password(contrasena):
             login_user(user)
             session['usuario'] = user.name
+            flash('¡Bienvenido/a! Has iniciado sesión correctamente.', 'success')
             return redirect(url_for('menu'))
         else:
-            error = 'Usuario o contraseña incorrectos'
+            error = 'Correo electrónico o contraseña incorrectos'
+    
     return render_template('login.html', error=error)
 
-#======================================
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -61,9 +64,10 @@ def register():
         email = request.form['email']
         password = request.form['password']
 
+        # Verificar si ya existe el usuario por email
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash('El correo ya está registrado', 'danger')
+            flash('El correo electrónico ya está registrado', 'danger')
             return redirect(url_for('register'))
 
         new_user = User(name=name, email=email)
@@ -74,9 +78,6 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
-#====================================================
-
-
 
 # Logout
 @app.route('/logout')
@@ -84,6 +85,7 @@ def register():
 def logout():
     logout_user()
     session.pop('usuario', None)
+    flash('Has cerrado sesión correctamente.', 'info')
     return redirect(url_for('inicio'))
 
 # Menú principal (solo con sesión activa)
@@ -94,13 +96,8 @@ def menu():
 
 # Casos de uso
 @app.route('/index1')
-
 def index1():
     return render_template('index1.html')
-
-
-
-
 
 # Crear la base de datos si no existe
 with app.app_context():

@@ -1,39 +1,101 @@
 {% extends "base.html" %}
 
-{% block title %}Registro{% endblock %}
+{% block title %}Registro - Del campo al algoritmo{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-header bg-success bg-opacity-25 text-center rounded-top-4">
-                    <h3><i class="bi bi-person-plus"></i> Crear cuenta</h3>
+        <div class="col-md-6 col-lg-5">
+            <!-- Tarjeta de Registro Mejorada -->
+            <div class="card login-card shadow border-0 rounded-4">
+                <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
+                    <i class="bi bi-person-plus display-4 mb-3 d-block"></i>
+                    <h2 class="h3 mb-0">Crear Cuenta</h2>
+                    <p class="mb-0 opacity-75">Únete a nuestra plataforma</p>
                 </div>
-                <div class="card-body bg-light">
+                
+                <div class="card-body p-4 p-md-5">
                     {% with messages = get_flashed_messages(with_categories=true) %}
-                      {% if messages %}
-                        {% for category, msg in messages %}
-                          <div class="alert alert-{{ category }}">{{ msg }}</div>
-                        {% endfor %}
-                      {% endif %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-{{ 'exclamation-triangle-fill' if category == 'danger' else 'check-circle-fill' }} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     {% endwith %}
 
                     <form method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" name="name" required>
+                        <!-- Campo Nombre -->
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-semibold text-dark">
+                                <i class="bi bi-person-fill me-2 text-success"></i>Nombre Completo
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control border-start-0 py-2" 
+                                       id="name" 
+                                       name="name" 
+                                       placeholder="Ingresa tu nombre completo"
+                                       required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control" name="email" required>
+
+                        <!-- Campo Email -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-semibold text-dark">
+                                <i class="bi bi-envelope-fill me-2 text-success"></i>Correo Electrónico
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-envelope text-muted"></i>
+                                </span>
+                                <input type="email" 
+                                       class="form-control border-start-0 py-2" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="tucorreo@ejemplo.com"
+                                       required>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="password" required>
+
+                        <!-- Campo Contraseña -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold text-dark">
+                                <i class="bi bi-lock-fill me-2 text-success"></i>Contraseña
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-key text-muted"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control border-start-0 py-2" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Crea una contraseña segura"
+                                       required>
+                            </div>
+                            <small class="text-muted">Mínimo 6 caracteres</small>
                         </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-success">Registrar</button>
+
+                        <!-- Botón de Registrar -->
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-success btn-lg py-2 fw-semibold">
+                                <i class="bi bi-person-plus me-2"></i>Crear Cuenta
+                            </button>
+                        </div>
+
+                        <!-- Enlace para iniciar sesión -->
+                        <div class="text-center pt-3 border-top">
+                            <p class="mb-2 text-muted">¿Ya tienes una cuenta?</p>
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                            </a>
                         </div>
                     </form>
                 </div>
