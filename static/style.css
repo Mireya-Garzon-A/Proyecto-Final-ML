@@ -151,7 +151,7 @@ body {
 
 /* --- SECCIÓN CONTEXTUALIZACIÓN --- */
 .contextualizacion-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fdf9 100%);
+    background: linear-gradient(135deg,  #ffffff 0%, #f8fdf9 100%);
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(16, 104, 75, 0.15);
     border: 1px solid rgba(25, 135, 84, 0.2);
@@ -246,10 +246,12 @@ body {
     font-weight: 500;
 }
 
-/* --- LOGIN CON IMAGEN DE FONDO --- */
+
+
+/* --- LOGIN Y REGISTRO CON FONDO SEMITRANSPARENTE --- */
 .login-container {
     position: relative;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #f8f9fa; /* color de respaldo si no carga la imagen */
     overflow: hidden;
     min-height: 100vh;
     display: flex;
@@ -258,27 +260,31 @@ body {
     padding: 2rem 0;
 }
 
+/* Capa de fondo con imagen */
 .login-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../images/vacas.jpg');
+    background-image: url("/static/images/vacas.jpg"); /* 👉 cambia por tu imagen */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.15;
+    opacity: 0.35; /* 💡 controla la transparencia */
     z-index: 1;
 }
 
+/* Capa de contenido (formulario) */
 .login-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
     position: relative;
     z-index: 2;
+    background: rgba(255, 255, 255, 0.92); /* 💡 semitransparente */
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    padding: 2.5rem;
 }
 
 .login-card .card-header {
@@ -456,4 +462,18 @@ footer::before {
     .login-card .card-body {
         padding: 2rem 1.5rem !important;
     }
+}
+
+.register-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/static/images/vacas.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    z-index: 1;
 }

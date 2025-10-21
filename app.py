@@ -94,7 +94,7 @@ def logout():
 def menu():
     return render_template('menu.html')
 
-# Casos de uso
+# datos proyecto
 @app.route('/index1')
 def index1():
     return render_template('index1.html')
@@ -102,6 +102,11 @@ def index1():
 # Crear la base de datos si no existe
 with app.app_context():
     db.create_all()
+
+# Política de tratamiento de datos
+@app.route("/politica-datos")
+def politica_datos():
+    return render_template("politica_datos.html")
 
 # Ejecutar la app
 if __name__ == '__main__':

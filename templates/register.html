@@ -3,101 +3,163 @@
 {% block title %}Registro - Del campo al algoritmo{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <!-- Tarjeta de Registro Mejorada -->
-            <div class="card login-card shadow border-0 rounded-4">
-                <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
-                    <i class="bi bi-person-plus display-4 mb-3 d-block"></i>
-                    <h2 class="h3 mb-0">Crear Cuenta</h2>
-                    <p class="mb-0 opacity-75">Únete a nuestra plataforma</p>
+<div class="login-container min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <!-- Fondo con imagen -->
+    <div class="login-background"></div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                
+                <!-- Tarjeta de Registro Mejorada -->
+                <div class="card login-card shadow border-0 rounded-4">
+                    <!-- Header de la tarjeta -->
+                    <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
+                        <i class="bi bi-person-plus display-4 mb-3 d-block"></i>
+                        <h2 class="h3 mb-0">Crear Cuenta</h2>
+                        <p class="mb-0 opacity-75">Únete a nuestra plataforma</p>
+                    </div>
+                    
+                    <!-- Cuerpo de la tarjeta -->
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Mensajes Flash -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-{{ 'exclamation-triangle-fill' if category == 'danger' else 'check-circle-fill' }} me-2"></i>
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Formulario de Registro -->
+                        <form method="post">
+                            <!-- Campo Nombre -->
+                            <div class="mb-4">
+                                <label for="name" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-person-fill me-2 text-success"></i>Nombre Completo
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-person text-muted"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control border-start-0 py-2" 
+                                           id="name" 
+                                           name="name" 
+                                           placeholder="Ingresa tu nombre completo"
+                                           required>
+                                </div>
+                            </div>
+
+                            <!-- Campo Email -->
+                            <div class="mb-4">
+                                <label for="email" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-envelope-fill me-2 text-success"></i>Correo Electrónico
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-envelope text-muted"></i>
+                                    </span>
+                                    <input type="email" 
+                                           class="form-control border-start-0 py-2" 
+                                           id="email" 
+                                           name="email" 
+                                           placeholder="tucorreo@ejemplo.com"
+                                           required>
+                                </div>
+                            </div>
+
+                            <!-- Campo Contraseña -->
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-lock-fill me-2 text-success"></i>Contraseña
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-key text-muted"></i>
+                                    </span>
+                                    <input type="password" 
+                                           class="form-control border-start-0 py-2" 
+                                           id="password" 
+                                           name="password" 
+                                           placeholder="Crea una contraseña segura"
+                                           required>
+                                </div>
+                                <small class="text-muted">Mínimo 6 caracteres</small>
+                            </div>
+
+                            <!-- Aceptación de tratamiento de datos -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="aceptoDatos" required>
+                                <label class="form-check-label" for="aceptoDatos">
+                                    Acepto el 
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalPolitica" class="text-success fw-semibold">
+                                        tratamiento de mis datos personales
+                                    </a>
+                                    según la Ley 1581 de 2012.
+                                </label>
+                            </div>
+
+                            <!-- Botón de Registrar -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-success btn-lg py-2 fw-semibold">
+                                    <i class="bi bi-person-plus me-2"></i>Crear Cuenta
+                                </button>
+                            </div>
+
+                            <!-- Enlace para iniciar sesión -->
+                            <div class="text-center pt-3 border-top">
+                                <p class="mb-2 text-muted">¿Ya tienes una cuenta?</p>
+                                <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Política de Tratamiento de Datos -->
+    <div class="modal fade" id="modalPolitica" tabindex="-1" aria-labelledby="modalPoliticaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 shadow-lg">
+                <!-- Header del Modal -->
+                <div class="modal-header bg-success text-white rounded-top-4">
+                    <h5 class="modal-title" id="modalPoliticaLabel">Política de Tratamiento de Datos Personales</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 
-                <div class="card-body p-4 p-md-5">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
-                                    <i class="bi bi-{{ 'exclamation-triangle-fill' if category == 'danger' else 'check-circle-fill' }} me-2"></i>
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                <!-- Cuerpo del Modal -->
+                <div class="modal-body p-4 text-justify">
+                    <p>De acuerdo con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>, informamos que los datos personales
+                    recolectados serán utilizados exclusivamente para los fines relacionados con la gestión académica y administrativa
+                    de nuestra plataforma <strong>Del campo al algoritmo</strong>.</p>
 
-                    <form method="post">
-                        <!-- Campo Nombre -->
-                        <div class="mb-4">
-                            <label for="name" class="form-label fw-semibold text-dark">
-                                <i class="bi bi-person-fill me-2 text-success"></i>Nombre Completo
-                            </label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-person text-muted"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control border-start-0 py-2" 
-                                       id="name" 
-                                       name="name" 
-                                       placeholder="Ingresa tu nombre completo"
-                                       required>
-                            </div>
-                        </div>
+                    <p>El titular de los datos tiene derecho a:</p>
+                    <ul>
+                        <li>Conocer, actualizar y rectificar sus datos personales.</li>
+                        <li>Solicitar prueba de la autorización otorgada para su tratamiento.</li>
+                        <li>Ser informado sobre el uso que se ha dado a sus datos.</li>
+                        <li>Presentar quejas ante la Superintendencia de Industria y Comercio por infracción a la ley.</li>
+                        <li>Revocar la autorización y/o solicitar la supresión de sus datos.</li>
+                    </ul>
 
-                        <!-- Campo Email -->
-                        <div class="mb-4">
-                            <label for="email" class="form-label fw-semibold text-dark">
-                                <i class="bi bi-envelope-fill me-2 text-success"></i>Correo Electrónico
-                            </label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-envelope text-muted"></i>
-                                </span>
-                                <input type="email" 
-                                       class="form-control border-start-0 py-2" 
-                                       id="email" 
-                                       name="email" 
-                                       placeholder="tucorreo@ejemplo.com"
-                                       required>
-                            </div>
-                        </div>
+                    <p>Para ejercer estos derechos, puede comunicarse con nosotros a través del correo:
+                    <strong>contacto@delcampoalgoritmo.com</strong>.</p>
 
-                        <!-- Campo Contraseña -->
-                        <div class="mb-4">
-                            <label for="password" class="form-label fw-semibold text-dark">
-                                <i class="bi bi-lock-fill me-2 text-success"></i>Contraseña
-                            </label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-key text-muted"></i>
-                                </span>
-                                <input type="password" 
-                                       class="form-control border-start-0 py-2" 
-                                       id="password" 
-                                       name="password" 
-                                       placeholder="Crea una contraseña segura"
-                                       required>
-                            </div>
-                            <small class="text-muted">Mínimo 6 caracteres</small>
-                        </div>
-
-                        <!-- Botón de Registrar -->
-                        <div class="d-grid gap-2 mb-4">
-                            <button type="submit" class="btn btn-success btn-lg py-2 fw-semibold">
-                                <i class="bi bi-person-plus me-2"></i>Crear Cuenta
-                            </button>
-                        </div>
-
-                        <!-- Enlace para iniciar sesión -->
-                        <div class="text-center pt-3 border-top">
-                            <p class="mb-2 text-muted">¿Ya tienes una cuenta?</p>
-                            <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
-                            </a>
-                        </div>
-                    </form>
+                    <p>Al aceptar esta política, el usuario autoriza expresamente el tratamiento de sus datos personales conforme a los
+                    propósitos mencionados.</p>
+                </div>
+                
+                <!-- Footer del Modal -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>

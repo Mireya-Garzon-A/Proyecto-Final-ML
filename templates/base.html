@@ -7,33 +7,23 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
-    <style>
-        .navbar-brand-custom {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        .footer-content {
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        main {
-            min-height: calc(100vh - 140px);
-        }
-    </style>
 </head>
+
 <body style="padding-top: 70px;">
 
-    <!-- Encabezado fijo mejorado -->
+    <!-- ==================== ENCABEZADO ==================== -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
         <div class="container">
+
             <!-- Nombre del proyecto -->
             <a class="navbar-brand navbar-brand-custom" href="{{ url_for('inicio') }}" data-bs-toggle="tooltip" data-bs-title="Página de inicio">
-                <i class="bi bi-droplet-half me-2"></i>🐄 Producción de Leche en Colombia
+                <i class="bi bi-droplet-half me-2"></i>🐄 ** Producción de Leche Cruda en Colombia ** 🥛
             </a>
 
             <!-- Botón para móviles -->
@@ -44,27 +34,30 @@
             <!-- Menú colapsable -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto d-flex align-items-center">
+
                     <a href="{{ url_for('index1') }}" class="btn btn-outline-light btn-sm me-2" data-bs-toggle="tooltip" data-bs-title="Información detallada sobre la producción lechera">
-                        <i class="bi bi-graph-up-arrow me-1"></i> Información general
+                        <i class="bi bi-graph-up-arrow me-1"></i> Sobre el Proyecto
                     </a>
-                    
+
                     {% if 'usuario' in session %}
+                        <!-- Menú de usuario -->
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" data-bs-title="Menú de usuario">
                                 <i class="bi bi-person-gear me-1"></i> {{ session['usuario'] }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="tooltip" data-bs-title="Configurar tu perfil"><i class="bi bi-person-badge me-2"></i>Mi perfil</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="tooltip" data-bs-title="Ver tus datos y estadísticas"><i class="bi bi-database me-2"></i>Mis datos</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-badge me-2"></i>Mi perfil</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-database me-2"></i>Mis datos</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}" data-bs-toggle="tooltip" data-bs-title="Cerrar tu sesión"><i class="bi bi-power me-2"></i>Cerrar sesión</a></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-power me-2"></i>Cerrar sesión</a></li>
                             </ul>
                         </div>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2" data-bs-toggle="tooltip" data-bs-title="Acceder a tu cuenta">
+                        <!-- Botones de inicio y registro -->
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">
                             <i class="bi bi-key me-1"></i> Iniciar sesión
                         </a>
-                        <a href="{{ url_for('register') }}" class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-title="Crear una nueva cuenta">
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-sm">
                             <i class="bi bi-person-add me-1"></i> Registrarse
                         </a>
                     {% endif %}
@@ -73,7 +66,7 @@
         </div>
     </nav>
 
-    <!-- Contenido principal -->
+    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
     <main class="container mt-4 py-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -90,11 +83,12 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer NO fijo - se mueve con el contenido -->
+    <!-- ==================== FOOTER ==================== -->
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container">
             <div class="row align-items-center">
-                <!-- Columna izquierda - Información universidad -->
+
+                <!-- Columna izquierda -->
                 <div class="col-md-6">
                     <div class="footer-content text-start">
                         <ul class="list-unstyled mb-2">
@@ -103,28 +97,28 @@
                             <li>Machine Learning</li>
                             <li>Proyecto Final - 2025</li>
                         </ul>
-                        <small class="text-muted">Del campo al algoritmo - Explorando la producción lechera</small>
+                        <small class="text-muted">Del campo al Algoritmo - Explorando la Producción Lechera</small>
                     </div>
                 </div>
-                
-                <!-- Columna derecha - Información de contacto -->
+
+                <!-- Columna derecha -->
                 <div class="col-md-6 text-md-end">
                     <div class="contact-info">
                         <ul class="list-unstyled mb-2">
                             <li>
                                 <i class="bi bi-envelope me-2"></i>
                                 <a href="mailto:ejemplo@unicundi.edu.co" class="text-white text-decoration-none">
-                                    ejemplo@unicundi.edu.co
+                                    contacto@example.com
                                 </a>
                             </li>
                             <li>
                                 <i class="bi bi-geo-alt me-2"></i>
-                                Dirección Ejemplo #123, Cundinamarca
+                                Dirección: Autopista Chía - Cajicá | Sector "El Cuarenta" |
                             </li>
                             <li>
                                 <i class="bi bi-telephone me-2"></i>
                                 <a href="tel:+573214567890" class="text-white text-decoration-none">
-                                    +57 321 456 7890
+                                    +57 325 0123 4567
                                 </a>
                             </li>
                         </ul>
@@ -135,7 +129,7 @@
         </div>
     </footer>
 
-    <!-- Modal Estadísticas -->
+    <!-- ==================== MODAL: ESTADÍSTICAS ==================== -->
     <div class="modal fade" id="modalEstadisticas" tabindex="-1" aria-labelledby="modalEstadisticasLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -145,6 +139,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -164,6 +159,7 @@
                             </ul>
                         </div>
                     </div>
+
                     <div class="mt-3 p-3 bg-light rounded">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>
@@ -171,15 +167,15 @@
                         </small>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success">Descargar Reporte</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Beneficios -->
+    <!-- ==================== MODAL: BENEFICIOS ==================== -->
     <div class="modal fade" id="modalBeneficios" tabindex="-1" aria-labelledby="modalBeneficiosLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -189,6 +185,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
                     <div class="d-flex mb-3">
                         <i class="bi bi-clock-history text-success fs-4 me-3"></i>
@@ -212,6 +209,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
                 </div>
@@ -219,20 +217,19 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- ==================== SCRIPTS ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Scripts personalizados -->
     <script>
         // Inicializar tooltips
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
         
-        // Inicializar carrusel si existe en la página
+        // Inicializar carrusel si existe
         document.addEventListener('DOMContentLoaded', function() {
             const carouselElement = document.getElementById('carouselLechero');
             if (carouselElement) {
-                const carousel = new bootstrap.Carousel(carouselElement, {
+                new bootstrap.Carousel(carouselElement, {
                     interval: 5000,
                     wrap: true
                 });

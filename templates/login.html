@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Login - Del campo al algoritmo{% endblock %}
+
 {% block content %}
 <div class="login-container min-vh-100 d-flex align-items-center justify-content-center py-5">
     <!-- Fondo con imagen -->
@@ -10,6 +11,7 @@
             <div class="col-md-8 col-lg-6 col-xl-5">
                 <!-- Tarjeta de Login Mejorada -->
                 <div class="card login-card shadow border-0 rounded-4">
+                    <!-- Header de la tarjeta -->
                     <div class="card-header bg-primary text-white text-center py-4 rounded-top-4 position-relative">
                         <div class="background-overlay"></div>
                         <i class="bi bi-person-circle display-4 mb-3 d-block position-relative"></i>
@@ -17,9 +19,11 @@
                         <p class="mb-0 opacity-75 position-relative">Accede a tu cuenta</p>
                     </div>
                     
+                    <!-- Cuerpo de la tarjeta -->
                     <div class="card-body p-4 p-md-5 position-relative">
                         <div class="background-overlay-light"></div>
                         
+                        <!-- Mensajes Flash -->
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
@@ -32,6 +36,7 @@
                             {% endif %}
                         {% endwith %}
                         
+                        <!-- Mensaje de Error -->
                         {% if error %}
                             <div class="alert alert-danger alert-dismissible fade show position-relative" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -40,6 +45,7 @@
                             </div>
                         {% endif %}
                         
+                        <!-- Formulario de Login -->
                         <form method="post" class="position-relative">
                             <!-- Campo Email -->
                             <div class="mb-4">
