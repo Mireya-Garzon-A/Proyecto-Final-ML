@@ -1,39 +1,181 @@
 {% extends "base.html" %}
-{% block title %}Menú Principal{% endblock %}
+{% block title %}Menú Principal - Análisis Lechero{% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-5">
 
-    <!-- Menú horizontal con submenús -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded shadow-sm mb-4">
-        <div class="container-fluid">
-            <ul class="navbar-nav mx-auto">
-
-                <!-- Casos de Uso -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle btn btn-outline-primary me-2" href="#" role="button" data-bs-toggle="dropdown">
-                        📁 Conceptos del Proyecto
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/index1">Conceptos Proyecto</a></li>
-                    </ul>
-                </li>
-                
-                <!-- Inicio -->
-                <li class="nav-item">
-                    <a class="nav-link btn btn-outline-secondary" href="/">🏠 Inicio</a>
-                </li>
-
-            </ul>
+    {% if 'usuario' in session %}
+        <!-- Encabezado descriptivo -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="display-5 fw-bold text-primary mb-3">Funcionalidades del Sistema</h1>
+                <p class="lead text-muted mx-auto" style="max-width: 800px;">
+                    Explora el comportamiento de la producción de leche en Colombia usando datos públicos de la USP Leche. 
+                    Los usuarios pueden investigar periodos de mayor acopio, analizar la influencia de la raza y el departamento, 
+                    y recibir recomendaciones personalizadas.
+                </p>
+            </div>
         </div>
-    </nav>
 
-    <!-- Explicación general -->
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body bg-light">
-            <h4 class="text-success"><i class="bi bi-robot"></i> ¿Qué hace esta aplicación?</h4>
-            <p>Explora cómo se aplican algoritmos supervisados en distintos sectores. Cada sección del menú te lleva a un módulo con explicación y ejercicio práctico.</p>
+        <!-- Menú principal con tarjetas de funcionalidades -->
+        <div class="row justify-content-center g-4 mb-5">
+            
+            <!-- Épocas de mayor acopio -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-hover rounded-4">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="icon-container bg-primary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-calendar-month fs-1 text-primary"></i>
+                        </div>
+                        <h4 class="card-title text-primary mb-3">Épocas de Mayor Acopio</h4>
+                        <p class="card-text text-muted flex-grow-1">
+                            Visualiza los periodos del año con mayor volumen y mejor precio de la leche.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-light text-dark border me-2">
+                                <i class="bi bi-graph-up me-1"></i> Análisis temporal
+                            </span>
+                        </div>
+                        <div class="mt-auto pt-3">
+                            <a href="#" class="btn btn-primary px-4">
+                                <i class="bi bi-bar-chart me-2"></i> Explorar Análisis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Influencia de raza y departamento -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-hover rounded-4">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="icon-container bg-success bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-geo-alt fs-1 text-success"></i>
+                        </div>
+                        <h4 class="card-title text-success mb-3">Influencia de Raza y Departamento</h4>
+                        <p class="card-text text-muted flex-grow-1">
+                            Analiza cómo la raza de la vaca y la ubicación geográfica afectan la producción.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-map me-1"></i> Análisis geográfico
+                            </span>
+                        </div>
+                        <div class="mt-auto pt-3">
+                            <a href="#" class="btn btn-success px-4">
+                                <i class="bi bi-map me-2"></i> Ver Mapa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recomendaciones personalizadas -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-hover rounded-4">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="icon-container bg-warning bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-robot fs-1 text-warning"></i>
+                        </div>
+                        <h4 class="card-title text-warning mb-3">Recomendaciones Personalizadas</h4>
+                        <p class="card-text text-muted flex-grow-1">
+                            Recibe sugerencias sobre los mejores momentos para vender la leche cruda según tus datos.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-cpu me-1"></i> Machine Learning
+                            </span>
+                        </div>
+                        <div class="mt-auto pt-3">
+                            <a href="#" class="btn btn-warning px-4">
+                                <i class="bi bi-lightbulb me-2"></i> Obtener Recomendaciones
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Menú horizontal alternativo para pantallas grandes -->
+        <div class="d-none d-lg-block mb-5">
+            <div class="bg-light rounded-4 p-4 shadow-sm">
+                <h5 class="text-center mb-4 text-muted">Acceso Rápido a Funcionalidades</h5>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="#" class="btn btn-primary px-4 py-2 d-flex align-items-center">
+                        <i class="bi bi-calendar-month me-2 fs-5"></i> 
+                        <div class="text-start">
+                            <div class="fw-bold">Épocas Acopio</div>
+                            <small class="d-block">Análisis temporal</small>
+                        </div>
+                    </a>
+                    <a href="#" class="btn btn-success px-4 py-2 d-flex align-items-center">
+                        <i class="bi bi-geo-alt me-2 fs-5"></i>
+                        <div class="text-start">
+                            <div class="fw-bold">Raza & Departamento</div>
+                            <small class="d-block">Análisis geográfico</small>
+                        </div>
+                    </a>
+                    <a href="#" class="btn btn-warning px-4 py-2 d-flex align-items-center">
+                        <i class="bi bi-robot me-2 fs-5"></i>
+                        <div class="text-start">
+                            <div class="fw-bold">Recomendaciones</div>
+                            <small class="d-block">Machine Learning</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    {% else %}
+        <!-- Mensaje para usuarios no autenticados -->
+        <div class="alert alert-warning text-center shadow-sm rounded-4 py-4">
+            <div class="d-flex align-items-center justify-content-center mb-3">
+                <i class="bi bi-lock-fill me-2 fs-2"></i> 
+                <span class="fs-4 fw-bold">Acceso Restringido</span>
+            </div>
+            <p class="mb-3">Debes iniciar sesión para acceder a las funcionalidades del sistema de análisis lechero.</p>
+            <div class="mt-3">
+                <a href="#" class="btn btn-primary btn-lg">Iniciar Sesión</a>
+                <a href="#" class="btn btn-outline-secondary btn-lg ms-2">Registrarse</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Información adicional del sistema -->
+    <div class="card shadow-sm border-0 rounded-4 mt-4">
+        <div class="card-body bg-light p-4">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-info-circle text-info fs-3 me-3"></i>
+                <h4 class="text-info mb-0">Sobre el Sistema de Análisis Lechero</h4>
+            </div>
+            <p class="mb-0">
+                Esta plataforma utiliza datos públicos de la USP Leche Colombia para proporcionar análisis avanzados 
+                sobre la producción láctea nacional. Las herramientas incluyen visualización temporal, análisis geográfico 
+                y algoritmos de machine learning para ofrecer recomendaciones personalizadas a productores y actores 
+                del sector lácteo colombiano.
+            </p>
         </div>
     </div>
 
 </div>
+
+<style>
+    .shadow-hover {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.1) !important;
+    }
+    .icon-container {
+        transition: all 0.3s ease;
+    }
+    .card:hover .icon-container {
+        transform: scale(1.1);
+    }
+    .btn {
+        transition: all 0.2s ease;
+    }
+</style>
 {% endblock %}

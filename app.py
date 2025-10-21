@@ -99,6 +99,10 @@ def menu():
 def index1():
     return render_template('index1.html')
 
+@app.route('/index2')
+def index2():
+    return render_template('index2.html')
+
 # Crear la base de datos si no existe
 with app.app_context():
     db.create_all()

@@ -1,8 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Información General - Proyecto Leche Cruda{% endblock %}
+{% block title %}Entendimiento del Negocio - Proyecto Leche Cruda{% endblock %}
 
 {% block content %}
 <div class="container mt-5 mb-5">
+
+    <!-- Título Principal -->
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold text-success">📊 Entendimiento del Negocio</h1>
+    </div>
 
     <!-- Contextualización del Proyecto -->
     <div class="card border-0 shadow-lg rounded-4 mb-5">
@@ -92,33 +97,114 @@
     <div class="card border-0 shadow-lg rounded-4 mb-4">
         <div class="card-body p-4">
             <h4 class="text-primary mb-3"><i class="bi bi-database"></i> Evaluación de Datos</h4>
-            <p><strong>Fuente de Datos:</strong> Ministerio de Agricultura y Desarrollo Rural – Unidad de Seguimiento de Precios de Leche Cruda Bovina.</p>
-            <p><strong>Tablas:</strong></p>
             <ul class="fs-6">
-                <li>Volumen de Acopios Directos</li>
-                <li>Precio Pagado al Productor</li>
-            </ul>
-            <p><strong>Aspectos a evaluar:</strong></p>
-            <ul class="fs-6">
-                <li>Historial: disponibilidad de años y meses suficientes para detectar patrones.</li>
-                <li>Datos por zonas: cobertura completa de los departamentos relevantes.</li>
-                <li>Formato: estructuras limpias (CSV, Excel) y sin valores faltantes.</li>
-                <li>Consistencia: unidades claras (litros, pesos) y sin errores tipográficos.</li>
+                <li><strong>Fuente de Datos:</strong><br>
+                    Ministerio de Agricultura y Desarrollo Rural – Unidad de Seguimiento de Precios de Leche Cruda Bovina.
+                </li>
+                <li><strong>Tablas utilizadas:</strong>
+                    <ul>
+                        <li>Volumen de Acopios Directos</li>
+                        <li>Volumen de Acopios Totales</li>
+                        <li>Precio Pagado al Productor</li>
+                        <li>Razas, volumen diario, volumen mes, departamento, Región (Tabla personalizada)</li>
+                    </ul>
+                </li>
+                <li><strong>Aspectos evaluados:</strong>
+                    <ul>
+                        <li>Historial: Se cuenta con registros de varios años, suficientes para detectar patrones.</li>
+                        <li>Cobertura geográfica: Los datos incluyen los departamentos clasificados por regiones.</li>
+                        <li>Formato: Los datos provienen en formato ODS, estructurados y con columnas bien definidas.</li>
+                        <li>Consistencia: Las unidades están claras (litros, pesos colombianos), y los errores fueron depurados.</li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
 
     <!-- Viabilidad -->
-    <div class="card border-0 shadow-lg rounded-4">
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
         <div class="card-body p-4">
             <h4 class="text-primary mb-3"><i class="bi bi-check2-circle"></i> Viabilidad</h4>
             <p class="fs-6">
                 La viabilidad del proyecto es <strong>alta</strong>, ya que se basa en datos oficiales del 
-                <em>Ministerio de Agricultura de Colombia</em>. Esto garantiza una base sólida para desarrollar el modelo. 
-                El éxito depende del manejo adecuado de la información, la segmentación regional y el análisis estadístico riguroso.
+                <em>Ministerio de Agricultura de Colombia</em>. Al provenir de una fuente institucional confiable, 
+                los datos tienen validez técnica y cobertura nacional. 
+                El éxito del modelo depende del correcto manejo de la información y la segmentación por regiones y departamentos, 
+                para permitir un análisis más preciso y representativo de la realidad productiva del país.
             </p>
         </div>
     </div>
 
+    <!-- ======= Referencias ======= -->
+<div class="container text-center my-5">
+  <h4 class="text-success mb-4">
+    <i class="bi bi-bookmark-star"></i> Referencias 
+  </h4>
+
+  <div class="row justify-content-center g-4">
+    
+   <!-- Federación Colombiana de Ganaderos (FEDEGÁN) -->
+<div class="col-md-3">
+  <a href="https://www.fedegan.org.co/" target="_blank" class="text-decoration-none">
+    <div class="card border-0 shadow-sm rounded-4 h-100 hover-shadow">
+      <div class="card-body">
+        <img src="https://cdn-icons-png.flaticon.com/512/1998/1998610.png" 
+             alt="Ícono de vaca" width="65" height="65" class="mb-3">
+        <h6 class="mt-3 fw-bold text-dark">Federación Colombiana de Ganaderos (FEDEGÁN)</h6>
+        <p class="small text-muted mb-0">fedegan.org.co</p>
+      </div>
+    </div>
+  </a>
 </div>
+
+    <!-- ICA -->
+    <div class="col-md-3">
+      <a href="https://www.ica.gov.co/" target="_blank" class="text-decoration-none">
+        <div class="card border-0 shadow-sm rounded-4 h-100 hover-shadow">
+          <div class="card-body">
+            <i class="bi bi-shield-check display-5 text-primary"></i>
+            <h6 class="mt-3 fw-bold text-dark">Instituto Colombiano Agropecuario - ICA</h6>
+            <p class="small text-muted mb-0">ica.gov.co</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- MINAGRICULTURA -->
+    <div class="col-md-3">
+      <a href="https://www.minagricultura.gov.co/paginas/default.aspx" target="_blank" class="text-decoration-none">
+        <div class="card border-0 shadow-sm rounded-4 h-100 hover-shadow">
+          <div class="card-body">
+            <i class="bi bi-building display-5 text-warning"></i>
+            <h6 class="mt-3 fw-bold text-dark">Ministerio de Agricultura y Desarrollo Rural</h6>
+            <p class="small text-muted mb-0">minagricultura.gov.co</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- USPLECHE -->
+    <div class="col-md-3">
+      <a href="https://uspleche.minagricultura.gov.co/" target="_blank" class="text-decoration-none">
+        <div class="card border-0 shadow-sm rounded-4 h-100 hover-shadow">
+          <div class="card-body">
+            <i class="bi bi-globe2 display-5 text-info"></i>
+            <h6 class="mt-3 fw-bold text-dark">USPLECHE – Sistema Nacional de Leche Cruda</h6>
+            <p class="small text-muted mb-0">uspleche.minagricultura.gov.co</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Efecto hover personalizado -->
+<style>
+  .hover-shadow:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+  }
+</style>
+
 {% endblock %}
