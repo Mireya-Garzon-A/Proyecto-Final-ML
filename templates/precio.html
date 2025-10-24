@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Precio del Litro de Leche{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <!-- Título principal -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">
+            🥛 Análisis del Precio Pagado al Productor
+        </h2>
+        <p class="text-muted">
+            Consulta y compara precios históricos por año, mes y departamento.
+        </p>
+    </div>
+
+    <!-- Indicadores principales -->
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-secondary">💰 Precio Actual</h6>
+                <h4 class="fw-bold text-success">${{ precio_actual }} COP</h4>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-secondary">📅 Mes con Mayor Precio (2025)</h6>
+                <h5 class="fw-bold">{{ mes_max_2025 if mes_max_2025 else 'No disponible' }}</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 border rounded shadow-sm bg-light">
+                <h6 class="text-secondary">📍 Departamento con Mayor Precio (2025)</h6>
+                <h5 class="fw-bold">{{ depto_max_2025 if depto_max_2025 else 'No disponible' }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de filtros -->
+    <form method="POST" class="row g-3 justify-content-center mb-4 p-3 rounded shadow-sm bg-light">
+        <div class="col-md-3">
+            <label for="anio" class="form-label fw-semibold text-primary">Año</label>
+            <select name="anio" id="anio" class="form-select border-primary">
+                <option value="">Todos</option>
+                {% for a in anios %}
+                <option value="{{ a }}" {% if a|string == anio_sel %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="mes" class="form-label fw-semibold text-primary">Mes</label>
+            <select name="mes" id="mes" class="form-select border-primary">
+                <option value="">Todos</option>
+                {% for m in meses %}
+                <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="departamento" class="form-label fw-semibold text-primary">Departamento</label>
+            <select name="departamento" id="departamento" class="form-select border-primary">
+                <option value="">Nacional</option>
+                {% for d in departamentos %}
+                <option value="{{ d }}" {% if d == depto_sel %}selected{% endif %}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                🔍 Filtrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Mostrar gráfico -->
+    {% if grafico %}
+    <div class="text-center mb-4">
+        <h5 class="fw-bold text-secondary mb-3">📈 Evolución del Precio</h5>
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de precios"
+             class="img-fluid rounded shadow-lg border border-primary">
+    </div>
+    {% endif %}
+
+    <!-- Tabla de resultados -->
+    {% if tabla %}
+    <div class="table-responsive shadow-sm">
+        <h5 class="fw-bold text-secondary mb-3 text-center">📋 Datos Filtrados</h5>
+        {{ tabla|safe }}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center mt-4">
+        <strong>⚠️ No hay datos disponibles para los filtros seleccionados.</strong>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

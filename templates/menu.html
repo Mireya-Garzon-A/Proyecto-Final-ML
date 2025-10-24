@@ -52,6 +52,34 @@
 
         </div>
 
+            <!-- Tarjeta: Análisis de Precio -->
+<div class="col-md-4 mb-4">
+    <a href="{{ url_for('precio') }}" class="text-decoration-none">
+        <div class="card shadow-lg border-0 precio-card text-center">
+            <div class="card-body">
+                <h4 class="card-title text-primary fw-bold mb-3">💰 Análisis de Precio</h4>
+                <p class="card-text text-secondary">
+                    Explora el precio pagado al productor por litro de leche, filtrando por año, mes y región.
+                </p>
+            </div>
+        </div>
+    </a>
+</div>
+
+            <!-- Tarjeta: Inversión Ganadera -->
+
+<div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+            <h5 class="card-title text-primary fw-bold">📈 Inversión Ganadera</h5>
+            <p class="card-text text-muted">Explora el censo bovino, selecciona tu departamento y raza, y recibe recomendaciones de producción y venta.</p>
+            <a href="{{ url_for('inversion.inversion') }}" class="btn btn-outline-primary w-100">Ir al análisis</a>
+        </div>
+    </div>
+</div>
+
+        
+
     {% else %}
         <div class="alert alert-warning text-center" role="alert">
             Debes iniciar sesión para acceder al menú principal.

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Inversión Ganadera por Departamento{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+  <h2 class="text-center fw-bold text-primary mb-4">📊 Análisis del Censo Bovino 2025</h2>
+
+  <div class="row g-3 justify-content-center">
+    <!-- Tarjeta 1 -->
+    <div class="col-md-4">
+      <div class="card h-100 border-success shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">🐄 Mayores por grupo etario</div>
+        <div class="card-body">
+          {% for item in analisis.mayores %}
+          <p><strong>{{ item.grupo }}:</strong> {{ item.departamento }} – {{ item.cantidad | int }}</p>
+          {% endfor %}
+          <p class="text-muted small">ANTIOQUIA lidera en todos los rangos, lo que indica una estructura ganadera robusta y continua.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 2 -->
+    <div class="col-md-4">
+      <div class="card h-100 border-danger shadow-sm">
+        <div class="card-header bg-danger text-white fw-bold">🐄 Menores por grupo etario</div>
+        <div class="card-body">
+          {% for item in analisis.menores %}
+          <p><strong>{{ item.grupo }}:</strong> {{ item.departamento }} – {{ item.cantidad | int }}</p>
+          {% endfor %}
+          <p class="text-muted small">Esto refleja una baja vocación ganadera en zonas insulares.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 3 -->
+    <div class="col-md-4">
+      <div class="card h-100 border-primary shadow-sm">
+        <div class="card-header bg-primary text-white fw-bold">📊 Distribución nacional</div>
+        <div class="card-body">
+          {% for grupo, porcentaje in analisis.distribucion.items() %}
+          <p><strong>{{ grupo }}:</strong> {{ porcentaje }}%</p>
+          {% endfor %}
+          <p class="text-muted small">Distribución porcentual del total nacional por grupo etario.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Botón para ver tabla completa -->
+<div class="text-center mb-5">
+  <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalCenso">
+    📋 Ver datos completos del censo
+  </button>
+</div>
+
+<!-- Modal con tabla completa -->
+<div class="modal fade" id="modalCenso" tabindex="-1" aria-labelledby="modalCensoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCensoLabel">📋 Censo Bovino 2025 – Datos completos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          {{ tabla_censo|safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Selección de departamento -->
+    <form method="POST" class="p-4 bg-light rounded shadow-sm mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="departamento" class="form-label fw-semibold text-primary">Selecciona un departamento</label>
+                <select name="departamento" id="departamento" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Elige un departamento --</option>
+                    {% for d in departamentos %}
+                    <option value="{{ d }}" {% if d == depto_sel %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    {% if region %}
+
+    <!-- Información de la región -->
+    <div class="row g-3">
+  <div class="col-md-6">
+    <div class="card border-success">
+      <div class="card-header bg-success text-white">Región 1</div>
+      <div class="card-body">
+        {% for d in departamentos_region if region == 1 %}
+        <span class="badge bg-light text-dark me-1 mb-1">{{ d }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-primary">
+      <div class="card-header bg-primary text-white">Región 2</div>
+      <div class="card-body">
+        {% for d in departamentos_region if region == 2 %}
+        <span class="badge bg-light text-dark me-1 mb-1">{{ d }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <div class="col-md-6">
+            <div class="p-3 bg-white border rounded shadow-sm">
+                <h5 class="fw-bold text-success">🐄 Razas disponibles</h5>
+                <ul class="list-group">
+                    {% for r in razas_region %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ r['razas'] }}</span>
+                        <span class="text-muted">{{ r['volumen diario'] }} litros/día</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selección de raza y número de vacas -->
+    <!-- Selección de raza, número de vacas, mes y año -->
+<form method="POST" class="p-4 bg-white border rounded shadow-sm mb-4">
+  <input type="hidden" name="departamento" value="{{ depto_sel }}">
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label for="raza" class="form-label fw-semibold text-primary">Raza</label>
+      <select name="raza" id="raza" class="form-select">
+        <option value="">-- Elige una raza --</option>
+        {% for r in razas_region %}
+        <option value="{{ r['razas'] }}" {% if r['razas'] == raza_sel %}selected{% endif %}>{{ r['razas'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label for="num_vacas" class="form-label fw-semibold text-primary"># Vacas</label>
+      <input type="number" name="num_vacas" id="num_vacas" class="form-control" min="1" value="{{ num_vacas or '' }}">
+    </div>
+    <div class="col-md-3">
+      <label for="mes" class="form-label fw-semibold text-primary">Mes</label>
+      <select name="mes" id="mes" class="form-select">
+        {% for m in ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] %}
+        <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label for="ano" class="form-label fw-semibold text-primary">Año</label>
+      <input type="number" name="ano" id="ano" class="form-control" value="{{ ano_sel or 2025 }}">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">🔍 Calcular</button>
+    </div>
+  </div>
+</form>
+    {% endif %}
+
+    {% if volumen_diario %}
+    <!-- Resultados -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="p-3 bg-white border rounded shadow-sm">
+                <h5 class="fw-bold text-success">💧 Producción estimada</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">Volumen diario total: <strong>{{ volumen_diario }} litros</strong></li>
+                    <li class="list-group-item">Volumen mensual estimado: <strong>{{ volumen_mensual }} litros</strong></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 bg-white border rounded shadow-sm">
+                <h5 class="fw-bold text-warning">📅 Mejor mes para vender</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">Mes recomendado: <strong>{{ mejor_mes }}</strong></li>
+                    <li class="list-group-item">Precio promedio: <strong>${{ precio_mes }} COP/litro</strong></li>
+                    <li class="list-group-item">Volumen de acopio: <strong>{{ acopio_mes }} millones de litros</strong></li>
+                </ul>
+                <div class="mt-3 alert alert-info text-center fw-semibold">
+                    {{ recomendacion }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+<!-- Tarjeta de predicción de acopio mensual -->
+<div class="row mb-4">
+  <div class="col-md-6 offset-md-3">
+    <div class="card border-info shadow-sm">
+      <div class="card-header bg-info text-white fw-bold">📈 Predicción de Acopio Mensual</div>
+      <div class="card-body">
+        <p><strong>Departamento:</strong> {{ depto_sel }}</p>
+        <p><strong>Mes:</strong> {{ mes_sel }}</p>
+        <p><strong>Año:</strong> {{ ano_sel }}</p>
+        <p><strong>Volumen estimado:</strong> {{ volumen_predicho | round(2) }} litros</p>
+        <p class="text-muted small">Estimación generada con modelo supervisado basado en datos históricos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row mb-4">
+  <div class="col-md-6 offset-md-3">
+    <div class="card border-success shadow-sm">
+      <div class="card-header bg-success text-white fw-bold">📈 Mes más rentable (ML)</div>
+      <div class="card-body">
+        <p><strong>Mes:</strong> {{ mejor_mes_data.mes }} {{ mejor_mes_data.año }}</p>
+        <p><strong>Precio promedio:</strong> ${{ mejor_mes_data.precio }} COP/litro</p>
+        <p><strong>Volumen de acopio:</strong> {{ mejor_mes_data.volumen }} litros</p>
+        <p><strong>Rentabilidad estimada:</strong> {{ mejor_mes_data.rentabilidad }}</p>
+        <p class="text-muted small">Predicción generada con modelo supervisado Random Forest entrenado con datos de los últimos 24 meses.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
