@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Volumen de Acopio{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <!-- Título principal -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">
+            🥛 Análisis del Volumen de Acopio de Leche
+        </h2>
+        <p class="text-muted">
+            Consulta los datos históricos de acopio nacional filtrando por año y mes.
+        </p>
+    </div>
+
+    <!-- Formulario de filtros -->
+    <form method="POST" class="row g-3 justify-content-center mb-4 p-3 rounded shadow-sm bg-light">
+        <div class="col-md-4">
+            <label for="anio" class="form-label fw-semibold text-success">Año</label>
+            <select name="anio" id="anio" class="form-select border-success">
+                <option value="">Todos</option>
+                {% for a in anios %}
+                <option value="{{ a }}" {% if a|string == anio_sel %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="mes" class="form-label fw-semibold text-success">Mes</label>
+            <select name="mes" id="mes" class="form-select border-success">
+                <option value="">Todos</option>
+                {% for m in meses %}
+                <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100 shadow-sm">
+                🔍 Filtrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Mostrar gráfico -->
+    {% if grafico %}
+    <div class="text-center mb-4">
+        <h5 class="fw-bold text-secondary mb-3">Gráfico del Acopio Nacional</h5>
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de acopio"
+             class="img-fluid rounded shadow-lg border border-success">
+    </div>
+    {% endif %}
+
+    <!-- Tabla de resultados -->
+    {% if tabla %}
+    <div class="table-responsive shadow-sm">
+        <h5 class="fw-bold text-secondary mb-3 text-center">📋 Datos Filtrados</h5>
+        {{ tabla|safe }}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center mt-4">
+        <strong>⚠️ No hay datos disponibles para los filtros seleccionados.</strong>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
