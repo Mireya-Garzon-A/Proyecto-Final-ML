@@ -1,127 +1,175 @@
 from flask import Blueprint, render_template, request
 import pandas as pd
-import os, io, base64
+import os
+import io, base64
 import matplotlib.pyplot as plt
-from modelo_acopio import predecir_acopio
+from modelo_acopio import predecir_acopio  # importar la función del otro módulo
 
-acopio_bp = Blueprint('acopio', __name__)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Crear el Blueprint
+acopio_bp = Blueprint('acopio', __name__, template_folder='templates')
 
-@acopio_bp.route('/acopio', methods=['GET', 'POST'])
-def mostrar_acopio():
-    try:
-        # === 1. Cargar datos ===
-        archivo = os.path.join(BASE_DIR, 'DataSheet', 'Volumen de Acopio Directos - Res 0017 de 2012.csv')
-        df = pd.read_csv(archivo, sep=';', encoding='utf-8', engine='python', na_values=['nd', 'ND'])
-        df.columns = [col.strip().lower().replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u') for col in df.columns]
+# Ruta base del archivo
+DATA_PATH = os.path.join("DataSheet", "Volumen de Acopio Directos - Res 0017 de 2012.csv")
 
-        # === 2. Identificar columnas clave con validación segura ===
-        col_mes_candidates = [c for c in df.columns if 'mes' in c]
-        if not col_mes_candidates:
-            return "<h4 style='color:red;'>⚠️ Error: No se encontró ninguna columna de mes.</h4>"
-        col_mes = col_mes_candidates[0]
+# ==========================
+# Función para cargar y limpiar la data
+# ==========================
+def cargar_datos():
+    # Intentar diferentes codificaciones
+    encodings = ['utf-8', 'latin1', 'iso-8859-1', 'cp1252']
+    df = None
+    
+    for encoding in encodings:
+        try:
+            df = pd.read_csv(DATA_PATH, sep=';', encoding=encoding)
+            # Si llegamos aquí, la lectura fue exitosa
+            break
+        except UnicodeDecodeError:
+            continue
+    
+    if df is None:
+        raise ValueError("No se pudo leer el archivo con ninguna codificación")
 
-        col_anio_candidates = [c for c in df.columns if 'año' in c or 'ano' in c]
-        if not col_anio_candidates:
-            return "<h4 style='color:red;'>⚠️ Error: No se encontró ninguna columna de año.</h4>"
-        col_anio = col_anio_candidates[0]
+    # Normalizar nombres de columnas: quitar espacios y tildes
+    def normalize_col(col):
+        import unicodedata
+        # Convertir a mayúsculas y quitar espacios
+        col = col.strip().upper()
+        # Normalizar caracteres (quitar tildes)
+        col = unicodedata.normalize('NFKD', col).encode('ASCII', 'ignore').decode('ASCII')
+        return col
 
-        col_vol = 'nacional' if 'nacional' in df.columns else None
-        if not col_vol:
-            return "<h4 style='color:red;'>⚠️ Error: No se encontró la columna 'NACIONAL' con el volumen total.</h4>"
+    df.columns = [normalize_col(c) for c in df.columns]
 
-        # === 3. Procesar fechas y limpiar volumen ===
-        meses = {
-            'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4,
-            'mayo': 5, 'junio': 6, 'julio': 7, 'agosto': 8,
-            'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
-        }
-        df['mes_num'] = df[col_mes].str.lower().map(meses)
-        df['Año'] = pd.to_numeric(df[col_anio], errors='coerce')
-        df['fecha'] = pd.to_datetime(dict(year=df['Año'], month=df['mes_num'], day=1), errors='coerce')
-        df[col_vol] = pd.to_numeric(df[col_vol], errors='coerce')
+    # Verificar y renombrar columna ANO/AÑO si es necesario
+    if 'ANO' in df.columns:
+        df = df.rename(columns={'ANO': 'AÑO'})
 
-        años_disponibles = sorted(df['Año'].dropna().unique())
-        meses_disponibles = sorted(df[col_mes].dropna().unique())
-
-        # === 4. Estadísticas desde enero 2024 ===
-        df_2024 = df[df['Año'] >= 2024]
-        mes_max_vol = None
-        depto_max_vol = None
-
-        if not df_2024.empty:
-            vol_por_mes = df_2024.groupby(col_mes)[col_vol].sum().reset_index()
-            if not vol_por_mes.empty:
-                mes_max_vol = vol_por_mes.sort_values(by=col_vol, ascending=False).iloc[0][col_mes]
-
-        # === Transformar departamentos en filas (excluyendo NACIONAL) ===
-        departamentos = [col for col in df.columns if col not in [col_anio, col_mes, 'nacional']]
-        df_melt = df.melt(id_vars=[col_anio, col_mes], value_vars=departamentos,
-                          var_name='Departamento', value_name='Volumen')
-        df_melt['Volumen'] = pd.to_numeric(df_melt['Volumen'], errors='coerce')
-        df_melt['Año'] = pd.to_numeric(df_melt[col_anio], errors='coerce')
-
-        df_2024_melt = df_melt[df_melt['Año'] >= 2024]
-        if not df_2024_melt.empty:
-            vol_por_depto = df_2024_melt.groupby('Departamento')['Volumen'].sum().reset_index()
-            if not vol_por_depto.empty:
-                depto_max_vol = vol_por_depto.sort_values(by='Volumen', ascending=False).iloc[0]['Departamento']
-
-        # === 5. Generar gráfico comparativo ===
-        grafico = None
-        if not df_2024.empty and not vol_por_mes.empty:
-            vol_por_mes['predicho'] = vol_por_mes[col_mes].str.lower().map(lambda m: predecir_acopio(m))
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.plot(vol_por_mes[col_mes], vol_por_mes[col_vol], label='Volumen real', marker='o', color='blue')
-            ax.plot(vol_por_mes[col_mes], vol_por_mes['predicho'], label='Volumen predicho', marker='o', color='orange')
-            ax.set_title("Predicción de Acopio por Mes")
-            ax.set_xlabel("Mes")
-            ax.set_ylabel("Volumen (litros)")
-            ax.legend()
-            plt.xticks(rotation=45)
-            buf = io.BytesIO()
-            plt.tight_layout()
-            plt.savefig(buf, format='png')
-            buf.seek(0)
-            grafico = base64.b64encode(buf.getvalue()).decode('utf-8')
-            plt.close(fig)
-
-        # === 6. Procesar formulario del usuario ===
-        resultados_usuario = None
-        tabla = None
-        anio_sel = request.form.get('anio')
-        mes_sel = request.form.get('mes')
-        depto_sel = request.form.get('departamento')
-
-        df_filtrado = df.copy()
-        if anio_sel:
-            df_filtrado = df_filtrado[df_filtrado['Año'] == int(anio_sel)]
-        if mes_sel:
-            df_filtrado = df_filtrado[df_filtrado[col_mes].str.lower() == mes_sel.lower()]
-        if depto_sel and depto_sel in df.columns:
-            df_filtrado = df_filtrado[[col_anio, col_mes, depto_sel]]
+    if 'MES' not in df.columns:
+        for col in df.columns:
+            if 'MES' in col:
+                df.rename(columns={col:'MES'}, inplace=True)
+                break
         else:
-            df_filtrado = df_filtrado[[col_anio, col_mes, col_vol]]
+            raise ValueError("Columna faltante: MES")
 
-        if not df_filtrado.empty:
-            tabla = df_filtrado.to_html(classes='table table-striped table-sm', index=False)
-            resultados_usuario = {
-                'anio': anio_sel,
-                'mes': mes_sel,
-                'depto': depto_sel if depto_sel else 'NACIONAL',
-                'volumen': 'Disponible'
-            }
+    # Convertir a tipo correcto
+    df['AÑO'] = df['AÑO'].astype(int)
+    df['MES'] = df['MES'].astype(str)
 
-        # === 7. Renderizar plantilla ===
-        return render_template('acopio.html',
-                               mes_max_vol=mes_max_vol,
-                               depto_max_vol=depto_max_vol,
-                               años_disponibles=años_disponibles,
-                               meses_disponibles=meses_disponibles,
-                               departamentos=departamentos,
-                               resultados_usuario=resultados_usuario,
-                               tabla=tabla,
-                               grafico=grafico)
+    # Convertir columnas de departamentos a float
+    for col in df.columns[2:]:
+        # Asegurarnos que la columna sea de tipo string primero
+        df[col] = df[col].astype(str)
+        # Reemplazar 'nd' por 0 y limpiar espacios
+        df[col] = df[col].str.strip().replace('nd', '0')
+        # Si la columna contiene números con formato español (1.234.567,89)
+        if df[col].str.contains('\.').any():
+            # Primero quitar puntos de miles
+            df[col] = df[col].str.replace('.', '')
+        # Reemplazar comas decimales por puntos
+        df[col] = df[col].str.replace(',', '.')
+        # Convertir a float
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
+    return df
+
+# ==========================
+# Función para generar gráfico
+# ==========================
+def generar_grafico(df, anio):
+    df_anio = df[df['AÑO'] == anio].copy()
+    columnas_deptos = df.columns[2:]
+    resumen = df_anio.groupby('MES')[columnas_deptos].sum().sum(axis=1).reset_index(name='VOLUMEN (LITROS)')
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.bar(resumen['MES'], resumen['VOLUMEN (LITROS)'])
+    ax.set_title(f'Volumen total de acopio - {anio}')
+    ax.set_xlabel('Mes')
+    ax.set_ylabel('Volumen (Litros)')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    grafico_base64 = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()
+    return grafico_base64
+
+# ==========================
+# Ruta principal del análisis
+# ==========================
+@acopio_bp.route('/analisis_acopio', methods=['GET', 'POST'])
+def analisis_acopio():
+    try:
+        df = cargar_datos()
     except Exception as e:
-        return f"<h4 style='color:red;'>Error en análisis de acopio: {str(e)}</h4>"
+        import traceback
+        error_msg = f"Error cargando datos: {str(e)}\n{traceback.format_exc()}"
+        print(error_msg)  # Para ver en la consola del servidor
+        return f"Error cargando datos: {str(e)}"
+
+    # Año seleccionado (por defecto último disponible)
+    anio = int(request.form.get('anio', df['AÑO'].max()))
+    df_anio = df[df['AÑO'] == anio].copy()
+
+    # Estadísticas
+    columnas_deptos = df.columns[2:]
+    df_anio['TOTAL'] = df_anio[columnas_deptos].sum(axis=1)
+    mes_max = df_anio.loc[df_anio['TOTAL'].idxmax()]
+    mes_min = df_anio.loc[df_anio['TOTAL'].idxmin()]
+
+    # Gráfico
+    grafico_base64 = generar_grafico(df, anio)
+
+    # Predicciones usando modelo externo (capturar errores sin romper la vista)
+    try:
+        pred_df = predecir_acopio()
+        print("✅ Predicciones generadas por el modelo:")
+        print(pred_df)
+        # Aceptar tanto DataFrame como lista
+        if hasattr(pred_df, 'to_dict'):
+            predicciones = pred_df.to_dict('records')
+            print("✅ Predicciones generadas por el modelo:")
+            print(pred_df)
+        elif isinstance(pred_df, list):
+            predicciones = pred_df
+        else:
+            predicciones = []
+    except Exception as e:
+        import traceback
+        print(f"Error en predicción: {str(e)}\n{traceback.format_exc()}")
+        predicciones = []  # Lista vacía en caso de error
+
+    # Lista de años disponibles
+    anios_disponibles = sorted(df['AÑO'].unique())
+
+    # Encontrar los meses con mayor y menor volumen
+    resumen_mes = df[df['AÑO'] == anio].copy()
+    columnas_deptos = [col for col in df.columns if col not in ['AÑO', 'MES']]
+    resumen_mes['TOTAL'] = resumen_mes[columnas_deptos].sum(axis=1)
+    
+    idx_max = resumen_mes['TOTAL'].idxmax()
+    idx_min = resumen_mes['TOTAL'].idxmin()
+    
+    mes_max_data = resumen_mes.loc[idx_max]
+    mes_min_data = resumen_mes.loc[idx_min]
+
+    # Encontrar departamento con mayor y menor aporte para cada mes
+    dept_max = columnas_deptos[mes_max_data[columnas_deptos].argmax()]
+    dept_min = columnas_deptos[mes_min_data[columnas_deptos].argmin()]
+
+    return render_template(
+        'acopio.html',
+        año_actual=anio,
+        años_disponibles=anios_disponibles,
+        mes_mayor=mes_max_data['MES'],
+        mes_menor=mes_min_data['MES'],
+        dept_mayor=dept_max,
+        dept_menor=dept_min,
+        vol_mayor=mes_max_data['TOTAL'],
+        vol_menor=mes_min_data['TOTAL'],
+        grafico=grafico_base64,
+        predicciones=predicciones
+    )
