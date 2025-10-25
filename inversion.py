@@ -55,6 +55,15 @@ def obtener_mejor_mes():
     mejor = df.sort_values(by='rentabilidad', ascending=False).iloc[0]
     return mejor['mes'], mejor['precio'], mejor['acopio']
 
+def mejores_meses_por_acopio(n=3):
+    """Devuelve los n meses con mayor volumen de acopio (lista de meses)."""
+    meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    acopios = [88, 90, 91, 89, 87, 92, 93, 92, 90, 89, 88, 87]
+    df_m = pd.DataFrame({'mes': meses, 'acopio': acopios})
+    top = df_m.sort_values(by='acopio', ascending=False).head(n)
+    return top['mes'].tolist()
+
 def generar_analisis_censo(df):
     grupos = ['terneras < 1 año', 'hembras 1 - 2 años', 'hembras 2 - 3 años', 'hembras > 3 años']
     grupos_existentes = [g for g in grupos if g in df.columns]
@@ -95,6 +104,16 @@ def inversion():
         df_raza = cargar_datos_raza()
         analisis = generar_analisis_censo(df_censo)
 
+        # Generar tabla HTML del censo para mostrar en el modal
+        try:
+            tabla_censo_df = df_censo.copy()
+            # Mejorar nombres de columnas para visualización
+            tabla_censo_df.columns = [c.title() for c in tabla_censo_df.columns]
+            tabla_censo = tabla_censo_df.to_html(classes="table table-striped table-sm table-hover",
+                                                 index=False, border=0, justify="center", na_rep="")
+        except Exception:
+            tabla_censo = "<p class='text-danger'>No fue posible cargar la tabla del censo.</p>"
+
         departamentos = df_raza['departamento'].unique().tolist()
         depto_sel = request.form.get('departamento')
         raza_sel = request.form.get('raza')
@@ -121,6 +140,32 @@ def inversion():
 
             mejor_mes, precio_mes, acopio_mes = obtener_mejor_mes()
 
+        # Si se seleccionó una raza, determinar el mejor departamento/region para producción
+        mejor_depto_info = None
+        mejores_meses = mejores_meses_por_acopio(3)
+        if raza_sel:
+            try:
+                raza_rows = df_raza[df_raza['razas'] == raza_sel]
+                if not raza_rows.empty:
+                    # Departamento con mayor volumen diario por vaca para esa raza
+                    idx = raza_rows['volumen diario'].idxmax()
+                    row = raza_rows.loc[idx]
+                    mejor_depto_info = {
+                        'departamento': row['departamento'],
+                        'region': int(row['region']) if 'region' in row and pd.notna(row['region']) else None,
+                        'volumen_diario_por_vaca': float(row['volumen diario'])
+                    }
+                    # volumen total estimado según número de vacas si se proporcionó
+                    try:
+                        nv = int(num_vacas) if num_vacas else None
+                        if nv:
+                            mejor_depto_info['volumen_total_diario'] = mejor_depto_info['volumen_diario_por_vaca'] * nv
+                            mejor_depto_info['volumen_total_mensual'] = mejor_depto_info['volumen_total_diario'] * 30
+                    except Exception:
+                        pass
+            except Exception:
+                mejor_depto_info = None
+
             try:
                 volumen_predicho = predecir_acopio(mejor_mes)
                 precio_predicho = predecir_precio(mejor_mes)
@@ -144,6 +189,9 @@ def inversion():
                                volumen_predicho=volumen_predicho,
                                precio_predicho=precio_predicho,
                                rentabilidad_predicha=rentabilidad_predicha,
-                               recomendacion=recomendacion)
+                               recomendacion=recomendacion,
+                               tabla_censo=tabla_censo,
+                               mejor_depto_info=mejor_depto_info,
+                               mejores_meses=mejores_meses)
     except Exception as e:
         return f"<h4 style='color:red;'>Error en inversión: {str(e)}</h4>"
