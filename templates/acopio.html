@@ -1,68 +1,67 @@
-{% extends "base.html" %}
-{% block title %}Volumen de Acopio{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5 mb-5">
+<div class="container mt-4">
 
-    <!-- Título principal -->
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-success">
-            🥛 Análisis del Volumen de Acopio de Leche
-        </h2>
-        <p class="text-muted">
-            Consulta los datos históricos de acopio nacional filtrando por año y mes.
-        </p>
+  <!-- 1. Visualización del modelo ML -->
+  <h3 class="text-center">📈 Predicción de Acopio por Mes</h3>
+  <div class="text-center mb-4">
+    <img src="{{ url_for('static', filename='images/grafico_acopio.png') }}" alt="Gráfico de Acopio" class="img-fluid rounded shadow">
+  </div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p>Este gráfico compara el volumen real de acopio por mes con la predicción generada por un modelo de <strong>Machine Learning</strong> basado en regresión lineal. La línea naranja representa la estimación del modelo, útil para identificar patrones estacionales y apoyar decisiones de compra o inversión.</p>
     </div>
+  </div>
 
-    <!-- Formulario de filtros -->
-    <form method="POST" class="row g-3 justify-content-center mb-4 p-3 rounded shadow-sm bg-light">
-        <div class="col-md-4">
-            <label for="anio" class="form-label fw-semibold text-success">Año</label>
-            <select name="anio" id="anio" class="form-select border-success">
-                <option value="">Todos</option>
-                {% for a in anios %}
-                <option value="{{ a }}" {% if a|string == anio_sel %}selected{% endif %}>{{ a }}</option>
-                {% endfor %}
-            </select>
+  <!-- 2. Estadísticas desde enero 2024 -->
+  <h4>📊 Estadísticas recientes (desde enero 2024)</h4>
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-header">Mes con mayor volumen</div>
+        <div class="card-body">
+          <h5 class="card-title">{{ mes_max_vol }}</h5>
         </div>
-
-        <div class="col-md-4">
-            <label for="mes" class="form-label fw-semibold text-success">Mes</label>
-            <select name="mes" id="mes" class="form-select border-success">
-                <option value="">Todos</option>
-                {% for m in meses %}
-                <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
-                {% endfor %}
-            </select>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-header">Departamento destacado</div>
+        <div class="card-body">
+          <h5 class="card-title">{{ depto_max_vol if depto_max_vol else 'No disponible' }}</h5>
         </div>
-
-        <div class="col-md-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-success w-100 shadow-sm">
-                🔍 Filtrar
-            </button>
-        </div>
-    </form>
-
-    <!-- Mostrar gráfico -->
-    {% if grafico %}
-    <div class="text-center mb-4">
-        <h5 class="fw-bold text-secondary mb-3">Gráfico del Acopio Nacional</h5>
-        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de acopio"
-             class="img-fluid rounded shadow-lg border border-success">
+      </div>
     </div>
-    {% endif %}
+  </div>
 
-    <!-- Tabla de resultados -->
-    {% if tabla %}
-    <div class="table-responsive shadow-sm">
-        <h5 class="fw-bold text-secondary mb-3 text-center">📋 Datos Filtrados</h5>
-        {{ tabla|safe }}
+  <!-- 3. Interacción con el usuario -->
+  <h4>🧪 Explora por año</h4>
+  <form method="POST" action="/acopio">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="anio" class="form-label">Selecciona un año:</label>
+        <select name="anio" id="anio" class="form-select">
+          {% for a in años_disponibles %}
+            <option value="{{ a }}">{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+      </div>
     </div>
-    {% else %}
-    <div class="alert alert-warning text-center mt-4">
-        <strong>⚠️ No hay datos disponibles para los filtros seleccionados.</strong>
-    </div>
-    {% endif %}
+  </form>
+
+  {% if resultados_usuario %}
+  <div class="mt-4">
+    <h5>🔍 Resultados para {{ resultados_usuario.anio }}</h5>
+    <ul>
+      <li><strong>Mes con mayor volumen:</strong> {{ resultados_usuario.mes_vol }}</li>
+      <li><strong>Mes con mejor precio:</strong> {{ resultados_usuario.mes_precio }}</li>
+      <li><strong>Departamento destacado:</strong> {{ resultados_usuario.depto }}</li>
+    </ul>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}

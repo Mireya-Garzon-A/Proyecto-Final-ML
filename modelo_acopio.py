@@ -1,36 +1,45 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+import os
 
-# Entrenamiento del modelo
-def entrenar_modelo_acopio(ruta_csv):
-    df = pd.read_csv(ruta_csv, sep=None, engine='python')
-    df.columns = [col.strip().lower() for col in df.columns]
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    col_mes = [c for c in df.columns if 'mes' in c][0]
-    col_ano = [c for c in df.columns if 'año' in c or 'ano' in c][0]
-    col_vol = [c for c in df.columns if 'vol' in c or 'acopio' in c or 'litros' in c or 'total' in c][0]
-    col_depto = [c for c in df.columns if 'depto' in c or 'departamento' in c][0]
+# === Entrenar el modelo de acopio ===
+def entrenar_modelo_acopio():
+    ruta = os.path.join(BASE_DIR, 'DataSheet', 'Volumen de Acopio Directos - Res 0017 de 2012.csv')
+    df = pd.read_csv(ruta, sep=None, engine='python')
+    df.columns = [col.strip() for col in df.columns]
 
-    df = df[[col_mes, col_ano, col_depto, col_vol]].dropna()
+    # Identificar columnas
+    col_mes = [c for c in df.columns if 'mes' in c.lower()][0]
+    col_vol = [c for c in df.columns if 'vol' in c.lower() or 'litros' in c.lower() or 'acopio' in c.lower() or 'total' in c.lower()][0]
 
-    le_mes = LabelEncoder()
-    le_depto = LabelEncoder()
-    df['mes_cod'] = le_mes.fit_transform(df[col_mes])
-    df['depto_cod'] = le_depto.fit_transform(df[col_depto])
+    # Agrupar por mes
+    df_group = df.groupby(col_mes)[col_vol].mean().reset_index()
 
-    X = df[['mes_cod', col_ano, 'depto_cod']]
-    y = df[col_vol]
+    # Codificar meses
+    le = LabelEncoder()
+    X = le.fit_transform(df_group[col_mes]).reshape(-1, 1)
+    y = df_group[col_vol].values
 
-    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+    modelo = LinearRegression()
     modelo.fit(X, y)
 
-    return modelo, le_mes, le_depto
+    return modelo, le
 
-# Predicción
-def predecir_acopio(modelo, le_mes, le_depto, mes, año, departamento):
-    mes_cod = le_mes.transform([mes])[0]
-    depto_cod = le_depto.transform([departamento])[0]
-    X_pred = [[mes_cod, año, depto_cod]]
-    return modelo.predict(X_pred)[0]
+# === Predecir acopio para un mes específico ===
+def predecir_acopio(mes, año=None):
+    modelo, le = entrenar_modelo_acopio()
+    mes_codificado = le.transform([mes])[0]
+    prediccion = modelo.predict([[mes_codificado]])
+    return float(prediccion[0])
+
+# === Encontrar el mes con mayor volumen predicho ===
+def mejor_mes_para_invertir():
+    meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    predicciones = {mes: predecir_acopio(mes) for mes in meses}
+    mejor_mes = max(predicciones, key=predicciones.get)
+    volumen = predicciones[mejor_mes]
+    return mejor_mes, volumen

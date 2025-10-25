@@ -129,7 +129,7 @@
     </div>
 
     <!-- Selección de raza y número de vacas -->
-    <!-- Selección de raza, número de vacas, mes y año -->
+    
 <form method="POST" class="p-4 bg-white border rounded shadow-sm mb-4">
   <input type="hidden" name="departamento" value="{{ depto_sel }}">
   <div class="row g-3 align-items-end">
@@ -146,18 +146,11 @@
       <label for="num_vacas" class="form-label fw-semibold text-primary"># Vacas</label>
       <input type="number" name="num_vacas" id="num_vacas" class="form-control" min="1" value="{{ num_vacas or '' }}">
     </div>
-    <div class="col-md-3">
-      <label for="mes" class="form-label fw-semibold text-primary">Mes</label>
-      <select name="mes" id="mes" class="form-select">
-        {% for m in ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] %}
-        <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-2">
-      <label for="ano" class="form-label fw-semibold text-primary">Año</label>
-      <input type="number" name="ano" id="ano" class="form-control" value="{{ ano_sel or 2025 }}">
-    </div>
+
+    
+
+
+
     <div class="col-md-2">
       <button type="submit" class="btn btn-primary w-100">🔍 Calcular</button>
     </div>
@@ -200,8 +193,8 @@
       <div class="card-header bg-info text-white fw-bold">📈 Predicción de Acopio Mensual</div>
       <div class="card-body">
         <p><strong>Departamento:</strong> {{ depto_sel }}</p>
-        <p><strong>Mes:</strong> {{ mes_sel }}</p>
-        <p><strong>Año:</strong> {{ ano_sel }}</p>
+        <p><strong>Mes:</strong> {{ mejor_mes }}</p>
+        <p><strong>Año:</strong> 2025</p>
         <p><strong>Volumen estimado:</strong> {{ volumen_predicho | round(2) }} litros</p>
         <p class="text-muted small">Estimación generada con modelo supervisado basado en datos históricos.</p>
       </div>

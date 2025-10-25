@@ -1,100 +1,66 @@
-{% extends "base.html" %}
-{% block title %}Precio del Litro de Leche{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5 mb-5">
+<div class="container mt-4">
 
-    <!-- Título principal -->
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">
-            🥛 Análisis del Precio Pagado al Productor
-        </h2>
-        <p class="text-muted">
-            Consulta y compara precios históricos por año, mes y departamento.
-        </p>
+  <!-- 1. Visualización del modelo ML -->
+  <h3 class="text-center">📈 Predicción de Precio de Leche por Mes</h3>
+  <div class="text-center mb-4">
+    <img src="{{ url_for('static', filename='images/grafico_precio.png') }}" alt="Gráfico de Precio" class="img-fluid rounded shadow">
+  </div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p>Este gráfico muestra el precio promedio mensual de la leche y la predicción generada por un modelo de <strong>Machine Learning</strong> basado en regresión lineal. La línea verde representa la estimación del modelo, útil para anticipar tendencias de mercado y tomar decisiones estratégicas.</p>
     </div>
+  </div>
 
-    <!-- Indicadores principales -->
-    <div class="row text-center mb-4">
-        <div class="col-md-4">
-            <div class="p-3 border rounded shadow-sm bg-light">
-                <h6 class="text-secondary">💰 Precio Actual</h6>
-                <h4 class="fw-bold text-success">${{ precio_actual }} COP</h4>
-            </div>
+  <!-- 2. Estadísticas desde enero 2024 -->
+  <h4>📊 Estadísticas recientes (desde enero 2024)</h4>
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-header">Mes con mejor precio</div>
+        <div class="card-body">
+          <h5 class="card-title">{{ mes_max_precio }}</h5>
         </div>
-        <div class="col-md-4">
-            <div class="p-3 border rounded shadow-sm bg-light">
-                <h6 class="text-secondary">📅 Mes con Mayor Precio (2025)</h6>
-                <h5 class="fw-bold">{{ mes_max_2025 if mes_max_2025 else 'No disponible' }}</h5>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-3 border rounded shadow-sm bg-light">
-                <h6 class="text-secondary">📍 Departamento con Mayor Precio (2025)</h6>
-                <h5 class="fw-bold">{{ depto_max_2025 if depto_max_2025 else 'No disponible' }}</h5>
-            </div>
-        </div>
+      </div>
     </div>
-
-    <!-- Formulario de filtros -->
-    <form method="POST" class="row g-3 justify-content-center mb-4 p-3 rounded shadow-sm bg-light">
-        <div class="col-md-3">
-            <label for="anio" class="form-label fw-semibold text-primary">Año</label>
-            <select name="anio" id="anio" class="form-select border-primary">
-                <option value="">Todos</option>
-                {% for a in anios %}
-                <option value="{{ a }}" {% if a|string == anio_sel %}selected{% endif %}>{{ a }}</option>
-                {% endfor %}
-            </select>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-header">Departamento destacado</div>
+        <div class="card-body">
+          <h5 class="card-title">{{ depto_max_precio if depto_max_precio else 'No disponible' }}</h5>
         </div>
-
-        <div class="col-md-3">
-            <label for="mes" class="form-label fw-semibold text-primary">Mes</label>
-            <select name="mes" id="mes" class="form-select border-primary">
-                <option value="">Todos</option>
-                {% for m in meses %}
-                <option value="{{ m }}" {% if m == mes_sel %}selected{% endif %}>{{ m }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label for="departamento" class="form-label fw-semibold text-primary">Departamento</label>
-            <select name="departamento" id="departamento" class="form-select border-primary">
-                <option value="">Nacional</option>
-                {% for d in departamentos %}
-                <option value="{{ d }}" {% if d == depto_sel %}selected{% endif %}>{{ d }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100 shadow-sm">
-                🔍 Filtrar
-            </button>
-        </div>
-    </form>
-
-    <!-- Mostrar gráfico -->
-    {% if grafico %}
-    <div class="text-center mb-4">
-        <h5 class="fw-bold text-secondary mb-3">📈 Evolución del Precio</h5>
-        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfico de precios"
-             class="img-fluid rounded shadow-lg border border-primary">
+      </div>
     </div>
-    {% endif %}
+  </div>
 
-    <!-- Tabla de resultados -->
-    {% if tabla %}
-    <div class="table-responsive shadow-sm">
-        <h5 class="fw-bold text-secondary mb-3 text-center">📋 Datos Filtrados</h5>
-        {{ tabla|safe }}
+  <!-- 3. Interacción con el usuario -->
+  <h4>🧪 Explora por año</h4>
+  <form method="POST" action="/precio">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="anio" class="form-label">Selecciona un año:</label>
+        <select name="anio" id="anio" class="form-select">
+          {% for a in años_disponibles %}
+            <option value="{{ a }}">{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-warning">Filtrar</button>
+      </div>
     </div>
-    {% else %}
-    <div class="alert alert-warning text-center mt-4">
-        <strong>⚠️ No hay datos disponibles para los filtros seleccionados.</strong>
-    </div>
-    {% endif %}
+  </form>
+
+  {% if resultados_usuario %}
+  <div class="mt-4">
+    <h5>🔍 Resultados para {{ resultados_usuario.anio }}</h5>
+    <ul>
+      <li><strong>Mes con mejor precio:</strong> {{ resultados_usuario.mes_precio }}</li>
+      <li><strong>Departamento destacado:</strong> {{ resultados_usuario.depto }}</li>
+    </ul>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}
