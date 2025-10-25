@@ -71,20 +71,32 @@
 </div>
 
 
-    <!-- Selección de departamento -->
-    <form method="POST" class="p-4 bg-light rounded shadow-sm mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-6">
-                <label for="departamento" class="form-label fw-semibold text-primary">Selecciona un departamento</label>
-                <select name="departamento" id="departamento" class="form-select" onchange="this.form.submit()">
-                    <option value="">-- Elige un departamento --</option>
-                    {% for d in departamentos %}
-                    <option value="{{ d }}" {% if d == depto_sel %}selected{% endif %}>{{ d }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </form>
+  <!-- Selección de raza y número de vacas (reemplaza selector de departamento) -->
+  <form method="POST" class="p-4 bg-light rounded shadow-sm mb-4" id="formAnalisis">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label for="raza_top" class="form-label fw-semibold text-primary">Selecciona una raza</label>
+        <select name="raza" id="raza_top" class="form-select">
+          <option value="">-- Elige una raza --</option>
+          {% for r in razas %}
+          <option value="{{ r }}" {% if r == raza_sel %}selected{% endif %}>{{ r }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="num_vacas_top" class="form-label fw-semibold text-primary"># Vacas</label>
+        <input type="number" name="num_vacas" id="num_vacas_top" class="form-control" min="1" value="{{ num_vacas or '' }}" required>
+       
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100" id="btnAnalizar">🔎 Analizar</button>
+      </div>
+    </div>
+  </form>
+
+  {% if input_error %}
+    <div class="alert alert-danger">{{ input_error }}</div>
+  {% endif %}
 
     {% if region %}
 
@@ -128,34 +140,7 @@
         </div>
     </div>
 
-    <!-- Selección de raza y número de vacas -->
-    
-<form method="POST" class="p-4 bg-white border rounded shadow-sm mb-4">
-  <input type="hidden" name="departamento" value="{{ depto_sel }}">
-  <div class="row g-3 align-items-end">
-    <div class="col-md-3">
-      <label for="raza" class="form-label fw-semibold text-primary">Raza</label>
-      <select name="raza" id="raza" class="form-select">
-        <option value="">-- Elige una raza --</option>
-        {% for r in razas_region %}
-        <option value="{{ r['razas'] }}" {% if r['razas'] == raza_sel %}selected{% endif %}>{{ r['razas'] }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-2">
-      <label for="num_vacas" class="form-label fw-semibold text-primary"># Vacas</label>
-      <input type="number" name="num_vacas" id="num_vacas" class="form-control" min="1" value="{{ num_vacas or '' }}">
-    </div>
-
-    
-
-
-
-    <div class="col-md-2">
-      <button type="submit" class="btn btn-primary w-100">🔍 Calcular</button>
-    </div>
-  </div>
-</form>
+    <!-- (Se eliminó formulario duplicado) -->
     {% endif %}
 
     {% if volumen_diario %}
@@ -170,55 +155,134 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="p-3 bg-white border rounded shadow-sm">
-                <h5 class="fw-bold text-warning">📅 Mejor mes para vender</h5>
-                <ul class="list-group">
-                    <li class="list-group-item">Mes recomendado: <strong>{{ mejor_mes }}</strong></li>
-                    <li class="list-group-item">Precio promedio: <strong>${{ precio_mes }} COP/litro</strong></li>
-                    <li class="list-group-item">Volumen de acopio: <strong>{{ acopio_mes }} millones de litros</strong></li>
-                </ul>
-                <div class="mt-3 alert alert-info text-center fw-semibold">
-                    {{ recomendacion }}
-                </div>
-            </div>
-        </div>
+    <!-- Se eliminó la tarjeta "Mejor mes para vender" a petición del usuario -->
     </div>
+
+    <!-- Mejor departamento / región y meses recomendados -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card border-secondary">
+          <div class="card-header bg-secondary text-white fw-bold">🏆 Mejor ubicación para la raza seleccionada</div>
+          <div class="card-body">
+            <p><strong>Mejor departamento:</strong> {{ mejor_depto or 'No disponible' }}</p>
+            <p><strong>Mejor región:</strong> {{ mejor_region or 'No disponible' }}</p>
+            <p class="text-muted small">Departamento seleccionado según mayor rendimiento por vaca para la raza escogida.</p>
+            {% if lista_mejores_info %}
+            <hr>
+            <h6 class="mt-2">Top departamentos (producción estimada para la cantidad indicada)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-striped">
+                <thead>
+                  <tr>
+                    <th>Departamento</th>
+                    <th>Región</th>
+                    <th>Volumen / vaca (L)</th>
+                    <th>Prod. diaria (L)</th>
+                    <th>Prod. mensual (L)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in lista_mejores_info %}
+                  <tr>
+                    <td>{{ i.departamento }}</td>
+                    <td>{{ i.region }}</td>
+                    <td>{{ i.volumen_por_vaca | round(2) }}</td>
+                    <td>{{ i.prod_diaria | round(2) }}</td>
+                    <td>{{ i.prod_mensual | round(2) }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-dark">
+          <div class="card-header bg-dark text-white fw-bold">📅 Mejores meses para producción</div>
+          <div class="card-body">
+            <p class="mb-1"><strong>A nivel nacional:</strong></p>
+            {% if meses_recomendados %}
+              {% for m in meses_recomendados %}
+                <div class="small">{{ m.mes }} <span class="text-muted">({{ m.valor | round(0) }})</span></div>
+                <div class="progress mb-2" style="height:8px;">
+                  <div class="progress-bar bg-info" role="progressbar" data-pct="{{ m.pct | round(1) }}" aria-valuenow="{{ m.valor }}" aria-valuemin="0" aria-valuemax="{{ meses_recomendados_max }}"></div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p>No disponible</p>
+            {% endif %}
+
+            <hr>
+            <p class="mb-1"><strong>Para el departamento recomendado:</strong></p>
+            {% if meses_depto %}
+              {% for m in meses_depto %}
+                <div class="small">{{ m.mes }} <span class="text-muted">({{ m.valor | round(0) }})</span></div>
+                <div class="progress mb-2" style="height:8px;">
+                  <div class="progress-bar bg-success" role="progressbar" data-pct="{{ m.pct | round(1) }}" aria-valuenow="{{ m.valor }}" aria-valuemin="0" aria-valuemax="{{ meses_depto_max }}"></div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p>No disponible</p>
+            {% endif %}
+
+            <p class="text-muted small">Meses calculados a partir del histórico de acopio (DataSheet).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Se eliminó la ventana emergente de análisis según petición del usuario. Los cuadros de resultados permanecen en la página. -->
 
     
-<!-- Tarjeta de predicción de acopio mensual -->
-<div class="row mb-4">
-  <div class="col-md-6 offset-md-3">
-    <div class="card border-info shadow-sm">
-      <div class="card-header bg-info text-white fw-bold">📈 Predicción de Acopio Mensual</div>
-      <div class="card-body">
-        <p><strong>Departamento:</strong> {{ depto_sel }}</p>
-        <p><strong>Mes:</strong> {{ mejor_mes }}</p>
-        <p><strong>Año:</strong> 2025</p>
-        <p><strong>Volumen estimado:</strong> {{ volumen_predicho | round(2) }} litros</p>
-        <p class="text-muted small">Estimación generada con modelo supervisado basado en datos históricos.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="row mb-4">
-  <div class="col-md-6 offset-md-3">
-    <div class="card border-success shadow-sm">
-      <div class="card-header bg-success text-white fw-bold">📈 Mes más rentable (ML)</div>
-      <div class="card-body">
-        <p><strong>Mes:</strong> {{ mejor_mes_data.mes }} {{ mejor_mes_data.año }}</p>
-        <p><strong>Precio promedio:</strong> ${{ mejor_mes_data.precio }} COP/litro</p>
-        <p><strong>Volumen de acopio:</strong> {{ mejor_mes_data.volumen }} litros</p>
-        <p><strong>Rentabilidad estimada:</strong> {{ mejor_mes_data.rentabilidad }}</p>
-        <p class="text-muted small">Predicción generada con modelo supervisado Random Forest entrenado con datos de los últimos 24 meses.</p>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Se eliminaron las tarjetas de 'Predicción de Acopio Mensual' y 'Mes más rentable (ML)' a petición del usuario. -->
 
     {% endif %}
 
 </div>
+<script>
+  // Cliente: set progress bar widths from data-pct y validar formulario
+  document.addEventListener('DOMContentLoaded', function () {
+    // Set progress widths
+    document.querySelectorAll('.progress-bar[data-pct]').forEach(function(el){
+      const pct = parseFloat(el.getAttribute('data-pct')) || 0;
+      el.style.width = pct + '%';
+    });
+
+    // Form validation
+    const form = document.getElementById('formAnalisis');
+    const numVacasInput = document.getElementById('num_vacas_top');
+    const razaSelect = document.getElementById('raza_top');
+    const numVacasError = document.getElementById('numVacasError');
+
+    if (form) {
+      form.addEventListener('submit', function(e){
+        let valid = true;
+        numVacasError.style.display = 'none';
+
+        // raza debe seleccionarse
+        if (!razaSelect.value) {
+          valid = false;
+          razaSelect.classList.add('is-invalid');
+        } else {
+          razaSelect.classList.remove('is-invalid');
+        }
+
+        // num vacas debe ser entero > 0
+        const nv = parseInt(numVacasInput.value, 10);
+        if (!nv || nv <= 0) {
+          valid = false;
+          numVacasError.style.display = 'block';
+        }
+
+        if (!valid) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+  });
+</script>
+
 {% endblock %}
