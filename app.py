@@ -46,22 +46,38 @@ def inicio():
 # Login CORREGIDO - usuario = email
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    import traceback
     error = None
     if request.method == 'POST':
-        # El campo "usuario" en el formulario es el correo electrónico
-        email = request.form['usuario']
-        contrasena = request.form['contrasena']
+        try:
+            # El campo "usuario" en el formulario es el correo electrónico
+            email = request.form['usuario']
+            contrasena = request.form['contrasena']
 
-        # Buscar usuario por email (correo electrónico)
-        user = User.query.filter_by(email=email).first()
-        
-        if user and user.check_password(contrasena):
-            login_user(user)
-            session['usuario'] = user.name
-            flash('¡Bienvenido/a! Has iniciado sesión correctamente.', 'success')
-            return redirect(url_for('menu'))
-        else:
-            error = 'Correo electrónico o contraseña incorrectos'
+            # Buscar usuario por email (correo electrónico)
+            user = User.query.filter_by(email=email).first()
+            
+            if user and user.check_password(contrasena):
+                login_user(user)
+                session['usuario'] = user.name
+                flash('¡Bienvenido/a! Has iniciado sesión correctamente.', 'success')
+                return redirect(url_for('menu'))
+            else:
+                error = 'Correo electrónico o contraseña incorrectos'
+        except Exception as e:
+            tb = traceback.format_exc()
+            try:
+                log_dir = os.path.join(Path(__file__).resolve().parent, 'instance')
+                os.makedirs(log_dir, exist_ok=True)
+                with open(os.path.join(log_dir, 'login_error.log'), 'a', encoding='utf-8') as f:
+                    f.write('\n--- ERROR en /login ---\n')
+                    f.write(tb)
+            except Exception:
+                pass
+            # En modo debug devolver traceback para ayuda local
+            if app.debug:
+                return f"<pre>{tb}</pre>"
+            error = 'Ocurrió un error al intentar iniciar sesión. Revisa el log en instance/login_error.log.'
     
     return render_template('login.html', error=error)
 

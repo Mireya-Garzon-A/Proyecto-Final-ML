@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, current_app
+import traceback
 import pandas as pd
 import os
 
@@ -54,6 +55,57 @@ def obtener_mejor_mes():
         return "No disponible", 0, 0
     mejor = df.sort_values(by='rentabilidad', ascending=False).iloc[0]
     return mejor['mes'], mejor['precio'], mejor['acopio']
+
+def cargar_acopio():
+    """Carga el CSV de acopio y devuelve un DataFrame limpio."""
+    ruta = os.path.join(BASE_DIR, 'DataSheet', 'Volumen de Acopio Directos - Res 0017 de 2012.csv')
+    if not os.path.exists(ruta):
+        raise FileNotFoundError(f"Archivo de acopio no encontrado: {ruta}")
+    df = pd.read_csv(ruta, sep=';', encoding='utf-8')
+    # Normalizar nombres de columnas (minúsculas, sin espacios exteriores)
+    df.columns = [c.strip().lower() for c in df.columns]
+    # Limpiar columnas numéricas: quitar puntos miles y 'nd'
+    def clean_num(x):
+        if pd.isna(x):
+            return pd.NA
+        s = str(x).strip()
+        if s.lower() in ('nd', ''):
+            return pd.NA
+        s = s.replace('.', '').replace(' ', '')
+        try:
+            return float(s)
+        except Exception:
+            return pd.NA
+
+    for col in df.columns:
+        if col not in ('año', 'ano', 'mes'):
+            df[col] = df[col].apply(clean_num)
+    return df
+
+def mejores_meses_acopio(n_top=3, departamento=None):
+    """Devuelve los n_top meses con mayor acopio promedio. Si departamento es None usa NACIONAL, si no usa la columna del departamento."""
+    try:
+        df_acopio = cargar_acopio()
+    except Exception:
+        return []
+    # localizar columna correspondiente (el DataFrame usa nombres en minúsculas)
+    requested = 'nacional' if departamento is None else departamento.lower()
+    cols_clean = {c.upper().replace(' ', ''): c for c in df_acopio.columns}
+    key = requested.upper().replace(' ', '')
+    if key in cols_clean:
+        col_name = cols_clean[key]
+    else:
+        return []
+    # Agrupar por mes y calcular media
+    if 'mes' not in df_acopio.columns:
+        return []
+    df2 = df_acopio[[ 'mes', col_name ]].copy()
+    df2 = df2.dropna(subset=[col_name])
+    if df2.empty:
+        return []
+    grouped = df2.groupby('mes', sort=False)[col_name].mean()
+    top = grouped.sort_values(ascending=False).head(n_top)
+    return [{'mes': m, 'valor': float(v)} for m, v in top.items()]
 
 def mejores_meses_por_acopio(n=3):
     """Devuelve los n meses con mayor volumen de acopio (lista de meses)."""
@@ -247,8 +299,7 @@ def inversion():
             except Exception as e:
                 recomendacion = f"No se pudo generar la predicción: {str(e)}"
 
-<<<<<<< HEAD
-        # Si usuario indicó raza y número de vacas, calcular mejor departamento/region y meses recomendados
+    # Si usuario indicó raza y número de vacas, calcular mejor departamento/region y meses recomendados
         mejor_depto = None
         mejor_region = None
         meses_recomendados = []
@@ -342,8 +393,6 @@ def inversion():
             except Exception:
                 lista_mejores_series = []
 
-=======
->>>>>>> bfb21c30b6303639b128abf733020461345c8cbb
         return render_template('inversion.html',
                                departamentos=departamentos,
                                razas=df_raza['razas'].unique().tolist(),
@@ -361,7 +410,6 @@ def inversion():
                                rentabilidad_predicha=rentabilidad_predicha,
                                recomendacion=recomendacion,
                                tabla_censo=tabla_censo,
-<<<<<<< HEAD
                                mejor_depto=mejor_depto,
                                mejor_region=mejor_region,
                                meses_recomendados=meses_recomendados,
@@ -375,9 +423,23 @@ def inversion():
                                input_error=input_error,
                                meses_recomendados_max=meses_recomendados_max if 'meses_recomendados_max' in locals() else 0,
                                meses_depto_max=meses_depto_max if 'meses_depto_max' in locals() else 0)
-=======
-                               mejor_depto_info=mejor_depto_info,
-                               mejores_meses=mejores_meses)
->>>>>>> bfb21c30b6303639b128abf733020461345c8cbb
     except Exception as e:
-        return f"<h4 style='color:red;'>Error en inversión: {str(e)}</h4>"
+        tb = traceback.format_exc()
+        # intentar escribir un log en instancia para facilitar diagnóstico
+        try:
+            log_dir = os.path.join(BASE_DIR, 'instance')
+            os.makedirs(log_dir, exist_ok=True)
+            with open(os.path.join(log_dir, 'inversion_error.log'), 'a', encoding='utf-8') as f:
+                f.write('\n--- ERROR en /inversion ---\n')
+                f.write(tb)
+        except Exception:
+            # si falla escribir el log, ignoramos para no enmascarar el error original
+            pass
+        # Si estamos en modo DEBUG, devolver el traceback en la respuesta para facilitar debugging local
+        try:
+            if current_app and current_app.debug:
+                return f"<pre>{tb}</pre>"
+        except Exception:
+            pass
+        # Mensaje genérico para producción
+        return f"<h4 style='color:red;'>Error en inversión. Revisa el archivo instance/inversion_error.log para más detalles.</h4>"
