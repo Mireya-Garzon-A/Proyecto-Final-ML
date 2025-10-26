@@ -1,67 +1,66 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Análisis de Acopio{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
+    <h2 class="text-center text-success fw-bold mb-4">📊 Análisis de Volumen de Acopio</h2>
 
-  <!-- 1. Visualización del modelo ML -->
-  <h3 class="text-center">📈 Predicción de Acopio por Mes</h3>
-  <div class="text-center mb-4">
-    <img src="{{ url_for('static', filename='images/grafico_acopio.png') }}" alt="Gráfico de Acopio" class="img-fluid rounded shadow">
-  </div>
-  <div class="card mb-4">
-    <div class="card-body">
-      <p>Este gráfico compara el volumen real de acopio por mes con la predicción generada por un modelo de <strong>Machine Learning</strong> basado en regresión lineal. La línea naranja representa la estimación del modelo, útil para identificar patrones estacionales y apoyar decisiones de compra o inversión.</p>
-    </div>
-  </div>
-
-  <!-- 2. Estadísticas desde enero 2024 -->
-  <h4>📊 Estadísticas recientes (desde enero 2024)</h4>
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="card text-white bg-primary mb-3">
-        <div class="card-header">Mes con mayor volumen</div>
-        <div class="card-body">
-          <h5 class="card-title">{{ mes_max_vol }}</h5>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card text-white bg-success mb-3">
-        <div class="card-header">Departamento destacado</div>
-        <div class="card-body">
-          <h5 class="card-title">{{ depto_max_vol if depto_max_vol else 'No disponible' }}</h5>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. Interacción con el usuario -->
-  <h4>🧪 Explora por año</h4>
-  <form method="POST" action="/acopio">
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="anio" class="form-label">Selecciona un año:</label>
-        <select name="anio" id="anio" class="form-select">
-          {% for a in años_disponibles %}
-            <option value="{{ a }}">{{ a }}</option>
-          {% endfor %}
+    <form method="POST" class="text-center mb-3">
+        <label for="anio" class="fw-bold me-2">Seleccionar año:</label>
+        <select name="anio" id="anio" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            {% for a in años_disponibles %}
+                <option value="{{ a }}" {% if a == año_actual %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
         </select>
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
-      </div>
+    </form>
+
+    <div class="row text-center">
+        <div class="col-md-6 mb-3">
+            <div class="card border-success shadow">
+                <div class="card-body">
+                    <h5 class="text-success fw-bold">📈 Mes con Mayor Volumen</h5>
+                    <p class="mb-1"><strong>Mes:</strong> {{ mes_mayor }}</p>
+                    <p class="mb-1"><strong>Departamento con mayor aporte:</strong> {{ dept_mayor }}</p>
+                    <p><strong>Volumen:</strong> {{ "{:,.0f}".format(vol_mayor) }} L</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card border-danger shadow">
+                <div class="card-body">
+                    <h5 class="text-danger fw-bold">📉 Mes con Menor Volumen</h5>
+                    <p class="mb-1"><strong>Mes:</strong> {{ mes_menor }}</p>
+                    <p class="mb-1"><strong>Departamento con menor aporte:</strong> {{ dept_menor }}</p>
+                    <p><strong>Volumen:</strong> {{ "{:,.0f}".format(vol_menor) }} L</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </form>
 
-  {% if resultados_usuario %}
-  <div class="mt-4">
-    <h5>🔍 Resultados para {{ resultados_usuario.anio }}</h5>
-    <ul>
-      <li><strong>Mes con mayor volumen:</strong> {{ resultados_usuario.mes_vol }}</li>
-      <li><strong>Mes con mejor precio:</strong> {{ resultados_usuario.mes_precio }}</li>
-      <li><strong>Departamento destacado:</strong> {{ resultados_usuario.depto }}</li>
-    </ul>
-  </div>
-  {% endif %}
+    <h4 class="text-center text-primary mt-5">📅 Volumen Nacional - {{ año_actual }}</h4>
+    <div class="text-center">
+        <img src="data:image/png;base64,{{ grafico }}" class="img-fluid rounded shadow mt-3"/>
+    </div>
 
+    <h4 class="text-center text-info mt-5">🤖 Predicción para los próximos 6 meses</h4>
+    <div class="table-responsive w-75 mx-auto mt-3">
+        <table class="table table-hover">
+            <thead class="table-info">
+                <tr>
+                        <th class="text-center">Fecha</th>
+                    <th class="text-center">Volumen Predicho (L)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in predicciones %}
+                <tr>
+                        <td class="text-center">{{ p.MES }} {{ p.AÑO }}</td>
+                        <td class="text-center">{{ "{:,.0f}".format(p.PREDICCION|float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
