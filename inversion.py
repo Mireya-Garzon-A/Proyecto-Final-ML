@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, current_app
 import pandas as pd
 import os
 
@@ -107,6 +107,62 @@ def mejores_meses_acopio(n_top=3, departamento=None):
     # Devolver lista de dicts con mes y valor para facilitar visualización
     return [{'mes': m, 'valor': float(v)} for m, v in top.items()]
 
+def serie_anual_departamento(departamento, ano=2025):
+    """Devuelve la serie mensual (12 meses) del año `ano` para el departamento indicado.
+    Resultado: lista de dicts [{'mes': 'Enero', 'valor': float}, ...] en orden de enero a diciembre.
+    """
+    try:
+        df_acopio = cargar_acopio()
+    except Exception:
+        return []
+
+    # localizar columna similar al nombre de departamento
+    cols_clean = {c.upper().replace(' ', '').replace('Á', 'A').replace('É','E').replace('Í','I').replace('Ó','O').replace('Ú','U'): c for c in df_acopio.columns}
+    key = departamento.upper().replace(' ', '').replace('Á', 'A').replace('É','E').replace('Í','I').replace('Ó','O').replace('Ú','U')
+    if key in cols_clean:
+        col = cols_clean[key]
+    elif departamento in df_acopio.columns:
+        col = departamento
+    else:
+        # no coincide
+        return []
+
+    meses_order = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+
+    series = []
+    try:
+        dff = df_acopio.copy()
+        # Normalizar columna de año/mes para evitar comparaciones fallidas por tipo
+        if 'año' in dff.columns:
+            dff['año'] = pd.to_numeric(dff['año'], errors='coerce')
+            filtro = dff['año'] == int(ano)
+        elif 'ano' in dff.columns:
+            dff['ano'] = pd.to_numeric(dff['ano'], errors='coerce')
+            filtro = dff['ano'] == int(ano)
+        else:
+            filtro = pd.Series([False]*len(dff))
+
+        # normalizar columna 'mes'
+        if 'mes' in dff.columns:
+            dff['mes'] = dff['mes'].astype(str).str.strip().str.lower()
+
+        df_year = dff[filtro]
+        for m in meses_order:
+            row = df_year[df_year['mes'].str.lower() == m]
+            if not row.empty:
+                val = row.iloc[0][col]
+                try:
+                    valf = float(val)
+                except Exception:
+                    valf = 0.0
+            else:
+                valf = 0.0
+            series.append({'mes': m.title(), 'valor': valf})
+    except Exception:
+        return []
+    return series
+
 def generar_analisis_censo(df):
     grupos = ['terneras < 1 año', 'hembras 1 - 2 años', 'hembras 2 - 3 años', 'hembras > 3 años']
     grupos_existentes = [g for g in grupos if g in df.columns]
@@ -158,6 +214,23 @@ def inversion():
             tabla_censo = "<p class='text-danger'>No fue posible cargar la tabla del censo.</p>"
 
         departamentos = df_raza['departamento'].unique().tolist()
+        # Obtener años disponibles del dataset de acopio para el selector
+        try:
+            df_acopio_all = cargar_acopio()
+            years = []
+            if 'año' in df_acopio_all.columns:
+                years = pd.to_numeric(df_acopio_all['año'], errors='coerce').dropna().astype(int).unique().tolist()
+            elif 'ano' in df_acopio_all.columns:
+                years = pd.to_numeric(df_acopio_all['ano'], errors='coerce').dropna().astype(int).unique().tolist()
+            available_years = sorted(years)
+        except Exception:
+            available_years = []
+
+        # año seleccionado por el usuario (selector). Por defecto, el último año disponible o 2025
+        try:
+            anio_sel = int(request.form.get('anio')) if request.form.get('anio') else (available_years[-1] if available_years else 2025)
+        except Exception:
+            anio_sel = available_years[-1] if available_years else 2025
         depto_sel = request.form.get('departamento')
         raza_sel = request.form.get('raza')
         num_vacas = request.form.get('num_vacas')
@@ -200,6 +273,7 @@ def inversion():
         show_modal_analisis = False
         input_error = None
         lista_mejores_info = []
+        lista_mejores_series = []
         if raza_sel and num_vacas:
             try:
                 num_vacas_int = int(num_vacas)
@@ -267,9 +341,22 @@ def inversion():
                             'prod_diaria': prod_diaria,
                             'prod_mensual': prod_mensual
                         })
-                else:
-                    mejor_depto = None
-                    mejor_region = None
+
+            # Generar series anuales por departamento recomendado (para gráficos) usando el año seleccionado
+            lista_mejores_series = []
+            try:
+                for info in lista_mejores_info:
+                    dept = info['departamento']
+                    serie = serie_anual_departamento(dept, ano=anio_sel)
+                    has_data = any((m.get('valor') or 0) > 0 for m in serie)
+                    lista_mejores_series.append({
+                        'departamento': dept,
+                        'year': anio_sel,
+                        'meses': serie,
+                        'has_data': has_data
+                    })
+            except Exception:
+                lista_mejores_series = []
 
         return render_template('inversion.html',
                                departamentos=departamentos,
@@ -294,6 +381,10 @@ def inversion():
                                meses_depto=meses_depto,
                                lista_mejores_departamentos=lista_mejores_departamentos,
                                lista_mejores_info=lista_mejores_info,
+                               lista_mejores_series=lista_mejores_series,
+                               available_years=available_years,
+                               anio_sel=anio_sel,
+                               debug=current_app.debug,
                                input_error=input_error,
                                meses_recomendados_max=meses_recomendados_max if 'meses_recomendados_max' in locals() else 0,
                                meses_depto_max=meses_depto_max if 'meses_depto_max' in locals() else 0)
