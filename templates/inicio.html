@@ -263,6 +263,19 @@
         <div class="row justify-content-center g-4">
             <!-- Funcionalidad 1 - CON IMAGEN ORIGINAL -->
             <div class="col-md-4">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('acopio.analisis_acopio') }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card">
+                        <img src="{{ url_for('static', filename='images/Imagen1.png') }}" 
+                             alt="Épocas de mayor acopio" 
+                             class="img-fluid mx-auto mb-3" 
+                             style="max-height: 80px;">
+                        <h5 class="card-title mb-2">Épocas de mayor acopio</h5>
+                        <p class="card-text fs-6">Visualiza los periodos del año con mayor volumen y mejor precio de la leche.</p>
+                        <small class="opacity-75"><i class="bi bi-clock-history me-1"></i>Análisis temporal</small>
+                    </div>
+                </a>
+                {% else %}
                 <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card" 
                      onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
                      data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
@@ -274,10 +287,24 @@
                     <p class="card-text fs-6">Visualiza los periodos del año con mayor volumen y mejor precio de la leche.</p>
                     <small class="opacity-75"><i class="bi bi-clock-history me-1"></i>Análisis temporal</small>
                 </div>
+                {% endif %}
             </div>
 
             <!-- Funcionalidad 2 - CON IMAGEN ORIGINAL -->
             <div class="col-md-4">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('precio.mostrar_precio') }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm text-center p-3 bg-primary text-white zoom-card">
+                        <img src="{{ url_for('static', filename='images/foto_ordeno.jpg') }}" 
+                             alt="Influencia de raza y departamento" 
+                             class="img-fluid mx-auto mb-3" 
+                             style="max-height: 80px; border-radius: 8px;">
+                        <h5 class="card-title mb-2">Influencia de raza y departamento</h5>
+                        <p class="card-text fs-6">Analiza cómo la raza de la vaca y la ubicación geográfica afectan la producción.</p>
+                        <small class="opacity-75"><i class="bi bi-map me-1"></i>Análisis geográfico</small>
+                    </div>
+                </a>
+                {% else %}
                 <div class="card h-100 shadow-sm text-center p-3 bg-primary text-white zoom-card" 
                      onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
                      data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
@@ -289,10 +316,24 @@
                     <p class="card-text fs-6">Analiza cómo la raza de la vaca y la ubicación geográfica afectan la producción.</p>
                     <small class="opacity-75"><i class="bi bi-map me-1"></i>Análisis geográfico</small>
                 </div>
+                {% endif %}
             </div>
 
             <!-- Funcionalidad 3 - CON IMAGEN ORIGINAL -->
             <div class="col-md-4">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('inversion.inversion') }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm text-center p-3 bg-warning text-dark zoom-card">
+                        <img src="{{ url_for('static', filename='images/Imagen2.jpg') }}" 
+                             alt="Recomendaciones personalizadas" 
+                             class="img-fluid mx-auto mb-3" 
+                             style="max-height: 80px; border-radius: 8px;">
+                        <h5 class="card-title mb-2">Recomendaciones personalizadas</h5>
+                        <p class="card-text fs-6">Recibe sugerencias sobre los mejores momentos para vender la leche cruda según tus datos.</p>
+                        <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
+                    </div>
+                </a>
+                {% else %}
                 <div class="card h-100 shadow-sm text-center p-3 bg-warning text-dark zoom-card" 
                      onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
                      data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
@@ -304,10 +345,12 @@
                     <p class="card-text fs-6">Recibe sugerencias sobre los mejores momentos para vender la leche cruda según tus datos.</p>
                     <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
                 </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Llamada a la acción -->
+        <!-- Llamada a la acción (solo para visitantes no autenticados) -->
+        {% if not current_user.is_authenticated %}
         <div class="text-center mt-5">
             <div class="p-4 bg-light rounded-3">
                 <h5 class="text-success mb-3">
@@ -319,6 +362,7 @@
                 </a>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

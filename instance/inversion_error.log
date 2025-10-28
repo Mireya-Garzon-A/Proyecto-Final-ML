@@ -1,0 +1,29 @@
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 398, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<26 lines>...
+                           meses_recomendados_max=meses_recomendados_max if 'meses_recomendados_max' in locals() else 0,
+                           meses_depto_max=meses_depto_max if 'meses_depto_max' in locals() else 0)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 110, in template
+    {% endif %}
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'endif'. Jinja was looking for the following tags: 'endblock'. The innermost block that needs to be closed is 'block'.

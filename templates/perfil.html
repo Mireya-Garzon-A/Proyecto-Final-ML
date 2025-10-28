@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-success">Mi Perfil</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Datos de la cuenta</h5>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+                        <button type="submit" name="update_profile" class="btn btn-success">Guardar cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Cambiar contraseña</h5>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña actual</label>
+                            <input type="password" name="current_password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nueva contraseña</label>
+                            <input type="password" name="new_password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar nueva contraseña</label>
+                            <input type="password" name="confirm_password" class="form-control" required>
+                        </div>
+                        <button type="submit" name="change_password" class="btn btn-warning">Cambiar contraseña</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary">Volver al menú</a>
+
+</div>
+{% endblock %}

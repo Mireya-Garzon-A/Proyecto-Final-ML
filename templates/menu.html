@@ -17,10 +17,15 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-success fw-semibold" href="{{ url_for('logout') }}">
-                                🚪 Cerrar Sesión
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-success fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                👤 {{ session['usuario'] }}
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.perfil') }}">Mi perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>

@@ -3,6 +3,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 import os
 
+
 def predecir_acopio():
     """
     Carga los datos históricos del acopio y predice los próximos 6 meses

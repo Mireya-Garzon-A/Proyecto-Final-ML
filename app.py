@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from inversion import inversion_bp
 from acopio import acopio_bp
 from precio import precio_bp
+from perfil import perfil_bp
 
 import pandas as pd
 import io, base64
@@ -60,8 +61,10 @@ def login():
             if user and user.check_password(contrasena):
                 login_user(user)
                 session['usuario'] = user.name
-                flash('¡Bienvenido/a! Has iniciado sesión correctamente.', 'success')
-                return redirect(url_for('menu'))
+                # Mostrar mensaje de bienvenida personalizado con el nombre del usuario
+                flash(f'¡Bienvenido/a, {user.name}! Has iniciado sesión correctamente.', 'success')
+                # Redirigir al inicio en lugar de al menú principal
+                return redirect(url_for('inicio'))
             else:
                 error = 'Correo electrónico o contraseña incorrectos'
         except Exception as e:
@@ -148,6 +151,7 @@ def politica_datos():
 app.register_blueprint(acopio_bp)
 app.register_blueprint(precio_bp)
 app.register_blueprint(inversion_bp)
+app.register_blueprint(perfil_bp)
 
 # ✅ Ejecución de la app
 if __name__ == '__main__':

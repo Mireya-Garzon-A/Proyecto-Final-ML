@@ -393,6 +393,8 @@ def inversion():
             except Exception:
                 lista_mejores_series = []
 
+            # (Proyección desactivada temporalmente para evitar errores en el frontend)
+
         return render_template('inversion.html',
                                departamentos=departamentos,
                                razas=df_raza['razas'].unique().tolist(),
