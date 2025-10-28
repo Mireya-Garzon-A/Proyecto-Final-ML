@@ -156,60 +156,24 @@
     {% endif %}
 
     {% if volumen_diario %}
-    <!-- Resultados -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="p-3 bg-white border rounded shadow-sm">
-                <h5 class="fw-bold text-success">💧 Producción estimada</h5>
-                <ul class="list-group">
-                    <li class="list-group-item">Volumen diario total: <strong>{{ volumen_diario }} litros</strong></li>
-                    <li class="list-group-item">Volumen mensual estimado: <strong>{{ volumen_mensual }} litros</strong></li>
-                </ul>
+    <!-- Resultados: Producción estimada centrada -->
+    <div class="row mb-4 justify-content-center">
+      <div class="col-md-6">
+        <div class="p-3 bg-white border rounded shadow-sm text-center">
+          <h5 class="fw-bold text-success">💧 Producción estimada{% if num_vacas %} — {{ num_vacas }} {{ 'vaca' if num_vacas|int == 1 else 'vacas' }}{% endif %}</h5>
+          {% if breed_stats %}
+            <hr>
+            <h6 class="fw-semibold">Datos de la raza: {{ raza_sel }}</h6>
+            <div class="table-responsive">
+              {{ breed_table_html | safe }}
             </div>
+          {% endif %}
         </div>
-    <!-- Se eliminó la tarjeta "Mejor mes para vender" a petición del usuario -->
+      </div>
     </div>
 
     <!-- Mejor departamento / región y meses recomendados -->
     <div class="row mb-4">
-      <div class="col-md-6">
-        <div class="card border-secondary">
-          <div class="card-header bg-secondary text-white fw-bold">🏆 Mejor ubicación para la raza seleccionada</div>
-          <div class="card-body">
-            <p><strong>Mejor departamento:</strong> {{ mejor_depto or 'No disponible' }}</p>
-            <p><strong>Mejor región:</strong> {{ mejor_region or 'No disponible' }}</p>
-            <p class="text-muted small">Departamento seleccionado según mayor rendimiento por vaca para la raza escogida.</p>
-            {% if lista_mejores_info %}
-            <hr>
-            <h6 class="mt-2">Top departamentos (producción estimada para la cantidad indicada)</h6>
-            <div class="table-responsive">
-              <table class="table table-sm table-striped">
-                <thead>
-                  <tr>
-                    <th>Departamento</th>
-                    <th>Región</th>
-                    <th>Volumen / vaca (L)</th>
-                    <th>Prod. diaria (L)</th>
-                    <th>Prod. mensual (L)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for i in lista_mejores_info %}
-                  <tr>
-                    <td>{{ i.departamento }}</td>
-                    <td>{{ i.region }}</td>
-                    <td>{{ i.volumen_por_vaca | round(2) }}</td>
-                    <td>{{ i.prod_diaria | round(2) }}</td>
-                    <td>{{ i.prod_mensual | round(2) }}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
       <div class="col-md-6">
         <div class="card border-dark">
           <div class="card-header bg-dark text-white fw-bold">📅 Mejores meses para producción</div>
@@ -240,6 +204,16 @@
             {% endif %}
 
             <p class="text-muted small">Meses calculados a partir del histórico de acopio (DataSheet).</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-secondary">
+          <div class="card-header bg-secondary text-white fw-bold">🏆 Mejor ubicación para la raza seleccionada</div>
+          <div class="card-body">
+            <p><strong>Mejor departamento:</strong> {{ mejor_depto or 'No disponible' }}</p>
+            <p><strong>Mejor región:</strong> {{ mejor_region or 'No disponible' }}</p>
+            <p class="text-muted small">Departamento seleccionado según mayor rendimiento por vaca para la raza escogida.</p>
           </div>
         </div>
       </div>

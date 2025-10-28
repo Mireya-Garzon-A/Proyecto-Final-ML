@@ -44,6 +44,16 @@ def cargar_datos_raza():
             data.append({'departamento': dpto, 'razas': raza, 'volumen diario': litros, 'region': 2})
     return pd.DataFrame(data)
 
+
+# Estadísticas por raza (valores por vaca en litros/día y composición)
+BREED_STATS = {
+    'Holstein': {'min': 30.0, 'max': 40.0, 'avg': 35.0, 'fat': 3.5, 'protein': 3.1},
+    'Simmental Suizo': {'min': 20.0, 'max': 30.0, 'avg': 25.0, 'fat': 4.0, 'protein': 3.4},
+    'Simmental': {'min': 20.0, 'max': 30.0, 'avg': 25.0, 'fat': 4.0, 'protein': 3.4},
+    'Jersey': {'min': 18.0, 'max': 25.0, 'avg': 21.5, 'fat': 5.0, 'protein': 3.8},
+    'Normando': {'min': 20.0, 'max': 28.0, 'avg': 24.0, 'fat': 4.2, 'protein': 3.5},
+}
+
 def obtener_mejor_mes():
     meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -244,6 +254,19 @@ def inversion():
         raza_sel = request.form.get('raza')
         num_vacas = request.form.get('num_vacas')
 
+        # Si se seleccionó una raza, obtener sus estadísticas básicas para mostrar (min/max/avg por vaca)
+        if raza_sel:
+            breed_stats = BREED_STATS.get(raza_sel) or BREED_STATS.get(raza_sel.strip())
+            if breed_stats:
+                breed_min = float(breed_stats.get('min', 0.0))
+                breed_max = float(breed_stats.get('max', 0.0))
+                breed_avg = float(breed_stats.get('avg', 0.0))
+            else:
+                breed_min = breed_max = breed_avg = 0.0
+        else:
+            breed_stats = None
+            breed_min = breed_max = breed_avg = 0.0
+
         volumen_diario = None
         volumen_mensual = None
         mejor_mes = None
@@ -253,6 +276,11 @@ def inversion():
         precio_predicho = None
         rentabilidad_predicha = None
         recomendacion = None
+        # valores por raza/finca (por defecto)
+        breed_stats = None
+        breed_min = breed_max = breed_avg = 0.0
+        farm_min_diaria = farm_max_diaria = farm_avg_diaria = 0.0
+        farm_min_mensual = farm_max_mensual = farm_avg_mensual = 0.0
 
         if depto_sel:
             depto_filtrado = df_raza[df_raza['departamento'] == depto_sel]
@@ -335,6 +363,26 @@ def inversion():
                     produccion_diaria = volumen_por_vaca * num_vacas_int
                     produccion_mensual = produccion_diaria * 30
 
+                    # Estadísticas de la raza (min, max, avg) por vaca y composición
+                    breed_stats = BREED_STATS.get(raza_sel) if raza_sel else None
+                    if breed_stats and num_vacas_int:
+                        # valores por vaca
+                        breed_min = float(breed_stats.get('min', 0.0))
+                        breed_max = float(breed_stats.get('max', 0.0))
+                        breed_avg = float(breed_stats.get('avg', 0.0))
+                        # totales para la finca (por número de vacas)
+                        farm_min_diaria = breed_min * num_vacas_int
+                        farm_max_diaria = breed_max * num_vacas_int
+                        farm_avg_diaria = breed_avg * num_vacas_int
+                        farm_min_mensual = farm_min_diaria * 30
+                        farm_max_mensual = farm_max_diaria * 30
+                        farm_avg_mensual = farm_avg_diaria * 30
+                    else:
+                        breed_stats = None
+                        breed_min = breed_max = breed_avg = 0.0
+                        farm_min_diaria = farm_max_diaria = farm_avg_diaria = 0.0
+                        farm_min_mensual = farm_max_mensual = farm_avg_mensual = 0.0
+
                     # mejores meses según acopio: a nivel nacional y para el departamento seleccionado
                     meses_recomendados = mejores_meses_acopio(n_top=3, departamento=None)
                     meses_depto = mejores_meses_acopio(n_top=3, departamento=mejor_depto)
@@ -395,6 +443,71 @@ def inversion():
 
             # (Proyección desactivada temporalmente para evitar errores en el frontend)
 
+        # Preparar cadenas formateadas para mostrar en la plantilla
+        def _fmt_num(x, decimals=2):
+            try:
+                return f"{float(x):,.{decimals}f}"
+            except Exception:
+                return f"{0:,.{decimals}f}"
+
+        def _fmt_comp(x):
+            try:
+                return f"{float(x):.1f}"
+            except Exception:
+                return "0.0"
+
+        breed_min_str = _fmt_num(breed_min)
+        breed_max_str = _fmt_num(breed_max)
+        breed_avg_str = _fmt_num(breed_avg)
+
+        farm_min_diaria_str = _fmt_num(farm_min_diaria)
+        farm_max_diaria_str = _fmt_num(farm_max_diaria)
+        farm_avg_diaria_str = _fmt_num(farm_avg_diaria)
+        farm_min_mensual_str = _fmt_num(farm_min_mensual)
+        farm_max_mensual_str = _fmt_num(farm_max_mensual)
+        farm_avg_mensual_str = _fmt_num(farm_avg_mensual)
+
+        fat_str = _fmt_comp(breed_stats.get('fat')) if breed_stats and 'fat' in breed_stats else "0.0"
+        protein_str = _fmt_comp(breed_stats.get('protein')) if breed_stats and 'protein' in breed_stats else "0.0"
+
+        # Construir una tabla HTML (cadena) con nombres completos para mostrar en la tarjeta
+        # Se evita tocar plantillas; se pasa la cadena para que la plantilla la renderice con |safe
+        try:
+            nv_int = None
+            try:
+                nv_int = int(num_vacas) if num_vacas else None
+            except Exception:
+                nv_int = None
+
+            rows = []
+            # Valores por vaca (litros/día)
+            rows.append(("Mínimo por vaca (Litro/día)", breed_min_str))
+            rows.append(("Máximo por vaca (Litro/día)", breed_max_str))
+            rows.append(("Promedio por vaca (Litro/día)", breed_avg_str))
+            # Composición
+            rows.append(("Grasa en leche", fat_str))
+            rows.append(("Proteína en leche", protein_str))
+
+            # Totales para la cantidad indicada de vacas (mostrar número y singular/plural)
+            if nv_int:
+                vaca_label = "vaca" if nv_int == 1 else "vacas"
+                rows.append((f"Total mínimo - {nv_int} {vaca_label} (Litros/día)", farm_min_diaria_str))
+                rows.append((f"Total mínimo - {nv_int} {vaca_label} (Litros/mes)", farm_min_mensual_str))
+                rows.append((f"Total máximo - {nv_int} {vaca_label} (Litos/día)", farm_max_diaria_str))
+                rows.append((f"Total máximo - {nv_int} {vaca_label} (Litros/mes)", farm_max_mensual_str))
+                rows.append((f"Total promedio - {nv_int} {vaca_label} (Litros/día)", farm_avg_diaria_str))
+                rows.append((f"Total promedio - {nv_int} {vaca_label} (Litros/mes)", farm_avg_mensual_str))
+
+            # Construir HTML
+            tbl_lines = ["<table class='table table-sm table-bordered'>",
+                         "<tbody>"]
+            for label, val in rows:
+                tbl_lines.append(f"<tr><th style='width:65%;'>{label}</th><td style='text-align:right;font-weight:600;'>{val}</td></tr>")
+            tbl_lines.append("</tbody></table>")
+            breed_table_html = '\n'.join(tbl_lines)
+        except Exception:
+            breed_table_html = ""
+
         return render_template('inversion.html',
                                departamentos=departamentos,
                                razas=df_raza['razas'].unique().tolist(),
@@ -424,7 +537,31 @@ def inversion():
                                debug=current_app.debug,
                                input_error=input_error,
                                meses_recomendados_max=meses_recomendados_max if 'meses_recomendados_max' in locals() else 0,
-                               meses_depto_max=meses_depto_max if 'meses_depto_max' in locals() else 0)
+                               meses_depto_max=meses_depto_max if 'meses_depto_max' in locals() else 0,
+                               breed_stats=breed_stats,
+                               breed_min=breed_min,
+                               breed_max=breed_max,
+                               breed_avg=breed_avg,
+                               farm_min_diaria=farm_min_diaria,
+                               farm_max_diaria=farm_max_diaria,
+                               farm_avg_diaria=farm_avg_diaria,
+                               farm_min_mensual=farm_min_mensual,
+                               farm_max_mensual=farm_max_mensual,
+                               farm_avg_mensual=farm_avg_mensual,
+                               # cadenas formateadas para la UI (evita tocar templates)
+                               breed_min_str=breed_min_str,
+                               breed_max_str=breed_max_str,
+                               breed_avg_str=breed_avg_str,
+                               farm_min_diaria_str=farm_min_diaria_str,
+                               farm_max_diaria_str=farm_max_diaria_str,
+                               farm_avg_diaria_str=farm_avg_diaria_str,
+                               farm_min_mensual_str=farm_min_mensual_str,
+                               farm_max_mensual_str=farm_max_mensual_str,
+                               farm_avg_mensual_str=farm_avg_mensual_str,
+                               fat_str=fat_str,
+                               protein_str=protein_str,
+                               breed_table_html=breed_table_html)
+                               
     except Exception as e:
         tb = traceback.format_exc()
         # intentar escribir un log en instancia para facilitar diagnóstico
