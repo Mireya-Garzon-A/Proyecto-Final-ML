@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 from modelo_acopio import predecir_acopio
-from modelo_precio import predecir_precio
+from modelo_precio import predecir_precio, cargar_datos as cargar_precios
 
 inversion_bp = Blueprint('inversion', __name__, template_folder='templates')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,10 +49,11 @@ def cargar_datos_raza():
 BREED_STATS = {
     'Holstein': {'min': 30.0, 'max': 40.0, 'avg': 35.0, 'fat': 3.5, 'protein': 3.1},
     'Simmental Suizo': {'min': 20.0, 'max': 30.0, 'avg': 25.0, 'fat': 4.0, 'protein': 3.4},
-    'Simmental': {'min': 20.0, 'max': 30.0, 'avg': 25.0, 'fat': 4.0, 'protein': 3.4},
     'Jersey': {'min': 18.0, 'max': 25.0, 'avg': 21.5, 'fat': 5.0, 'protein': 3.8},
     'Normando': {'min': 20.0, 'max': 28.0, 'avg': 24.0, 'fat': 4.2, 'protein': 3.5},
+    'Gyr': {'min': 10.0, 'max': 18.0, 'avg': 14.0, 'fat': 4.75, 'protein': 3.65}
 }
+
 
 def obtener_mejor_mes():
     meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -254,9 +255,18 @@ def inversion():
         raza_sel = request.form.get('raza')
         num_vacas = request.form.get('num_vacas')
 
+        # Normalizar raza seleccionada para evitar problemas por mayúsculas/espacios
+        if raza_sel:
+            try:
+                raza_sel = raza_sel.strip()
+            except Exception:
+                pass
+
         # Si se seleccionó una raza, obtener sus estadísticas básicas para mostrar (min/max/avg por vaca)
         if raza_sel:
-            breed_stats = BREED_STATS.get(raza_sel) or BREED_STATS.get(raza_sel.strip())
+            # búsqueda insensible a mayúsculas en BREED_STATS
+            bkey = next((k for k in BREED_STATS.keys() if str(k).strip().lower() == raza_sel.strip().lower()), None)
+            breed_stats = BREED_STATS.get(bkey) if bkey else BREED_STATS.get(raza_sel) or BREED_STATS.get(raza_sel.strip())
             if breed_stats:
                 breed_min = float(breed_stats.get('min', 0.0))
                 breed_max = float(breed_stats.get('max', 0.0))
@@ -276,17 +286,18 @@ def inversion():
         precio_predicho = None
         rentabilidad_predicha = None
         recomendacion = None
-        # valores por raza/finca (por defecto)
-        breed_stats = None
-        breed_min = breed_max = breed_avg = 0.0
+    # valores por raza/finca (por defecto) - sólo inicializar totales de finca aquí
         farm_min_diaria = farm_max_diaria = farm_avg_diaria = 0.0
         farm_min_mensual = farm_max_mensual = farm_avg_mensual = 0.0
 
         if depto_sel:
+            # comparar departamentos tal cual (se generan en mayúsculas desde cargar_datos_raza)
             depto_filtrado = df_raza[df_raza['departamento'] == depto_sel]
 
             if raza_sel and num_vacas:
-                raza_info = depto_filtrado[depto_filtrado['razas'] == raza_sel]
+                # comparar razas normalizando espacios y case
+                raza_mask = df_raza['razas'].astype(str).str.strip().str.lower() == raza_sel.lower()
+                raza_info = depto_filtrado[raza_mask]
                 if not raza_info.empty:
                     volumen_diario = raza_info['volumen diario'].values[0]
                     volumen_mensual = volumen_diario * int(num_vacas) * 30
@@ -298,7 +309,8 @@ def inversion():
         mejores_meses = mejores_meses_por_acopio(3)
         if raza_sel:
             try:
-                raza_rows = df_raza[df_raza['razas'] == raza_sel]
+                # filtrar filas de la raza normalizando
+                raza_rows = df_raza[df_raza['razas'].astype(str).str.strip().str.lower() == raza_sel.lower()]
                 if not raza_rows.empty:
                     # Departamento con mayor volumen diario por vaca para esa raza
                     idx = raza_rows['volumen diario'].idxmax()
@@ -347,8 +359,8 @@ def inversion():
                 input_error = "Ingrese un número válido de vacas (entero mayor que 0)."
 
             if num_vacas_int and raza_sel:
-                # departamentos que tienen esa raza
-                df_razas_sel = df_raza[df_raza['razas'] == raza_sel]
+                # departamentos que tienen esa raza (comparación insensible a mayúsculas/espacios)
+                df_razas_sel = df_raza[df_raza['razas'].astype(str).str.strip().str.lower() == raza_sel.strip().lower()]
                 if not df_razas_sel.empty:
                     # mejor departamento: el que tenga mayor 'volumen diario' por vaca
                     df_sorted = df_razas_sel.sort_values(by='volumen diario', ascending=False)
@@ -424,6 +436,57 @@ def inversion():
                             'prod_diaria': prod_diaria,
                             'prod_mensual': prod_mensual
                         })
+
+                    
+                    # Obtener precios más recientes solo para los departamentos listados (máx 3)
+                    precios_departamentos = []
+                    try:
+                        df_precios, cols_precios = cargar_precios()
+                        # Normalizar nombres de columnas de precios (ya vienen normalizados en modelo_precio)
+                        def _norm(s):
+                            try:
+                                import unicodedata
+                                ns = str(s).strip().upper()
+                                ns = unicodedata.normalize('NFKD', ns).encode('ASCII', 'ignore').decode('ASCII')
+                                ns = ns.replace(' ', '')
+                                return ns
+                            except Exception:
+                                return str(s).strip().upper()
+
+                        cols_norm = {(_norm(c)): c for c in cols_precios}
+
+                        for info in lista_mejores_info:
+                            depto = info['departamento']
+                            key = _norm(depto)
+                            precio_val = None
+                            if key in cols_norm:
+                                col_name = cols_norm[key]
+                                # tomar el último valor no nulo ordenado por FECHA
+                                try:
+                                    serie = df_precios[[col_name, 'FECHA']].dropna(subset=[col_name]).sort_values('FECHA')
+                                    if not serie.empty:
+                                        precio_val = float(serie.iloc[-1][col_name])
+                                except Exception:
+                                    precio_val = None
+                            else:
+                                # intentar fallback: promedio nacional del último registro
+                                try:
+                                    deps = [c for c in cols_precios]
+                                    df_precios['NACIONAL_PROM'] = df_precios[deps].mean(axis=1)
+                                    serie = df_precios[['NACIONAL_PROM', 'FECHA']].dropna(subset=['NACIONAL_PROM']).sort_values('FECHA')
+                                    if not serie.empty:
+                                        precio_val = float(serie.iloc[-1]['NACIONAL_PROM'])
+                                except Exception:
+                                    precio_val = None
+
+                            precios_departamentos.append({
+                                'departamento': depto,
+                                'precio': precio_val,
+                                'precio_str': f"{precio_val:,.0f}" if precio_val is not None else 'N/A'
+                            })
+                    except Exception:
+                        # Si falla la carga de precios, inicializar lista vacía con N/A
+                        precios_departamentos = [{'departamento': i['departamento'], 'precio': None, 'precio_str': 'N/A'} for i in lista_mejores_info]
 
             # Generar series anuales por departamento recomendado (para gráficos) usando el año seleccionado
             lista_mejores_series = []
@@ -560,7 +623,8 @@ def inversion():
                                farm_avg_mensual_str=farm_avg_mensual_str,
                                fat_str=fat_str,
                                protein_str=protein_str,
-                               breed_table_html=breed_table_html)
+                               breed_table_html=breed_table_html,
+                               precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
                                
     except Exception as e:
         tb = traceback.format_exc()

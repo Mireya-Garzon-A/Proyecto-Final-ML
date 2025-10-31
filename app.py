@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from datetime import datetime, timedelta
 
 from inversion import inversion_bp
 from acopio import acopio_bp
@@ -18,6 +19,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
 app.secret_key = 'clave_segura_para_sesion'
+# Configurar expiración de sesión por inactividad (30 minutos)
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 # Configuración de base de datos SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
@@ -61,6 +64,9 @@ def login():
             if user and user.check_password(contrasena):
                 login_user(user)
                 session['usuario'] = user.name
+                # Marcar sesión como permanente y registrar última actividad
+                session.permanent = True
+                session['last_activity'] = datetime.utcnow().timestamp()
                 # Mostrar mensaje de bienvenida personalizado con el nombre del usuario
                 flash(f'¡Bienvenido/a, {user.name}! Has iniciado sesión correctamente.', 'success')
                 # Redirigir al inicio en lugar de al menú principal
@@ -112,8 +118,49 @@ def register():
 def logout():
     logout_user()
     session.pop('usuario', None)
+    session.pop('last_activity', None)
     flash('Has cerrado sesión correctamente.', 'info')
     return redirect(url_for('inicio'))
+
+
+# Endpoint opcional para extender la sesión desde cliente (invocado por JS cuando hay actividad)
+@app.route('/keepalive', methods=['POST'])
+@login_required
+def keepalive():
+    try:
+        session['last_activity'] = datetime.utcnow().timestamp()
+        return ('', 204)
+    except Exception:
+        return jsonify({'ok': False}), 500
+
+
+@app.before_request
+def session_timeout_handler():
+    # No aplicamos para endpoints estáticos o si no hay sesión
+    try:
+        if 'usuario' not in session and not current_user.is_authenticated:
+            return None
+    except Exception:
+        # en caso de fallo al leer current_user, no cortar el request
+        return None
+
+    # Obtener última actividad
+    last = session.get('last_activity')
+    now_ts = datetime.utcnow().timestamp()
+    if last:
+        elapsed = now_ts - float(last)
+        # 1800 segundos = 30 minutos
+        if elapsed > 1800:
+            try:
+                logout_user()
+            except Exception:
+                pass
+            session.clear()
+            flash('Tu sesión expiró por inactividad. Por favor inicia sesión de nuevo.', 'warning')
+            return redirect(url_for('login'))
+
+    # Actualizar last_activity para cada request válida
+    session['last_activity'] = now_ts
 
 # Menú principal (solo con sesión activa)
 @app.route('/menu')

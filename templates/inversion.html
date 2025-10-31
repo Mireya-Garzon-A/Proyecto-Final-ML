@@ -156,7 +156,7 @@
     {% endif %}
 
     {% if volumen_diario %}
-    <!-- Resultados: Producción estimada centrada -->
+    <!-- Resultados: Producción estimada y Precio de venta (último) lado a lado -->
     <div class="row mb-4 justify-content-center">
       <div class="col-md-6">
         <div class="p-3 bg-white border rounded shadow-sm text-center">
@@ -168,6 +168,25 @@
               {{ breed_table_html | safe }}
             </div>
           {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 bg-white border rounded shadow-sm">
+          <h6 class="fw-bold text-primary">💰 Precio de venta (último registro)</h6>
+          <p class="small text-muted">Se muestran los precios más recientes solo para los departamentos recomendados (máx. 3).</p>
+          <ul class="list-group list-group-flush">
+            {% if precios_departamentos %}
+              {% for p in precios_departamentos %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ p.departamento }}</span>
+                  <span class="badge bg-success rounded-pill">{{ p.precio_str }} COP</span>
+                </li>
+              {% endfor %}
+            {% else %}
+              <li class="list-group-item">No hay datos de precios disponibles.</li>
+            {% endif %}
+          </ul>
+          <p class="text-muted small mt-2">Fuente: dataset de precios en DataSheet (último registro disponible).</p>
         </div>
       </div>
     </div>
@@ -228,9 +247,10 @@
           <div class="card-header bg-info text-white fw-bold">📈 Acopio anual - {{ s.departamento }} ({{ s.year }})</div>
           <div class="card-body">
             {% if not s.has_data %}
-              <div class="alert alert-warning">No hay datos de acopio para <strong>{{ s.departamento }}</strong> en {{ s.year }}. Se mostrará el año completo con valores (0 si no hay registros).</div>
+              <div class="alert alert-warning">No hay datos de acopio para <strong>{{ s.departamento }}</strong> en {{ s.year }}. No hay registros en la base de datos para este año; por eso no se muestra el gráfico.</div>
+            {% else %}
+              <canvas id="chart-{{ loop.index0 }}" height="160"></canvas>
             {% endif %}
-            <canvas id="chart-{{ loop.index0 }}" height="160"></canvas>
           </div>
         </div>
       </div>
