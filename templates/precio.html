@@ -1,66 +1,109 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Análisis de Precio{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
+  <h2 class="text-center mb-3">📈 Predicción de Precio Nacional</h2>
 
-  <!-- 1. Visualización del modelo ML -->
-  <h3 class="text-center">📈 Predicción de Precio de Leche por Mes</h3>
-  <div class="text-center mb-4">
-    <img src="{{ url_for('static', filename='images/grafico_precio.png') }}" alt="Gráfico de Precio" class="img-fluid rounded shadow">
-  </div>
-  <div class="card mb-4">
-    <div class="card-body">
-      <p>Este gráfico muestra el precio promedio mensual de la leche y la predicción generada por un modelo de <strong>Machine Learning</strong> basado en regresión lineal. La línea verde representa la estimación del modelo, útil para anticipar tendencias de mercado y tomar decisiones estratégicas.</p>
-    </div>
-  </div>
-
-  <!-- 2. Estadísticas desde enero 2024 -->
-  <h4>📊 Estadísticas recientes (desde enero 2024)</h4>
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="card text-white bg-warning mb-3">
-        <div class="card-header">Mes con mejor precio</div>
-        <div class="card-body">
-          <h5 class="card-title">{{ mes_max_precio }}</h5>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card text-white bg-success mb-3">
-        <div class="card-header">Departamento destacado</div>
-        <div class="card-body">
-          <h5 class="card-title">{{ depto_max_precio if depto_max_precio else 'No disponible' }}</h5>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. Interacción con el usuario -->
-  <h4>🧪 Explora por año</h4>
-  <form method="POST" action="/precio">
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="anio" class="form-label">Selecciona un año:</label>
-        <select name="anio" id="anio" class="form-select">
-          {% for a in años_disponibles %}
-            <option value="{{ a }}">{{ a }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-outline-warning">Filtrar</button>
-      </div>
-    </div>
+  <!-- Selector de año -->
+  <form method="POST" class="text-center mb-3">
+    <label for="anio" class="fw-bold me-2">Seleccionar año:</label>
+    <select name="año" id="anio" class="form-select d-inline-block w-auto">
+      {% for a in años_disponibles %}
+        <option value="{{ a }}" {% if a == año_actual %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-primary ms-2" type="submit">Mostrar</button>
   </form>
 
-  {% if resultados_usuario %}
-  <div class="mt-4">
-    <h5>🔍 Resultados para {{ resultados_usuario.anio }}</h5>
-    <ul>
-      <li><strong>Mes con mejor precio:</strong> {{ resultados_usuario.mes_precio }}</li>
-      <li><strong>Departamento destacado:</strong> {{ resultados_usuario.depto }}</li>
-    </ul>
+  <!-- Estadísticas -->
+  <div class="row text-center">
+    <div class="col-md-6 mb-3">
+      <div class="card border-success shadow">
+        <div class="card-body">
+          <h5 class="text-success fw-bold">📈 Departamento con Mayor Precio</h5>
+          <p class="mb-1"><strong>Departamento:</strong> {{ depto_mayor }}</p>
+          <p><strong>Precio:</strong> {{ precio_max }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card border-danger shadow">
+        <div class="card-body">
+          <h5 class="text-danger fw-bold">📉 Departamento con Menor Precio</h5>
+          <p class="mb-1"><strong>Departamento:</strong> {{ depto_menor }}</p>
+          <p><strong>Precio:</strong> {{ precio_min }}</p>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Gráfica nacional -->
+  <h4 class="text-center mt-4">📅 Serie Nacional Mensual</h4>
+  {% if grafico %}
+    <div class="text-center">
+      <img src="data:image/png;base64,{{ grafico }}" class="img-fluid rounded shadow mt-3"/>
+    </div>
+  {% else %}
+    <p class="text-center">No hay datos para graficar.</p>
   {% endif %}
 
+  <!-- Tabla de predicción nacional -->
+  <h4 class="text-center mt-5">🤖 Predicción Nacional (6 meses)</h4>
+  <div class="table-responsive w-75 mx-auto mt-3">
+    <table class="table table-hover">
+      <thead class="table-info">
+        <tr>
+          <th class="text-center">Año</th>
+          <th class="text-center">Mes</th>
+          <th class="text-center">Precio Nacional</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in predicciones %}
+          <tr>
+            <td class="text-center">{{ p.AÑO }}</td>
+            <td class="text-center">{{ p.MES }}</td>
+            <td class="text-center">{{ p.PRECIO_NACIONAL | default(0) | round(2) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Selector de departamento -->
+  <h4 class="text-center mt-5">🏞️ Predicción por Departamento</h4>
+  <form method="POST" class="text-center mb-3">
+    <label for="departamento" class="fw-bold me-2">Seleccionar departamento:</label>
+    <select name="departamento" id="departamento" class="form-select d-inline-block w-auto">
+      {% for d in departamentos_disponibles %}
+        <option value="{{ d }}" {% if d == departamento_actual %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-secondary ms-2" type="submit">Ver predicción</button>
+  </form>
+
+  {% if pred_departamento %}
+  <div class="table-responsive w-75 mx-auto mt-3">
+    <table class="table table-hover">
+      <thead class="table-warning">
+        <tr>
+          <th class="text-center">Año</th>
+          <th class="text-center">Mes</th>
+          <th class="text-center">Precio {{ departamento_actual }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pred_departamento %}
+          <tr>
+            <td class="text-center">{{ p.AÑO }}</td>
+            <td class="text-center">{{ p.MES }}</td>
+            <td class="text-center">{{ p['PRECIO_' ~ departamento_actual.upper()] | default(0) | round(2) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

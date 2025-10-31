@@ -582,3 +582,7 @@ def inversion():
             pass
         # Mensaje genérico para producción
         return f"<h4 style='color:red;'>Error en inversión. Revisa el archivo instance/inversion_error.log para más detalles.</h4>"
+    
+    # 🔁 Compatibilidad con inversion.py
+    def predecir_precio():
+        return predecir_precio_nacional()
