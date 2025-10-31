@@ -191,6 +191,25 @@
       </div>
     </div>
 
+    <!-- Formulario para guardar la consulta (envía JSON con raza, num_vacas, departamentos y precios actuales) -->
+    <div class="row mb-4 justify-content-center">
+      <div class="col-md-10 text-end">
+        <form method="POST" action="{{ url_for('perfil.guardar_consulta') }}" id="formGuardarConsulta">
+          <input type="hidden" name="titulo" id="gc_titulo" value="">
+          <input type="hidden" name="descripcion" id="gc_descripcion" value="">
+          {# El campo 'query' contendrá el JSON con los parámetros clave y la tabla de precios actuales #}
+          <input type="hidden" name="query" id="gc_query" value=''>
+          {% if lista_mejores_info and precios_departamentos %}
+            <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success">💾 Guardar consulta</button>
+          {% endif %}
+        </form>
+        <!-- Payload preconstruido como atributo data (evita insertar Jinja directamente en código JS) -->
+        <div id="gc_payload_data" style="display:none;"
+             data-payload='{{ {"raza": (raza_sel or ""), "num_vacas": (num_vacas|default(None)), "anio": anio_sel, "departamentos": (lista_mejores_info | map(attribute="departamento") | list), "precios_departamentos": precios_departamentos } | tojson | safe }}'>
+        </div>
+      </div>
+    </div>
+
     <!-- Mejor departamento / región y meses recomendados -->
     <div class="row mb-4">
       <div class="col-md-6">
@@ -374,6 +393,37 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   } catch (err) {
     console.error('Error al renderizar gráficos:', err);
+  }
+
+  // Lógica para preparar y enviar la consulta guardada
+  try {
+    const btnGuardar = document.getElementById('btnGuardarConsulta');
+    if (btnGuardar) {
+      btnGuardar.addEventListener('click', function(){
+        // leer payload preconstruido desde el atributo data-payload
+        const payloadEl = document.getElementById('gc_payload_data');
+        let payload = {};
+        if (payloadEl && payloadEl.dataset && payloadEl.dataset.payload) {
+          try {
+            payload = JSON.parse(payloadEl.dataset.payload);
+          } catch (e) {
+            console.error('Payload JSON inválido en gc_payload_data:', e);
+            payload = {};
+          }
+        }
+        // setear campos ocultos
+        const q = document.getElementById('gc_query');
+        const titulo = document.getElementById('gc_titulo');
+        const desc = document.getElementById('gc_descripcion');
+        if (q) q.value = JSON.stringify(payload);
+        if (titulo) titulo.value = 'Consulta inversión - ' + (payload.raza || '') + ' - ' + (payload.num_vacas || '');
+        if (desc) desc.value = 'Generada desde la vista de inversión para ' + (payload.raza || '');
+        // enviar el formulario
+        document.getElementById('formGuardarConsulta').submit();
+      });
+    }
+  } catch (err) {
+    console.error('Error al preparar guardado de consulta:', err);
   }
 });
 </script>

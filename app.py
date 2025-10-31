@@ -22,8 +22,14 @@ app.secret_key = 'clave_segura_para_sesion'
 # Configurar expiración de sesión por inactividad (30 minutos)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
-# Configuración de base de datos SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
+# Configuración de base de datos SQLite (usar la DB en el folder instance)
+import os
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# Asegurar que el directorio instance exista y usar ruta absoluta para evitar problemas con CWD
+db_path = os.path.join(BASE_DIR, 'instance', 'usuarios.db')
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+# Formato de URI absoluto (tres slashes + path absoluto)
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar base de datos usando la instancia compartida

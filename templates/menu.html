@@ -22,7 +22,7 @@
                                 👤 {{ session['usuario'] }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('perfil.perfil') }}">Mi perfil</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.mis_consultas') }}">Mis consultas guardadas</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
                             </ul>
