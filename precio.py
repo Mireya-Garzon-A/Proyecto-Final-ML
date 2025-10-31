@@ -91,9 +91,17 @@ def mostrar_precio():
                     columna_original = f"PREDICCION_{depto_sel}"
                     columna_nueva = f"PRECIO_{depto_sel.upper()}"
                     df_pred_depto = df_pred_depto.rename(columns={columna_original: columna_nueva})
-                    
+
+                    # Mapear nombres de meses en inglés a español para evitar dependencias de locale
+                    meses_map_en_es = {
+                        'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo', 'April': 'Abril',
+                        'May': 'Mayo', 'June': 'Junio', 'July': 'Julio', 'August': 'Agosto',
+                        'September': 'Septiembre', 'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+                    }
+
                     df_pred_depto['AÑO'] = df_pred_depto['FECHA'].dt.year
-                    df_pred_depto['MES'] = df_pred_depto['FECHA'].dt.strftime('%B')
+                    meses_en = df_pred_depto['FECHA'].dt.strftime('%B')
+                    df_pred_depto['MES'] = meses_en.map(lambda m: meses_map_en_es.get(m, m))
                     contexto["pred_departamento"] = df_pred_depto.to_dict(orient='records')
                     print(f"Predicción para '{depto_sel}' calculada y renombrada.")
             except Exception as e:
@@ -106,9 +114,17 @@ def mostrar_precio():
             if not df_pred_nac.empty:
                 # --- CAMBIO CLAVE: Renombramos la columna para que coincida con el HTML ---
                 df_pred_nac = df_pred_nac.rename(columns={'PREDICCION_NACIONAL': 'PRECIO_NACIONAL'})
-                
+
+                # Mapear meses en inglés a español (evita depender de la configuración regional del sistema)
+                meses_map_en_es = {
+                    'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo', 'April': 'Abril',
+                    'May': 'Mayo', 'June': 'Junio', 'July': 'Julio', 'August': 'Agosto',
+                    'September': 'Septiembre', 'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+                }
+
                 df_pred_nac['AÑO'] = df_pred_nac['FECHA'].dt.year
-                df_pred_nac['MES'] = df_pred_nac['FECHA'].dt.strftime('%B')
+                meses_en_nac = df_pred_nac['FECHA'].dt.strftime('%B')
+                df_pred_nac['MES'] = meses_en_nac.map(lambda m: meses_map_en_es.get(m, m))
                 contexto["predicciones"] = df_pred_nac.to_dict(orient='records')
                 print("Predicción nacional calculada y renombrada.")
         except Exception as e:
