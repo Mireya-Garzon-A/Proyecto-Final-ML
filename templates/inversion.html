@@ -235,9 +235,12 @@
           <input type="hidden" name="query" id="gc_query" value=''>
           <!-- CAMBIO: Se añade un ID al contenedor para poder ocultarlo con JS -->
           <div id="guardar-consulta-container">
-            {# Ocultar el botón de guardar en modo 'historico' (control server-side) #}
-            {% if lista_mejores_info and precios_departamentos and mode != 'historico' %}
-              <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success">💾 Guardar consulta</button>
+            {# Renderizar el botón si existen datos para guardar, pero ocultarlo con CSS
+               cuando el servidor indicó modo 'historico'. De este modo el botón
+               siempre está en el DOM (si hay datos) y el JS puede mostrarlo/ocultarlo
+               al cambiar entre vistas sin necesidad de recargar la página. #}
+            {% if lista_mejores_info and precios_departamentos %}
+              <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success {% if mode == 'historico' %}d-none{% endif %}">💾 Guardar consulta</button>
             {% endif %}
           </div>
         </form>
@@ -395,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
         consultaSection.classList.add('d-none');
       }
 
+      const btnGuardar = document.getElementById('btnGuardarConsulta');
       if (mode === 'consulta') {
         anioGroup?.classList.add('d-none');
         nvGroup?.classList.remove('d-none');
@@ -402,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resultadosSeccion?.classList.remove('d-none');
         consultaCards?.classList.remove('d-none');
         guardarConsultaContainer?.classList.remove('d-none');
+        if (btnGuardar) btnGuardar.classList.remove('d-none');
         // Actualizar apariencia de botones
         if (btnConsulta && btnHistorico) {
           btnConsulta.classList.remove('btn-outline-primary'); btnConsulta.classList.add('btn-primary');
@@ -414,6 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resultadosSeccion?.classList.add('d-none');
         consultaCards?.classList.add('d-none');
         guardarConsultaContainer?.classList.add('d-none');
+        if (btnGuardar) btnGuardar.classList.add('d-none');
         const selectedYear = document.getElementById('anio_top')?.value || window.__inversion.latestYear;
         if (selectedYear) renderChartsTo('graficos-historico', selectedYear);
         // Actualizar apariencia de botones
