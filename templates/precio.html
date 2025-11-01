@@ -3,23 +3,38 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h2 class="text-center mb-3">📈 Predicción de Precio Nacional</h2>
+
+  <!-- 📊 Banner con fondo de imagen -->
+<div class="hero-banner-precio mb-4">
+  <div class="hero-overlay d-flex flex-column justify-content-center align-items-center text-center">
+    <h2 class="text-white fw-bold fs-1 mb-2">
+      🧮 Analisis de Precio
+    </h2>
+    <h5 class="text-light fs-4">
+      Explorando el comportamiento de los precios nacionales y departamentales a lo largo del tiempo
+    </h5>
+  </div>
+</div>
 
   <!-- Selector de año -->
-  <form method="POST" class="text-center mb-3">
-    <label for="anio" class="fw-bold me-2">Seleccionar año:</label>
-    <select name="año" id="anio" class="form-select d-inline-block w-auto">
-      {% for a in años_disponibles %}
-        <option value="{{ a }}" {% if a == año_actual %}selected{% endif %}>{{ a }}</option>
-      {% endfor %}
-    </select>
-    <button class="btn btn-primary ms-2" type="submit">Mostrar</button>
-  </form>
+  <div class="card shadow-sm border-primary mb-4 w-50 mx-auto">
+  <div class="card-body text-center">
+    <form method="POST">
+      <label for="anio" class="fw-bold me-2">Seleccionar año:</label>
+      <select name="año" id="anio" class="form-select d-inline-block w-auto">
+        {% for a in años_disponibles %}
+          <option value="{{ a }}" {% if a == año_actual %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-primary ms-2" type="submit">Mostrar</button>
+    </form>
+  </div>
+</div>
 
   <!-- Estadísticas -->
   <div class="row text-center">
     <div class="col-md-6 mb-3">
-      <div class="card border-success shadow">
+      <div class="card shadow-sm h-100 bg-success-subtle border-success">
         <div class="card-body">
           <h5 class="text-success fw-bold">📈 Departamento con Mayor Precio</h5>
           <p class="mb-1"><strong>Departamento:</strong> {{ depto_mayor }}</p>
@@ -28,7 +43,7 @@
       </div>
     </div>
     <div class="col-md-6 mb-3">
-      <div class="card border-danger shadow">
+      <div class="card shadow-sm h-100 bg-danger-subtle border-danger">
         <div class="card-body">
           <h5 class="text-danger fw-bold">📉 Departamento con Menor Precio</h5>
           <p class="mb-1"><strong>Departamento:</strong> {{ depto_menor }}</p>
@@ -38,41 +53,71 @@
     </div>
   </div>
 
-  <!-- Gráfica nacional -->
-  <h4 class="text-center mt-4">📅 Serie Nacional Mensual</h4>
+ <!-- Gráfica nacional -->
+  <div class="text-center mt-5">
+<h4 class="text-center mt-5 fw-bold text-primary border border-primary rounded d-inline-block px-3 py-2 fs-3">
+  📅 Serie Nacional Mensual</h4>
+<div class="text-center my-4">
   {% if grafico %}
-    <div class="text-center">
-      <img src="data:image/png;base64,{{ grafico }}" class="img-fluid rounded shadow mt-3"/>
-    </div>
+    <img src="data:image/png;base64,{{ grafico }}" 
+         class="img-fluid rounded shadow p-2 bg-white"/>
   {% else %}
-    <p class="text-center">No hay datos para graficar.</p>
+    <div class="p-5 bg-light rounded shadow-sm">
+      <p class="text-muted mb-0">Selecciona un año para ver la gráfica</p>
+    </div>
   {% endif %}
+</div>
 
-  <!-- Tabla de predicción nacional -->
-  <h4 class="text-center mt-5">🤖 Predicción Nacional (6 meses)</h4>
-  <div class="table-responsive w-75 mx-auto mt-3">
-    <table class="table table-hover">
-      <thead class="table-info">
-        <tr>
-          <th class="text-center">Año</th>
-          <th class="text-center">Mes</th>
-          <th class="text-center">Precio Nacional</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in predicciones %}
-          <tr>
-            <td class="text-center">{{ p.AÑO }}</td>
-            <td class="text-center">{{ p.MES }}</td>
-            <td class="text-center">{{ p.PRECIO_NACIONAL | default(0) | round(2) }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- 🤖 PREDICCIÓN NACIONAL -->
+<div class="card shadow-lg border-0 mb-4 bg-info rounded-4">
+  <div class="card-body">
+    <h4 class="text-center fw-bold text-dark mb-4 fs-1">
+      🤖 Predicción Nacional (6 meses)
+    </h4>
+
+    <div class="row align-items-center">
+      
+      <!-- Imagen -->
+      <div class="col-md-5 text-center mb-3 mb-md-0">
+        <div class="p-2 bg-white rounded shadow-sm d-inline-block">
+          <img src="/static/images/ordeñoin.png" 
+               alt="Predicción de precios" 
+               class="img-fluid rounded">
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="col-md-7">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden">
+            <thead class="table-dark">
+              <tr>
+                <th class="text-center">Año</th>
+                <th class="text-center">Mes</th>
+                <th class="text-center">Precio Nacional</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in predicciones %}
+              <tr>
+                <td class="text-center">{{ p.AÑO }}</td>
+                <td class="text-center">{{ p.MES }}</td>
+                <td class="text-center fw-semibold text-primary">
+                  {{ p.PRECIO_NACIONAL | default(0) | round(2) }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
+</div>
 
   <!-- Selector de departamento -->
-  <h4 class="text-center mt-5">🏞️ Predicción por Departamento</h4>
+  <h4 class="text-center mt-5 fw-bold text-warning fs-1">🏞️ Predicción por Departamento</h4>
   <form method="POST" class="text-center mb-3">
     <label for="departamento" class="fw-bold me-2">Seleccionar departamento:</label>
     <select name="departamento" id="departamento" class="form-select d-inline-block w-auto">
@@ -85,8 +130,8 @@
 
   {% if pred_departamento %}
   <div class="table-responsive w-75 mx-auto mt-3">
-    <table class="table table-hover">
-      <thead class="table-warning">
+    <table class="table table-hover align-middle shadow-lg rounded-3 overflow-hidden">
+      <thead class="table-dark">
         <tr>
           <th class="text-center">Año</th>
           <th class="text-center">Mes</th>
@@ -98,7 +143,9 @@
           <tr>
             <td class="text-center">{{ p.AÑO }}</td>
             <td class="text-center">{{ p.MES }}</td>
-            <td class="text-center">{{ p['PRECIO_' ~ departamento_actual.upper()] | default(0) | round(2) }}</td>
+            <td class="text-center fw-semibold text-danger">
+              {{ p['PRECIO_' ~ departamento_actual.upper()] | default(0) | round(2) }}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

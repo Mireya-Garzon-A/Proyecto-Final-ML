@@ -12,7 +12,9 @@
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: linear-gradient(135deg, #f8fdf9 0%, #ffffff 100%);
-    min-height: 100vh;
+    min-height: 100vh;  
+    margin-left: 0;
+    margin-right: 0;
 }
 
 /* --- TÍTULO PRINCIPAL --- */
@@ -111,7 +113,7 @@ body {
 
 /* --- CONTENEDORES MEJORADOS --- */
 .ods-container {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fdf9 100%);
+    background: linear-gradient(135deg, #e9f2f4e5 0%, #f8fdf9 100%);
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(16, 104, 75, 0.15);
     border: 1px solid rgba(25, 135, 84, 0.2);
@@ -481,7 +483,8 @@ footer::before {
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 220px; /* Banner más bajo */
+
+  height: 350px; /* Banner más bajo */
   background-image: url('/static/images/vaca2.jpg'); 
   background-size: cover;
   background-position: center;
@@ -490,6 +493,12 @@ footer::before {
   align-items: center;
   color: #ffffff;
   text-align: center;
+  margin-left: 0;
+  margin-right: 0;
+
+   
+  border-top: none;
+
 }
 
 .hero-banner::after {
@@ -503,7 +512,7 @@ footer::before {
 }
 
 .hero-content {
-  position: relative;
+  position: absolute;
   z-index: 1;
 }
 
@@ -541,4 +550,60 @@ footer::before {
   .hero-subtitle {
     font-size: 1.2rem;
   }
+}
+/* Banner específico para el análisis */
+.hero-analisis {
+  background-image: url('/static/images/ordeño.png'); /* tu nueva imagen */
+}
+
+
+.hero-narrow {
+  background-size: cover;
+  background-position: center;
+  padding: 4rem 2rem;
+  color: white;
+  
+}
+
+.bg-gradient-prediccion {
+  background: linear-gradient(135deg, #e0f7fa, #ffffff); /* azul claro → blanco */
+}   
+
+.bg-gradient-precio {
+  background: linear-gradient(135deg, #cecaf1, #e2e1ef); /* azul → violeta */
+  padding: 2.5rem 1rem;
+}
+
+.hero-banner-precio {
+  background-image: url('/static/images/vacas3.png'); /* tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  height: 280px; /* ajusta según tu diseño */
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  background: rgba(0, 0, 0, 0.45); /* capa oscura para contraste */
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+}
+
+/* Banner exclusivo para la sección de Censo Bovino */
+.banner-censo-bovino {
+  background-image: url('/static/images/vacas4.png'); /* tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  height: 220px;              /* ajusta la altura según tu diseño */
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-censo-bovino .card-body {
+  background: rgba(0, 0, 0, 0.45); /* capa oscura para contraste */
+  border-radius: 1rem;
+  width: 100%;
+  height: 100%;
 }

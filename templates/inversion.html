@@ -1,15 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Inversión Ganadera por Departamento{% endblock %}
-
 {% block content %}
-<div class="container mt-5 mb-5">
-  <h2 class="text-center fw-bold text-primary mb-4">📊 Análisis del Censo Bovino 2025</h2>
+<!-- 📊 Banner Censo Bovino 2025 -->
+<div class="card shadow-lg border-0 mb-5 rounded-4 banner-censo-bovino">
+  <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+    <h2 class="fw-bold text-white mb-0 fs-1">
+      🐂 Análisis del Censo Bovino 2025
+    </h2>
+    <h5 class="text-light fst-italic fs-3">
+      Explorando la evolución del hato ganadero y sus implicaciones en la producción nacional
+    </h5>
+  </div>
+  </div>
+</div>
 
-  <div class="row g-3 justify-content-center">
+
+  <div class="card shadow-lg border-0 rounded-4 mb-4">
+  <div class="card-body">
+    <div class="row g-3 justify-content-center">
+
     <!-- Tarjeta 1 -->
     <div class="col-md-4">
-      <div class="card h-100 border-success shadow-sm">
-        <div class="card-header bg-success text-white fw-bold">🐄 Mayores por grupo etario</div>
+      <div class="card h-100 border-success shadow-lg">
+        <div class="card-header bg-success text-white fw-bold fs-5">🐄 Mayores por grupo etario</div>
         <div class="card-body">
           {% for item in analisis.mayores %}
           <p><strong>{{ item.grupo }}:</strong> {{ item.departamento }} – {{ item.cantidad | int }}</p>
@@ -21,8 +34,8 @@
 
     <!-- Tarjeta 2 -->
     <div class="col-md-4">
-      <div class="card h-100 border-danger shadow-sm">
-        <div class="card-header bg-danger text-white fw-bold">🐄 Menores por grupo etario</div>
+      <div class="card h-100 border-danger shadow-lg">
+        <div class="card-header bg-danger text-white fw-bold fs-5">🐄 Menores por grupo etario</div>
         <div class="card-body">
           {% for item in analisis.menores %}
           <p><strong>{{ item.grupo }}:</strong> {{ item.departamento }} – {{ item.cantidad | int }}</p>
@@ -34,8 +47,8 @@
 
     <!-- Tarjeta 3 -->
     <div class="col-md-4">
-      <div class="card h-100 border-primary shadow-sm">
-        <div class="card-header bg-primary text-white fw-bold">📊 Distribución nacional</div>
+      <div class="card h-100 border-primary shadow-lg">
+        <div class="card-header bg-primary text-white fw-bold fs-5">📊 Distribución nacional</div>
         <div class="card-body">
           {% for grupo, porcentaje in analisis.distribucion.items() %}
           <p><strong>{{ grupo }}:</strong> {{ porcentaje }}%</p>
@@ -46,9 +59,11 @@
     </div>
   </div>
 </div>
+
+
 <!-- Botón para ver tabla completa -->
 <div class="text-center mb-5">
-  <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalCenso">
+  <button class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#modalCenso">
     📋 Ver datos completos del censo
   </button>
 </div>
@@ -70,12 +85,16 @@
   </div>
 </div>
 
+<!-- Contenedor del formulario -->
+<div class="card shadow-lg border-0 rounded-4 mb-4 bg-success bg-opacity-10">
+  <div class="card-body">
+ <h4 class="fw-bold text-primary-emphasis mb-3 fs-2 text-center fw-bold">⚙️ Parámetros de Análisis Inversion</h4>
 
   <!-- Selección de raza y número de vacas (reemplaza selector de departamento) -->
   <form method="POST" class="p-4 bg-light rounded shadow-sm mb-4" id="formAnalisis">
     <div class="row g-3 align-items-end">
       <div class="col-md-5">
-        <label for="raza_top" class="form-label fw-semibold text-primary">Selecciona una raza</label>
+        <label for="raza_top" class="form-label fw-semibold text-primary fs-5">Selecciona una raza</label>
         <select name="raza" id="raza_top" class="form-select">
           <option value="">-- Elige una raza --</option>
           {% for r in razas %}
@@ -84,7 +103,7 @@
         </select>
       </div>
       <div class="col-md-2">
-        <label for="anio_top" class="form-label fw-semibold text-primary">Año</label>
+        <label for="anio_top" class="form-label fw-semibold text-primary fs-5">Año</label>
         <select name="anio" id="anio_top" class="form-select">
           {% if available_years %}
             {% for y in available_years %}
@@ -96,7 +115,7 @@
         </select>
       </div>
       <div class="col-md-2">
-        <label for="num_vacas_top" class="form-label fw-semibold text-primary"># Vacas</label>
+        <label for="num_vacas_top" class="form-label fw-semibold text-primary fs-5"># Vacas</label>
         <input type="number" name="num_vacas" id="num_vacas_top" class="form-control" min="1" value="{{ num_vacas or '' }}" required>
         <div id="numVacasError" class="invalid-feedback" style="display:none">Ingrese un número entero mayor que 0.</div>
       </div>
@@ -104,6 +123,7 @@
         <button type="submit" class="btn btn-primary w-100" id="btnAnalizar">🔎 Analizar</button>
       </div>
     </div>
+    
   </form>
 
   {% if input_error %}
