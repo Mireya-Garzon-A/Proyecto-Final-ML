@@ -74,7 +74,6 @@
   </div>
 </div>
 
-
   <!-- Sección oculta por defecto que contiene el formulario y los resultados de la consulta -->
   <div id="consulta-section" class="d-none">
   <!-- Selección de raza y número de vacas (reemplaza selector de departamento) -->
@@ -106,7 +105,8 @@
       </div>
       <div id="numvacas-group" class="col-md-2">
         <label for="num_vacas_top" class="form-label fw-semibold text-primary"># Vacas</label>
-        <input type="number" name="num_vacas" id="num_vacas_top" class="form-control" min="1" value="{{ num_vacas or '' }}" required>
+        <!-- CAMBIO: Se elimina el atributo 'required' para desacoplar el formulario -->
+        <input type="number" name="num_vacas" id="num_vacas_top" class="form-control" min="1" value="{{ num_vacas or '' }}">
         <div id="numVacasError" class="invalid-feedback" style="display:none">Ingrese un número entero mayor que 0.</div>
       </div>
       <div class="col-md-2">
@@ -120,7 +120,6 @@
   {% endif %}
 
     {% if region %}
-
     <!-- Información de la región -->
     <div class="row g-3">
   <div class="col-md-6">
@@ -145,8 +144,6 @@
     </div>
   </div>
 </div>
-
-
         <div class="col-md-6">
             <div class="p-3 bg-white border rounded shadow-sm">
                 <h5 class="fw-bold text-success">🐄 Razas disponibles</h5>
@@ -161,8 +158,6 @@
             </div>
         </div>
     </div>
-
-    <!-- (Se eliminó formulario duplicado) -->
     {% endif %}
 
   {% if volumen_diario %}
@@ -203,19 +198,20 @@
   </div>
   </div>
 
-    <!-- Formulario para guardar la consulta (envía JSON con raza, num_vacas, departamentos y precios actuales) -->
+    <!-- Formulario para guardar la consulta -->
     <div class="row mb-4 justify-content-center">
       <div class="col-md-10 text-end">
         <form method="POST" action="{{ url_for('perfil.guardar_consulta') }}" id="formGuardarConsulta">
           <input type="hidden" name="titulo" id="gc_titulo" value="">
           <input type="hidden" name="descripcion" id="gc_descripcion" value="">
-          {# El campo 'query' contendrá el JSON con los parámetros clave y la tabla de precios actuales #}
           <input type="hidden" name="query" id="gc_query" value=''>
-          {% if lista_mejores_info and precios_departamentos %}
-            <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success">💾 Guardar consulta</button>
-          {% endif %}
+          <!-- CAMBIO: Se añade un ID al contenedor para poder ocultarlo con JS -->
+          <div id="guardar-consulta-container">
+            {% if lista_mejores_info and precios_departamentos %}
+              <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success">💾 Guardar consulta</button>
+            {% endif %}
+          </div>
         </form>
-        <!-- Payload preconstruido como atributo data (evita insertar Jinja directamente en código JS) -->
         <div id="gc_payload_data" style="display:none;"
              data-payload='{{ {"raza": (raza_sel or ""), "num_vacas": (num_vacas|default(None)), "anio": anio_sel, "departamentos": (lista_mejores_info | map(attribute="departamento") | list), "precios_departamentos": precios_departamentos } | tojson | safe }}'>
         </div>
@@ -223,7 +219,7 @@
     </div>
 
     <!-- Mejor departamento / región y meses recomendados -->
-    <div class="row mb-4">
+    <div class="row mb-4" id="consulta-cards">
       <div class="col-md-6">
         <div class="card border-dark">
           <div class="card-header bg-dark text-white fw-bold">📅 Mejores meses para producción</div>
@@ -239,7 +235,6 @@
             {% else %}
               <p>No disponible</p>
             {% endif %}
-
             <hr>
             <p class="mb-1"><strong>Para el departamento recomendado:</strong></p>
             {% if meses_depto %}
@@ -252,7 +247,6 @@
             {% else %}
               <p>No disponible</p>
             {% endif %}
-
             <p class="text-muted small">Meses calculados a partir del histórico de acopio (DataSheet).</p>
           </div>
         </div>
@@ -271,203 +265,98 @@
     
     <!-- Gráficos anuales por departamento recomendado -->
     {% if lista_mejores_series %}
-      <!-- Contenedores para gráficos: uno para Consulta (último año) y otro para Histórico (año seleccionado) -->
-        <div id="graficos-consulta" class="row mt-4"></div>
-        <div id="graficos-historico" class="row mt-4 d-none"></div>
-      {% endif %}
-
-<!-- Se eliminó la ventana emergente de análisis según petición del usuario. Los cuadros de resultados permanecen en la página. -->
-
-    
-<!-- Se eliminaron las tarjetas de 'Predicción de Acopio Mensual' y 'Mes más rentable (ML)' a petición del usuario. -->
-
+      <!-- Contenedor para gráficos de Consulta (ahora siempre oculto) -->
+      <div id="graficos-consulta" class="row mt-4 d-none"></div>
+      <!-- Contenedor para gráficos de Histórico -->
+      <div id="graficos-historico" class="row mt-4 d-none"></div>
     {% endif %}
-
+    {% endif %}
 </div>
   <!-- Fin de #consulta-section -->
   </div>
-<!-- Debug output for series (visible solo en DEBUG) -->
-{% if debug %}
-<pre id="series-debug" style="white-space:pre-wrap; background:#f8f9fa; border:1px solid #e9ecef; padding:8px; max-height:300px; overflow:auto;"></pre>
-{% endif %}
 
-<!-- Contenedor oculto con los datos de series (evita inyección directa de Jinja dentro de JS) -->
+<!-- Contenedor oculto con los datos de series -->
 <div id="series-data" style="display:none;" data-series='{{ lista_mejores_series | tojson | safe }}'></div>
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* Resaltado temporal cuando se desplaza al formulario desde el botón Consulta */
 .focus-highlight { box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); border-radius: .25rem; transition: box-shadow .25s ease-in-out; }
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // Set progress widths
   document.querySelectorAll('.progress-bar[data-pct]').forEach(function(el){
     const pct = parseFloat(el.getAttribute('data-pct')) || 0;
     el.style.width = pct + '%';
   });
 
-  // Mostrar la sección de consulta si el servidor lo indicó (por ejemplo tras un POST/resultado)
-  try {
-    const main = document.getElementById('main-container');
-    const consultaSection = document.getElementById('consulta-section');
-    if (main && consultaSection) {
-      const show = main.dataset.showConsulta === '1';
-      if (show) consultaSection.classList.remove('d-none');
-    }
-  } catch (err) {
-    console.error('Error al comprobar display inicial de consulta:', err);
+  const main = document.getElementById('main-container');
+  const consultaSection = document.getElementById('consulta-section');
+  if (main && consultaSection && main.dataset.showConsulta === '1') {
+    consultaSection.classList.remove('d-none');
   }
 
-  // Form validation
   const form = document.getElementById('formAnalisis');
   const numVacasInput = document.getElementById('num_vacas_top');
   const razaSelect = document.getElementById('raza_top');
   const numVacasError = document.getElementById('numVacasError');
-  // modo actual: 'consulta' o 'historico'
   let mode = 'consulta';
 
   if (form) {
     form.addEventListener('submit', function(e){
-      // Asegurar que en modo 'consulta' el select de año no se envíe
-      try {
-        const anioTopSubmit = document.getElementById('anio_top');
-        if (mode === 'consulta' && anioTopSubmit) {
-          anioTopSubmit.disabled = true;
-        } else if (anioTopSubmit) {
-          anioTopSubmit.disabled = false;
-        }
-      } catch (err) { /* ignore */ }
+      const anioTopSubmit = document.getElementById('anio_top');
+      if (mode === 'consulta' && anioTopSubmit) anioTopSubmit.disabled = true;
+      else if (anioTopSubmit) anioTopSubmit.disabled = false;
+
       let valid = true;
       if (numVacasError) numVacasError.style.display = 'none';
+      if (!razaSelect.value) { valid = false; razaSelect.classList.add('is-invalid'); }
+      else razaSelect.classList.remove('is-invalid');
 
-      if (!razaSelect.value) {
-        valid = false;
-        razaSelect.classList.add('is-invalid');
-      } else {
-        razaSelect.classList.remove('is-invalid');
+      // Validación de num_vacas solo en modo consulta
+      if (mode === 'consulta') {
+        const nv = parseInt(numVacasInput.value, 10);
+        if (!nv || nv <= 0) { valid = false; if (numVacasError) numVacasError.style.display = 'block'; }
       }
 
-      const nv = parseInt(numVacasInput.value, 10);
-      if (mode === 'consulta' && (!nv || nv <= 0)) { // La validación de num_vacas solo es para modo consulta
-        valid = false;
-        if (numVacasError) numVacasError.style.display = 'block';
-      }
-
-      if (!valid) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+      if (!valid) { e.preventDefault(); e.stopPropagation(); }
     });
   }
 
-  // Dibujar gráficos por departamento recomendado (si los hay)
   try {
     const seriesContainer = document.getElementById('series-data');
-    const seriesJson = seriesContainer ? (seriesContainer.dataset.series || '[]') : '[]';
-    const rawSeries = JSON.parse(seriesJson || '[]');
-    console.log('lista_mejores_series (raw)', rawSeries);
+    const rawSeries = JSON.parse(seriesContainer ? (seriesContainer.dataset.series || '[]') : '[]');
+    const years = rawSeries.map(s => parseInt(s.year, 10)).filter(y => !isNaN(y));
+    const latestYear = years.length ? Math.max(...years) : null;
+    window.__inversion = { rawSeries: rawSeries, latestYear: latestYear };
 
     function renderChartsTo(containerId, year) {
       const container = document.getElementById(containerId);
       if (!container) return;
-      // Si el contenedor de consulta ya fue renderizado una vez, lo bloqueamos
-      // para que permanezca mostrando siempre el último año y no sea afectado
-      // por acciones en Histórico.
-      if (containerId === 'graficos-consulta' && container.dataset.locked === '1') {
-        return;
-      }
       container.innerHTML = '';
       const fmt = new Intl.NumberFormat('es-CO');
-      const departamentos = Array.from(new Set((rawSeries || []).map(s => s.departamento))).sort();
-
-      if (!departamentos.length) {
-        container.innerHTML = '<div class="col-12"><div class="alert alert-warning">No hay series disponibles.</div></div>';
-        return;
-      }
+      const departamentos = Array.from(new Set(rawSeries.map(s => s.departamento))).sort();
+      if (!departamentos.length) { container.innerHTML = '<div class="col-12"><div class="alert alert-warning">No hay series disponibles.</div></div>'; return; }
 
       departamentos.forEach(function(depto, idx) {
-        const s = (rawSeries || []).find(x => x.departamento === depto && parseInt(x.year, 10) === parseInt(year, 10));
-        const col = document.createElement('div');
-        col.className = 'col-md-6 mb-3';
+        const s = rawSeries.find(x => x.departamento === depto && parseInt(x.year, 10) === parseInt(year, 10));
+        const col = document.createElement('div'); col.className = 'col-md-6 mb-3';
         if (!s || !s.has_data) {
-          col.innerHTML = `
-            <div class="card h-100 border-info">
-              <div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${depto} (${year})</div>
-              <div class="card-body">
-                <div class="alert alert-warning mb-0">No hay datos registrados de ese año para ${depto}.</div>
-              </div>
-            </div>`;
+          col.innerHTML = `<div class="card h-100 border-info"><div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${depto} (${year})</div><div class="card-body"><div class="alert alert-warning mb-0">No hay datos registrados de ese año para ${depto}.</div></div></div>`;
+        } else {
+          const canvasId = `${containerId}-chart-${idx}`;
+          col.innerHTML = `<div class="card h-100 border-info"><div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${s.departamento} (${s.year})</div><div class="card-body"><canvas id="${canvasId}" height="160"></canvas></div></div>`;
           container.appendChild(col);
-          return;
-        }
-
-        const canvasId = `${containerId}-chart-${idx}`;
-        col.innerHTML = `
-          <div class="card h-100 border-info">
-            <div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${s.departamento} (${s.year})</div>
-            <div class="card-body">
-              <canvas id="${canvasId}" height="160"></canvas>
-            </div>
-          </div>`;
-        container.appendChild(col);
-        try {
-          const canvas = document.getElementById(canvasId) || col.querySelector('canvas');
-          const labels = (s.meses || []).map(m => m.mes);
-          const vals = (s.meses || []).map(m => m.valor);
+          const canvas = document.getElementById(canvasId);
           new Chart(canvas.getContext('2d'), {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Acopio (litros)',
-                data: vals,
-                borderColor: 'rgba(54,162,235,0.9)',
-                backgroundColor: 'rgba(54,162,235,0.6)',
-                borderWidth: 1,
-                maxBarThickness: 40,
-                barPercentage: 0.75,
-                categoryPercentage: 0.85
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: { ticks: { autoSkip: false } },
-                y: { beginAtZero: true, ticks: { callback: function(value) { return fmt.format(value); } } }
-              },
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      const v = context.parsed && (context.parsed.y !== undefined ? context.parsed.y : context.parsed);
-                      return (context.dataset.label ? context.dataset.label + ': ' : '') + fmt.format(v || 0);
-                    }
-                  }
-                }
-              }
-            }
+            type: 'bar', data: { labels: s.meses.map(m => m.mes), datasets: [{ label: 'Acopio (litros)', data: s.meses.map(m => m.valor), borderColor: 'rgba(54,162,235,0.9)', backgroundColor: 'rgba(54,162,235,0.6)', borderWidth: 1 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: fmt.format } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmt.format(c.parsed.y) } } } }
           });
-        } catch (err) { console.error('Error creando chart dinámico:', err); }
+        }
+        container.appendChild(col);
       });
     }
 
-    const years = rawSeries.map(s => parseInt(s.year, 10)).filter(y => !isNaN(y));
-    const latestYear = years.length ? Math.max(...years) : null;
-    window.__inversion = { rawSeries: rawSeries, latestYear: latestYear, renderChartsTo };
-
-    // =================================================================
-    // == INICIO DE LAS MODIFICACIONES PRINCIPALES ==
-    // =================================================================
-
-    /**
-     * Función centralizada para configurar la vista (campos del formulario y gráficos)
-     * según el modo seleccionado ('consulta' o 'historico').
-     * @param {string} modeToSet - El modo al que se quiere cambiar: 'consulta' o 'historico'.
-     */
     function initializeView(modeToSet) {
       const anioGroup = document.getElementById('anio-group');
       const nvGroup = document.getElementById('numvacas-group');
@@ -475,68 +364,47 @@ document.addEventListener('DOMContentLoaded', function () {
       const graficosConsulta = document.getElementById('graficos-consulta');
       const anioEl = document.getElementById('anio_top');
       const resultadosSeccion = document.getElementById('resultados-seccion');
+      const consultaCards = document.getElementById('consulta-cards');
+      const guardarConsultaContainer = document.getElementById('guardar-consulta-container');
 
-      mode = modeToSet; // Actualiza la variable global de modo
+      mode = modeToSet;
 
       if (mode === 'consulta') {
-        // --- Configuración para el modo CONSULTA ---
-        // Este modo es completamente independiente y SIEMPRE usará el año más reciente.
         if (anioGroup) anioGroup.classList.add('d-none');
         if (nvGroup) nvGroup.classList.remove('d-none');
         if (graficosHistorico) graficosHistorico.classList.add('d-none');
-        if (graficosConsulta) graficosConsulta.classList.remove('d-none');
+        // CAMBIO CLAVE: Ocultar las gráficas de consulta
+        if (graficosConsulta) graficosConsulta.classList.add('d-none');
         if (resultadosSeccion) resultadosSeccion.classList.remove('d-none');
-
-        // Siempre renderizar las gráficas de consulta con el año más reciente y bloquearlas
-        // para que no puedan ser afectadas por cambios en otros modos.
-        if (window.__inversion && window.__inversion.latestYear) {
-          window.__inversion.renderChartsTo('graficos-consulta', window.__inversion.latestYear);
-          if (graficosConsulta) graficosConsulta.dataset.locked = '1';
-        }
-      } else {
-        // --- Configuración para el modo HISTÓRICO ---
-        // Este modo permite al usuario seleccionar un año y mostrará los datos correspondientes.
+        if (consultaCards) consultaCards.classList.remove('d-none');
+        if (guardarConsultaContainer) guardarConsultaContainer.classList.remove('d-none');
+        // No se renderizan las gráficas de consulta
+      } else { // historico
         if (anioGroup) anioGroup.classList.remove('d-none');
         if (nvGroup) nvGroup.classList.add('d-none');
         if (graficosHistorico) graficosHistorico.classList.remove('d-none');
         if (graficosConsulta) graficosConsulta.classList.add('d-none');
         if (resultadosSeccion) resultadosSeccion.classList.add('d-none');
-        
-        // Desbloquear las gráficas de consulta por si se vuelve a ese modo luego
-        if (graficosConsulta) graficosConsulta.dataset.locked = '0';
-
-        // Renderizar las gráficas históricas con el año seleccionado en el dropdown
-        const selectedYear = anioEl ? anioEl.value : (window.__inversion && window.__inversion.latestYear);
-        if (window.__inversion && window.__inversion.renderChartsTo) {
-          window.__inversion.renderChartsTo('graficos-historico', selectedYear);
-        }
+        if (consultaCards) consultaCards.classList.add('d-none');
+        if (guardarConsultaContainer) guardarConsultaContainer.classList.add('d-none');
+        const selectedYear = anioEl ? anioEl.value : window.__inversion.latestYear;
+        if (selectedYear) renderChartsTo('graficos-historico', selectedYear);
       }
     }
 
-    // --- Manejo de los botones Consulta e Histórico ---
     const btnConsulta = document.getElementById('btnConsulta');
     const btnHistorico = document.getElementById('btnHistorico');
-    const formModeInput = document.getElementById('form_mode'); // Campo oculto para el modo
+    const formModeInput = document.getElementById('form_mode');
 
     if (btnConsulta) {
       btnConsulta.addEventListener('click', function(e) {
         e.preventDefault();
-        const consultaSection = document.getElementById('consulta-section');
         if (consultaSection) consultaSection.classList.remove('d-none');
-        
-        // Establecer el modo en el campo oculto para que el servidor lo reciba
         if (formModeInput) formModeInput.value = 'consulta';
-        
-        // Usar la función centralizada para configurar la vista
         initializeView('consulta');
-
-        const form = document.getElementById('formAnalisis');
-        if (!form) return;
         form.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const raza = document.getElementById('raza_top');
-        if (raza) {
-          setTimeout(() => raza.focus(), 350);
-        }
+        if (raza) setTimeout(() => raza.focus(), 350);
         form.classList.add('focus-highlight');
         setTimeout(() => form.classList.remove('focus-highlight'), 1600);
       });
@@ -545,72 +413,39 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnHistorico) {
       btnHistorico.addEventListener('click', function(e) {
         e.preventDefault();
-        const consultaSection = document.getElementById('consulta-section');
         if (consultaSection) consultaSection.classList.remove('d-none');
-        
-        // Establecer el modo en el campo oculto
         if (formModeInput) formModeInput.value = 'historico';
-
-        // Usar la función centralizada para configurar la vista
         initializeView('historico');
-        
-        // No se desplaza al formulario en modo histórico para mantener la posición del usuario
       });
     }
 
-    // --- Inicialización al cargar la página ---
-    // Se determina el modo inicial basándose en el atributo `data-mode` pasado por el servidor.
-    // Si no existe, se asume 'consulta'.
-    const mainEl = document.getElementById('main-container');
-    const initialMode = mainEl ? mainEl.dataset.mode : 'consulta';
+    const initialMode = main ? main.dataset.mode : 'consulta';
     initializeView(initialMode);
 
-    // Si el usuario cambia el año en modo Histórico, actualizar las gráficas
     const anioTop = document.getElementById('anio_top');
     if (anioTop) {
       anioTop.addEventListener('change', function(){
-        if (mode === 'historico' && window.__inversion && window.__inversion.renderChartsTo) {
-          window.__inversion.renderChartsTo('graficos-historico', this.value);
-        }
+        if (mode === 'historico') renderChartsTo('graficos-historico', this.value);
       });
     }
 
-    // =================================================================
-    // == FIN DE LAS MODIFICACIONES PRINCIPALES ==
-    // =================================================================
+  } catch (err) { console.error('Error al renderizar gráficos dinámicos:', err); }
 
-  } catch (err) {
-    console.error('Error al renderizar gráficos dinámicos:', err);
-  }
-
-  // Lógica para preparar y enviar la consulta guardada (sin cambios)
   try {
     const btnGuardar = document.getElementById('btnGuardarConsulta');
     if (btnGuardar) {
       btnGuardar.addEventListener('click', function(){
         const payloadEl = document.getElementById('gc_payload_data');
-        let payload = {};
-        if (payloadEl && payloadEl.dataset && payloadEl.dataset.payload) {
-          try {
-            payload = JSON.parse(payloadEl.dataset.payload);
-          } catch (e) {
-            console.error('Payload JSON inválido en gc_payload_data:', e);
-            payload = {};
-          }
-        }
-        const q = document.getElementById('gc_query');
-        const titulo = document.getElementById('gc_titulo');
-        const desc = document.getElementById('gc_descripcion');
+        let payload = payloadEl && payloadEl.dataset ? JSON.parse(payloadEl.dataset.payload || '{}') : {};
+        if (window.__inversion.latestYear) payload.anio = window.__inversion.latestYear;
+        const q = document.getElementById('gc_query'); const titulo = document.getElementById('gc_titulo'); const desc = document.getElementById('gc_descripcion');
         if (q) q.value = JSON.stringify(payload);
         if (titulo) titulo.value = 'Consulta inversión - ' + (payload.raza || '') + ' - ' + (payload.num_vacas || '');
         if (desc) desc.value = 'Generada desde la vista de inversión para ' + (payload.raza || '');
         document.getElementById('formGuardarConsulta').submit();
       });
     }
-  } catch (err) {
-    console.error('Error al preparar guardado de consulta:', err);
-  }
+  } catch (err) { console.error('Error al preparar guardado de consulta:', err); }
 });
 </script>
-
 {% endblock %}

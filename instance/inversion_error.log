@@ -311,3 +311,153 @@ Traceback (most recent call last):
   File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\pandas\core\groupby\groupby.py", line 1948, in _agg_py_fallback
     raise type(err)(msg) from err
 TypeError: agg function failed [how->mean,dtype->object]
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 588, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<51 lines>...
+                           breed_table_html=breed_table_html,
+                           precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 294, in template
+    {% break %}
+    
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 588, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<51 lines>...
+                           breed_table_html=breed_table_html,
+                           precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 294, in template
+    {% break %}
+    
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 588, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<51 lines>...
+                           breed_table_html=breed_table_html,
+                           precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 294, in template
+    {% break %}
+    
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 588, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<51 lines>...
+                           breed_table_html=breed_table_html,
+                           precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 294, in template
+    {% break %}
+    
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+
+--- ERROR en /inversion ---
+Traceback (most recent call last):
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\inversion.py", line 588, in inversion
+    return render_template('inversion.html',
+                           departamentos=departamentos,
+    ...<51 lines>...
+                           breed_table_html=breed_table_html,
+                           precios_departamentos=precios_departamentos if 'precios_departamentos' in locals() else [])
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Users\RUBENCHO\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "D:\Users\Rubencho\Documents\U\Semestres\VI\CAD612023642C-A MACHINE LEARNING (CONCEPTOS)\Proyecto-Final-ML\templates\inversion.html", line 294, in template
+    {% break %}
+    
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
