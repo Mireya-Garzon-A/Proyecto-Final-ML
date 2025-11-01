@@ -314,17 +314,11 @@
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.progress-bar[data-pct]').forEach(function(el){
-    const pct = parseFloat(el.getAttribute('data-pct')) || 0;
-    el.style.width = pct + '%';
-  });
+  // Set progress widths
+  document.querySelectorAll('.progress-bar[data-pct]').forEach(el => el.style.width = (parseFloat(el.getAttribute('data-pct')) || 0) + '%');
 
-  const main = document.getElementById('main-container');
-  const consultaSection = document.getElementById('consulta-section');
-  if (main && consultaSection && main.dataset.showConsulta === '1') {
-    consultaSection.classList.remove('d-none');
-  }
-
+  // --- INICIO: Lógica de inicialización de la vista ---
+  // Form validation
   const form = document.getElementById('formAnalisis');
   const numVacasInput = document.getElementById('num_vacas_top');
   const razaSelect = document.getElementById('raza_top');
@@ -332,32 +326,26 @@ document.addEventListener('DOMContentLoaded', function () {
   let mode = 'consulta';
 
   if (form) {
-    form.addEventListener('submit', function(e){
+    form.addEventListener('submit', e => {
       const anioTopSubmit = document.getElementById('anio_top');
       if (mode === 'consulta' && anioTopSubmit) anioTopSubmit.disabled = true;
       else if (anioTopSubmit) anioTopSubmit.disabled = false;
-
       let valid = true;
       if (numVacasError) numVacasError.style.display = 'none';
       if (!razaSelect.value) { valid = false; razaSelect.classList.add('is-invalid'); }
       else razaSelect.classList.remove('is-invalid');
-
-      // Validación de num_vacas solo en modo consulta
-      if (mode === 'consulta') {
-        const nv = parseInt(numVacasInput.value, 10);
-        if (!nv || nv <= 0) { valid = false; if (numVacasError) numVacasError.style.display = 'block'; }
-      }
-
+      if (mode === 'consulta') { const nv = parseInt(numVacasInput.value, 10); if (!nv || nv <= 0) { valid = false; if (numVacasError) numVacasError.style.display = 'block'; } }
       if (!valid) { e.preventDefault(); e.stopPropagation(); }
     });
   }
 
+  // --- INICIO: Lógica de gráficos ---
   try {
     const seriesContainer = document.getElementById('series-data');
     const rawSeries = JSON.parse(seriesContainer ? (seriesContainer.dataset.series || '[]') : '[]');
     const years = rawSeries.map(s => parseInt(s.year, 10)).filter(y => !isNaN(y));
     const latestYear = years.length ? Math.max(...years) : null;
-    window.__inversion = { rawSeries: rawSeries, latestYear: latestYear };
+    window.__inversion = { rawSeries, latestYear };
 
     function renderChartsTo(containerId, year) {
       const container = document.getElementById(containerId);
@@ -366,114 +354,116 @@ document.addEventListener('DOMContentLoaded', function () {
       const fmt = new Intl.NumberFormat('es-CO');
       const departamentos = Array.from(new Set(rawSeries.map(s => s.departamento))).sort();
       if (!departamentos.length) { container.innerHTML = '<div class="col-12"><div class="alert alert-warning">No hay series disponibles.</div></div>'; return; }
-
-      departamentos.forEach(function(depto, idx) {
+      departamentos.forEach(depto => {
         const s = rawSeries.find(x => x.departamento === depto && parseInt(x.year, 10) === parseInt(year, 10));
         const col = document.createElement('div'); col.className = 'col-md-6 mb-3';
         if (!s || !s.has_data) {
           col.innerHTML = `<div class="card h-100 border-info"><div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${depto} (${year})</div><div class="card-body"><div class="alert alert-warning mb-0">No hay datos registrados de ese año para ${depto}.</div></div></div>`;
         } else {
-          const canvasId = `${containerId}-chart-${idx}`;
+          const canvasId = `${containerId}-chart-${depto}`;
           col.innerHTML = `<div class="card h-100 border-info"><div class="card-header bg-info text-white fw-bold">📈 Acopio anual - ${s.departamento} (${s.year})</div><div class="card-body"><canvas id="${canvasId}" height="160"></canvas></div></div>`;
           container.appendChild(col);
           const canvas = document.getElementById(canvasId);
           new Chart(canvas.getContext('2d'), {
             type: 'bar', data: { labels: s.meses.map(m => m.mes), datasets: [{ label: 'Acopio (litros)', data: s.meses.map(m => m.valor), borderColor: 'rgba(54,162,235,0.9)', backgroundColor: 'rgba(54,162,235,0.6)', borderWidth: 1 }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: fmt.format } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmt.format(c.parsed.y) } } } }
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: fmt.format } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt.format(c.parsed.y) } } } }
           });
         }
         container.appendChild(col);
       });
     }
 
+    // --- INICIO: Función central de control de la vista ---
     function initializeView(modeToSet) {
       const anioGroup = document.getElementById('anio-group');
       const nvGroup = document.getElementById('numvacas-group');
       const graficosHistorico = document.getElementById('graficos-historico');
-      const graficosConsulta = document.getElementById('graficos-consulta');
-      const anioEl = document.getElementById('anio_top');
       const resultadosSeccion = document.getElementById('resultados-seccion');
       const consultaCards = document.getElementById('consulta-cards');
       const guardarConsultaContainer = document.getElementById('guardar-consulta-container');
+      const consultaSection = document.getElementById('consulta-section');
 
       mode = modeToSet;
 
+      // Mantener el valor del campo oculto para que el servidor reciba el modo correcto
+      if (formModeInput) formModeInput.value = modeToSet || '';
+
+      // UNICA FUENTE DE VERDAD para la visibilidad de la sección
+      if (modeToSet && consultaSection) {
+        consultaSection.classList.remove('d-none');
+      } else if (consultaSection) {
+        consultaSection.classList.add('d-none');
+      }
+
       if (mode === 'consulta') {
-        if (anioGroup) anioGroup.classList.add('d-none');
-        if (nvGroup) nvGroup.classList.remove('d-none');
-        if (graficosHistorico) graficosHistorico.classList.add('d-none');
-        // CAMBIO CLAVE: Ocultar las gráficas de consulta
-        if (graficosConsulta) graficosConsulta.classList.add('d-none');
-        if (resultadosSeccion) resultadosSeccion.classList.remove('d-none');
-        if (consultaCards) consultaCards.classList.remove('d-none');
-        if (guardarConsultaContainer) guardarConsultaContainer.classList.remove('d-none');
-        // No se renderizan las gráficas de consulta
-      } else { // historico
-        if (anioGroup) anioGroup.classList.remove('d-none');
-        if (nvGroup) nvGroup.classList.add('d-none');
-        if (graficosHistorico) graficosHistorico.classList.remove('d-none');
-        if (graficosConsulta) graficosConsulta.classList.add('d-none');
-        if (resultadosSeccion) resultadosSeccion.classList.add('d-none');
-        if (consultaCards) consultaCards.classList.add('d-none');
-        if (guardarConsultaContainer) guardarConsultaContainer.classList.add('d-none');
-        const selectedYear = anioEl ? anioEl.value : window.__inversion.latestYear;
+        anioGroup?.classList.add('d-none');
+        nvGroup?.classList.remove('d-none');
+        graficosHistorico?.classList.add('d-none');
+        resultadosSeccion?.classList.remove('d-none');
+        consultaCards?.classList.remove('d-none');
+        guardarConsultaContainer?.classList.remove('d-none');
+        // Actualizar apariencia de botones
+        if (btnConsulta && btnHistorico) {
+          btnConsulta.classList.remove('btn-outline-primary'); btnConsulta.classList.add('btn-primary');
+          btnHistorico.classList.remove('btn-secondary'); btnHistorico.classList.add('btn-outline-secondary');
+        }
+      } else if (mode === 'historico') {
+        anioGroup?.classList.remove('d-none');
+        nvGroup?.classList.add('d-none');
+        graficosHistorico?.classList.remove('d-none');
+        resultadosSeccion?.classList.add('d-none');
+        consultaCards?.classList.add('d-none');
+        guardarConsultaContainer?.classList.add('d-none');
+        const selectedYear = document.getElementById('anio_top')?.value || window.__inversion.latestYear;
         if (selectedYear) renderChartsTo('graficos-historico', selectedYear);
+        // Actualizar apariencia de botones
+        if (btnConsulta && btnHistorico) {
+          btnHistorico.classList.remove('btn-outline-secondary'); btnHistorico.classList.add('btn-secondary');
+          btnConsulta.classList.remove('btn-primary'); btnConsulta.classList.add('btn-outline-primary');
+        }
+      } else {
+        // Sin modo activo: asegurarse de que ningún botón aparezca activo
+        if (btnConsulta && btnHistorico) {
+          btnConsulta.classList.remove('btn-primary'); btnConsulta.classList.add('btn-outline-primary');
+          btnHistorico.classList.remove('btn-secondary'); btnHistorico.classList.add('btn-outline-secondary');
+        }
       }
     }
 
-    const btnConsulta = document.getElementById('btnConsulta');
-    const btnHistorico = document.getElementById('btnHistorico');
-    const formModeInput = document.getElementById('form_mode');
+  // --- INICIO: Manejo de eventos de botones ---
+  const btnConsulta = document.getElementById('btnConsulta');
+  const btnHistorico = document.getElementById('btnHistorico');
+  const formModeInput = document.getElementById('form_mode');
 
-    if (btnConsulta) {
-      btnConsulta.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (consultaSection) consultaSection.classList.remove('d-none');
-        if (formModeInput) formModeInput.value = 'consulta';
-        initializeView('consulta');
-        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const raza = document.getElementById('raza_top');
-        if (raza) setTimeout(() => raza.focus(), 350);
-        form.classList.add('focus-highlight');
-        setTimeout(() => form.classList.remove('focus-highlight'), 1600);
-      });
-    }
+  btnConsulta?.addEventListener('click', e => { e.preventDefault(); if (formModeInput) formModeInput.value = 'consulta'; initializeView('consulta'); form?.scrollIntoView({ behavior: 'smooth', block: 'center' }); const raza = document.getElementById('raza_top'); if (raza) setTimeout(() => raza.focus(), 350); form?.classList.add('focus-highlight'); setTimeout(() => form?.classList.remove('focus-highlight'), 1600); });
+  btnHistorico?.addEventListener('click', e => { e.preventDefault(); if (formModeInput) formModeInput.value = 'historico'; initializeView('historico'); });
 
-    if (btnHistorico) {
-      btnHistorico.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (consultaSection) consultaSection.classList.remove('d-none');
-        if (formModeInput) formModeInput.value = 'historico';
-        initializeView('historico');
-      });
-    }
-
-    const initialMode = main ? main.dataset.mode : 'consulta';
-    initializeView(initialMode);
+  // --- INICIO: Inicialización al cargar la página ---
+  // El estado inicial se toma directamente desde la variable 'mode' renderizada por el servidor
+  const initialModeFromServer = "{{ mode if mode else '' }}";
+  const initialMode = initialModeFromServer ? initialModeFromServer : null;
+  // Asegurar que el campo oculto refleje el modo inicial
+  if (formModeInput) formModeInput.value = initialMode || '';
+  initializeView(initialMode);
 
     const anioTop = document.getElementById('anio_top');
-    if (anioTop) {
-      anioTop.addEventListener('change', function(){
-        if (mode === 'historico') renderChartsTo('graficos-historico', this.value);
-      });
-    }
+    anioTop?.addEventListener('change', () => { if (mode === 'historico') renderChartsTo('graficos-historico', anioTop.value); });
 
   } catch (err) { console.error('Error al renderizar gráficos dinámicos:', err); }
 
+  // --- INICIO: Lógica para guardar consulta (sin cambios) ---
   try {
     const btnGuardar = document.getElementById('btnGuardarConsulta');
-    if (btnGuardar) {
-      btnGuardar.addEventListener('click', function(){
-        const payloadEl = document.getElementById('gc_payload_data');
-        let payload = payloadEl && payloadEl.dataset ? JSON.parse(payloadEl.dataset.payload || '{}') : {};
-        if (window.__inversion.latestYear) payload.anio = window.__inversion.latestYear;
-        const q = document.getElementById('gc_query'); const titulo = document.getElementById('gc_titulo'); const desc = document.getElementById('gc_descripcion');
-        if (q) q.value = JSON.stringify(payload);
-        if (titulo) titulo.value = 'Consulta inversión - ' + (payload.raza || '') + ' - ' + (payload.num_vacas || '');
-        if (desc) desc.value = 'Generada desde la vista de inversión para ' + (payload.raza || '');
-        document.getElementById('formGuardarConsulta').submit();
-      });
-    }
+    btnGuardar?.addEventListener('click', () => {
+      const payloadEl = document.getElementById('gc_payload_data');
+      let payload = payloadEl?.dataset ? JSON.parse(payloadEl.dataset.payload || '{}') : {};
+      if (window.__inversion.latestYear) payload.anio = window.__inversion.latestYear;
+      const q = document.getElementById('gc_query'); const titulo = document.getElementById('gc_titulo'); const desc = document.getElementById('gc_descripcion');
+      if (q) q.value = JSON.stringify(payload);
+      if (titulo) titulo.value = 'Consulta inversión - ' + (payload.raza || '') + ' - ' + (payload.num_vacas || '');
+      if (desc) desc.value = 'Generada desde la vista de inversión para ' + (payload.raza || '');
+      document.getElementById('formGuardarConsulta').submit();
+    });
   } catch (err) { console.error('Error al preparar guardado de consulta:', err); }
 });
 </script>
