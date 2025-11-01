@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Administración de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-danger">Administración de Usuarios</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <p class="text-muted">Desde aquí el administrador puede ver la lista de usuarios registrados y cambiar sus contraseñas.</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Administrador</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    {# Plantilla: Administración de usuarios
+                       - Muestra la lista de usuarios registrados.
+                       - Permite al administrador cambiar contraseñas, promover/revocar admin y eliminar usuarios.
+                       Sólo es acccesible para usuarios con permiso (control del servidor).
+                    #}
+                    {% extends "base.html" %}
+                    {% block title %}Administración de Usuarios{% endblock %}
+
+                    {% block content %}
+                    <div class="container mt-4">
+                        <h2 class="mb-4 text-danger">Administración de Usuarios</h2>
+
+                        {# Mensajes flash (éxitos/errores) #}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                          {% if messages %}
+                            {% for category, message in messages %}
+                              <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                          {% endif %}
+                        {% endwith %}
+
+                        <p class="text-muted">Desde aquí el administrador puede ver la lista de usuarios registrados y ejecutar acciones sobre ellos.</p>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Administrador</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for u in users %}
+                                    <tr>
+                                        <td>{{ u.id }}</td>
+                                        <td>{{ u.name }}</td>
+                                        <td>{{ u.email }}</td>
+                                        <td>{% if u.is_admin %}<span class="badge bg-success">Sí</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                {# Formulario para cambiar contraseña del usuario #}
+                                                <form method="post" action="{{ url_for('perfil.admin_change_password', uid=u.id) }}" class="d-flex align-items-center">
+                                                    <input type="password" name="new_password" class="form-control form-control-sm me-2" placeholder="Nueva contraseña" required>
+                                                    <input type="password" name="confirm_password" class="form-control form-control-sm me-2" placeholder="Confirmar" required>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Cambiar</button>
+                                                </form>
+
+                                                {# Botón para promover/revocar privilegios de administrador #}
+                                                <form method="post" action="{{ url_for('perfil.admin_toggle_admin', uid=u.id) }}">
+                                                    {% if u.is_admin %}
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Revocar admin">Revocar admin</button>
+                                                    {% else %}
+                                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Conceder admin">Promover a admin</button>
+                                                    {% endif %}
+                                                </form>
+
+                                                {# Eliminar usuario (con confirmación JS) #}
+                                                <form method="post" action="{{ url_for('perfil.admin_delete_user', uid=u.id) }}" onsubmit="return confirm('¿Eliminar al usuario {{ u.email }}? Esta acción no se puede deshacer.');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <a href="{{ url_for('perfil.perfil') }}" class="btn btn-outline-secondary mt-3">Volver al perfil</a>
+                    </div>
+                    {% endblock %}

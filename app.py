@@ -1,3 +1,13 @@
+"""Aplicación Flask principal.
+
+Este módulo inicializa la app Flask, configura la base de datos, el
+login manager y registra los blueprints de las distintas partes de la
+aplicación (acopio, precio, inversión, perfil).
+
+Contiene además rutas públicas simples como `/`, `/login`, `/register`
+y utilidades de sesión.
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
@@ -56,6 +66,12 @@ def inicio():
 # Login CORREGIDO - usuario = email
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Manejador de autenticación.
+
+    El formulario envía 'usuario' (email) y 'contrasena'. Si la
+    autenticación es correcta se inicia sesión y se refresca
+    `session['last_activity']`.
+    """
     import traceback
     error = None
     if request.method == 'POST':
@@ -98,6 +114,12 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """Registrar un nuevo usuario.
+
+    POST: valida que el correo no esté registrado, crea la instancia
+    `User`, guarda la contraseña hasheada y redirige al login.
+    GET: renderiza el formulario de registro.
+    """
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -122,6 +144,11 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
+    """Cerrar la sesión del usuario actual.
+
+    Limpia las claves de sesión y redirige al inicio mostrando un flash
+    informativo.
+    """
     logout_user()
     session.pop('usuario', None)
     session.pop('last_activity', None)
@@ -133,6 +160,12 @@ def logout():
 @app.route('/keepalive', methods=['POST'])
 @login_required
 def keepalive():
+    """Extiende la sesión del usuario (ping desde el cliente).
+
+    Este endpoint es invocado por JavaScript de la UI para actualizar
+    `session['last_activity']` y evitar expiraciones mientras el
+    usuario está activo. Devuelve 204 en éxito.
+    """
     try:
         session['last_activity'] = datetime.utcnow().timestamp()
         return ('', 204)

@@ -1,4 +1,10 @@
-# modelo_precio.py - VERSIÓN CON DEPURACIÓN
+"""Predicción y preprocesamiento de precios pagados al productor.
+
+Provee funciones para cargar y limpiar los CSV de precios, y generar
+predicciones tanto a nivel nacional como por departamento. El módulo
+es tolerante a formatos locales (puntos como separador de miles,
+comas como decimales) y normaliza nombres de columnas.
+"""
 
 import pandas as pd
 import numpy as np
@@ -77,6 +83,10 @@ def cargar_datos():
     return df, departamentos
 
 def predecir_precio_nacional():
+    """Entrena un modelo simple (regresión lineal) sobre la serie nacional
+    y devuelve un DataFrame con las predicciones para los próximos 6 meses
+    junto con un DataFrame de estadísticas resumen.
+    """
     df, departamentos = cargar_datos()
     print(f"DEBUG: Datos cargados. Shape: {df.shape}")
 
@@ -123,6 +133,11 @@ def predecir_precio_nacional():
 
 
 def predecir_precio_departamento(departamento):
+    """Entrena un modelo por departamento y devuelve un DataFrame con
+    las predicciones para los próximos 6 meses. Si el departamento no
+    tiene datos suficientes, devuelve un DataFrame con ceros en las
+    predicciones para no romper la vista que las consume.
+    """
     df, departamentos = cargar_datos()
     print(f"DEBUG: Datos cargados para depto {departamento}. Shape: {df.shape}")
 

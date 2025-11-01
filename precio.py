@@ -1,4 +1,9 @@
-# precio.py (Versión Final Corregida)
+"""Vistas y utilidades para el análisis de precios.
+
+Contiene la vista `/precio` que carga datos, calcula estadísticas,
+genera gráficos y prepara predicciones para renderizar en la plantilla
+`precio.html`.
+"""
 
 from flask import Blueprint, render_template, request
 import pandas as pd
@@ -11,8 +16,17 @@ from modelo_precio import predecir_precio_nacional, predecir_precio_departamento
 
 precio_bp = Blueprint('precio', __name__, template_folder='templates')
 
+# Nota: la función `mostrar_precio` realiza cargas y transformaciones pesadas
+# (pandas + matplotlib). Mantener la lógica en la vista centralizada facilita
+# gestionar errores y capturar excepciones para no romper el servidor.
+
 @precio_bp.route('/precio', methods=['GET', 'POST'])
 def mostrar_precio():
+    """Vista principal para mostrar análisis y predicciones de precios.
+
+    Maneja dos formularios POST (selección por año y por departamento)
+    y siempre carga la predicción nacional para mostrar en la plantilla.
+    """
     try:
         print("--- Iniciando nueva petición a /precio ---")
         df, departamentos = cargar_datos()

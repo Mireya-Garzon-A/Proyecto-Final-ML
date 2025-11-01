@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{# Plantilla: listado de consultas guardadas por el usuario.
+  Esta vista asume que `consultas` es una lista de objetos `Consulta`
+  con atributos `id`, `titulo`, `descripcion` y `created_at`. Evitar
+  cambiar los nombres de los atributos usados en los bucles Jinja. #}
 {% block title %}Mis consultas guardadas{% endblock %}
 
 {% block content %}

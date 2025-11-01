@@ -1,3 +1,11 @@
+"""Módulo de inversión ganadera.
+
+Proporciona la vista `/inversion` y utilidades para trabajar con los
+datasets de censo y acopio, calcular estimaciones por raza y generar
+recomendaciones basadas en predicciones. Contiene funciones para cargar
+datos, limpiar series y calcular métricas usadas por las plantillas.
+"""
+
 from flask import Blueprint, render_template, request, current_app
 import traceback
 import pandas as pd
@@ -10,6 +18,11 @@ inversion_bp = Blueprint('inversion', __name__, template_folder='templates')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def cargar_censo_bovino():
+    """Carga y limpia el CSV del censo bovino.
+
+    Normaliza columnas y convierte campos numéricos, devolviendo un
+    DataFrame listo para cálculos de análisis.
+    """
     ruta = os.path.join(BASE_DIR, 'DataSheet', 'CENSO-BOVINO-2025.csv')
     if not os.path.exists(ruta):
         raise FileNotFoundError(f"Archivo no encontrado: {ruta}")
@@ -26,6 +39,11 @@ def cargar_censo_bovino():
     return df
 
 def cargar_datos_raza():
+    """Construye y devuelve un DataFrame con información aproximada de razas por departamento.
+
+    Esta función usa tablas definidas en código para evitar depender de
+    un dataset externo y facilita pruebas locales.
+    """
     region_1 = ['ANTIOQUIA', 'BOGOTÁ DC', 'BOYACÁ', 'CALDAS', 'CAUCA', 'CUNDINAMARCA',
                 'NARIÑO', 'QUINDÍO', 'RISARALDA', 'VALLE DEL CAUCA']
     region_2 = ['ARAUCA', 'ATLÁNTICO', 'BOLIVAR', 'CAQUETÁ', 'CASANARE', 'CESAR', 'CÓRDOBA',
@@ -56,6 +74,11 @@ BREED_STATS = {
 
 
 def obtener_mejor_mes():
+    """Retorna una tupla (mes, precio, acopio) con el mes de mayor rentabilidad.
+
+    Implementado como función simple que usa datos estáticos para
+    facilitar demos cuando no hay modelos disponibles.
+    """
     meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
     precios = [1450, 1480, 1500, 1520, 1490, 1510, 1530, 1620, 1580, 1550, 1500, 1480]
@@ -82,7 +105,9 @@ def cargar_acopio():
         s = str(x).strip()
         if s.lower() in ('nd', ''):
             return pd.NA
+        # Quitar separadores de miles (puntos o espacios) y normalizar comas decimales
         s = s.replace('.', '').replace(' ', '')
+        s = s.replace(',', '.')
         try:
             return float(s)
         except Exception:
@@ -664,4 +689,8 @@ def inversion():
     
     # 🔁 Compatibilidad con inversion.py
     def predecir_precio():
+        """Función de compatibilidad: expone la predicción nacional cuando
+        se invoca sin argumentos. Está definida aquí para preservar la
+        API histórica usada en algunas plantillas/llamadas antiguas.
+        """
         return predecir_precio_nacional()

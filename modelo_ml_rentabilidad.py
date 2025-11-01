@@ -1,8 +1,24 @@
+"""Modelo de rentabilidad.
+
+Contiene utilidades para entrenar un modelo simple de rentabilidad
+basado en precio y volumen. Es un módulo auxiliar pensado para uso
+offline (entrenamiento local) y para generar predicciones que el
+resto de la aplicación pueda consumir.
+"""
+
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+
 def entrenar_modelo_rentabilidad(ruta_csv):
+    """Entrena y devuelve un modelo de rentabilidad.
+
+    Parámetros:
+    - ruta_csv: ruta al CSV con columnas mínimas ['mes','año','precio','volumen']
+
+    Retorna: (modelo_entrenado, labelencoder_mes, df_usado)
+    """
     df = pd.read_csv(ruta_csv)
     df.columns = [col.strip().lower() for col in df.columns]
 
@@ -23,7 +39,13 @@ def entrenar_modelo_rentabilidad(ruta_csv):
 
     return modelo, le_mes, df
 
+
 def predecir_rentabilidad(modelo, le_mes, df):
+    """Genera predicciones de rentabilidad sobre `df` y devuelve la fila con mayor predicción.
+
+    Retorna un dict con keys: mes, año, precio, volumen, rentabilidad.
+    """
+    df = df.copy()
     df['mes_cod'] = le_mes.transform(df['mes'])
     X_pred = df[['mes_cod', 'año', 'precio', 'volumen']]
     df['rentabilidad_predicha'] = modelo.predict(X_pred)

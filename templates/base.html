@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+    Plantilla base principal usada por todas las vistas.
+    Contiene la barra de navegación, manejo de mensajes flash, botón "Volver"
+    global y el modal de expiración de sesión.
+-->
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -55,6 +60,7 @@
                     </div>
                     <!-- ======= FIN MENÚ ======= -->
 
+                    {# Mostrar menú de usuario si hay sesión activa. #}
                     {% if 'usuario' in session %}
                         <!-- Menú de usuario -->
                         <div class="nav-item dropdown">

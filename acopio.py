@@ -1,3 +1,10 @@
+"""Blueprint y utilidades para análisis de acopio.
+
+Este módulo expone la ruta `/analisis_acopio` y funciones auxiliares para
+leer, limpiar y graficar los datos de acopio. Mantiene funciones ligeras
+para normalizar las columnas y producir salidas en base64 para la vista.
+"""
+
 from flask import Blueprint, render_template, request
 import pandas as pd
 import os
@@ -15,6 +22,13 @@ DATA_PATH = os.path.join("DataSheet", "Volumen de Acopio Directos - Res 0017 de 
 # Función para cargar y limpiar la data
 # ==========================
 def cargar_datos():
+    """Cargar y normalizar el CSV de acopio.
+
+    Intenta múltiples codificaciones, normaliza nombres de columnas,
+    convierte columnas numéricas (quitando separadores de miles y
+    normalizando decimales) y devuelve un DataFrame listo para uso en
+    las vistas.
+    """
     # Intentar diferentes codificaciones
     encodings = ['utf-8', 'latin1', 'iso-8859-1', 'cp1252']
     df = None
@@ -64,12 +78,13 @@ def cargar_datos():
         # Reemplazar 'nd' por 0 y limpiar espacios
         df[col] = df[col].str.strip().replace('nd', '0')
         # Si la columna contiene números con formato español (1.234.567,89)
-        if df[col].str.contains('\.').any():
-            # Primero quitar puntos de miles
-            df[col] = df[col].str.replace('.', '')
-        # Reemplazar comas decimales por puntos
-        df[col] = df[col].str.replace(',', '.')
-        # Convertir a float
+        # quitar puntos de miles de forma literal y luego normalizar la coma decimal
+        if df[col].str.contains(r'\.', regex=True).any():
+            # Quitar puntos de miles (reemplazo literal)
+            df[col] = df[col].str.replace('.', '', regex=False)
+        # Reemplazar comas decimales por puntos (literal)
+        df[col] = df[col].str.replace(',', '.', regex=False)
+        # Convertir a float y rellenar NAs con 0
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
     return df
@@ -78,6 +93,7 @@ def cargar_datos():
 # Función para generar gráfico
 # ==========================
 def generar_grafico(df, anio):
+    """Genera un gráfico de barras (base64 PNG) del volumen total por mes para `anio`."""
     df_anio = df[df['AÑO'] == anio].copy()
     columnas_deptos = df.columns[2:]
     resumen = df_anio.groupby('MES')[columnas_deptos].sum().sum(axis=1).reset_index(name='VOLUMEN (LITROS)')
@@ -102,6 +118,11 @@ def generar_grafico(df, anio):
 # ==========================
 @acopio_bp.route('/analisis_acopio', methods=['GET', 'POST'])
 def analisis_acopio():
+    """Ruta que muestra estadísticas y predicciones del acopio.
+
+    Renderiza la plantilla `acopio.html` con el gráfico y las
+    predicciones generadas por `modelo_acopio.predecir_acopio`.
+    """
     try:
         df = cargar_datos()
     except Exception as e:

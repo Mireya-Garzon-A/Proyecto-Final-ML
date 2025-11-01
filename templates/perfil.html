@@ -1,3 +1,6 @@
+{# Plantilla: gestión del perfil de usuario (editar datos y cambiar contraseña).
+    También contiene enlaces administrativos cuando el usuario tiene permisos.
+    Evitar exponer estas acciones a usuarios no autenticados. #}
 {% extends "base.html" %}
 {% block title %}Mi Perfil{% endblock %}
 
@@ -57,7 +60,11 @@
         </div>
     </div>
 
+    {# Botón para volver al inicio; el botón de administración aparece solo para administradores #}
     <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">Volver al inicio</a>
+    {% if user.email == 'admin@example.com' or user.is_admin %}
+        <a href="{{ url_for('perfil.admin_users') }}" class="btn btn-danger ms-2">Administrar usuarios</a>
+    {% endif %}
 
 </div>
 {% endblock %}

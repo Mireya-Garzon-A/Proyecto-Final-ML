@@ -1,3 +1,11 @@
+"""Herramientas de predicción de volumen de acopio.
+
+Contiene utilidades para cargar el CSV histórico de acopios y generar
+predicciones de volumen nacional mediante una regresión lineal simple.
+El módulo intenta ser robusto frente a formatos locales de números y
+nombres de columnas.
+"""
+
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -5,10 +13,14 @@ import os
 
 
 def predecir_acopio():
-    """
-    Carga los datos históricos del acopio y predice los próximos 6 meses
-    de volumen nacional usando regresión lineal.
-    Retorna un DataFrame con las predicciones.
+    """Cargar datos históricos de acopio y predecir 6 meses siguientes.
+
+    Esta función normaliza los valores numéricos (quita separadores de
+    miles, normaliza comas decimales), entrena una regresión lineal
+    sobre la columna nacional y devuelve un DataFrame con las 6 filas
+    de predicción. En caso de errores de lectura, intenta rutas
+    alternativas y, si no puede, lanza excepción para que la vista la
+    gestione.
     """
 
     # Ruta del archivo CSV
@@ -70,9 +82,11 @@ def predecir_acopio():
         print("⚠️ No se encontró columna de volumen nacional. Columnas disponibles:", df.columns.tolist())
         return pd.DataFrame()
     df[nacional_col] = df[nacional_col].astype(str).str.strip().replace('nd', '0')
-    if df[nacional_col].str.contains('\.').any():
-        df[nacional_col] = df[nacional_col].str.replace('.', '')
-    df[nacional_col] = df[nacional_col].str.replace(',', '.')
+    if df[nacional_col].str.contains(r'\.', regex=True).any():
+        # remover puntos de miles de forma literal
+        df[nacional_col] = df[nacional_col].str.replace('.', '', regex=False)
+    # normalizar coma decimal a punto
+    df[nacional_col] = df[nacional_col].str.replace(',', '.', regex=False)
     df[nacional_col] = pd.to_numeric(df[nacional_col], errors='coerce')
     df.dropna(subset=[nacional_col], inplace=True)
     df = df.rename(columns={nacional_col: 'NACIONAL'})

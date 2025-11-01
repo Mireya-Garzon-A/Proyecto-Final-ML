@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+{# Plantilla: formulario para crear/editar una consulta guardada.
+  Ofrece una vista "amigable" para completar campos y un textarea
+  JSON editable. Mantener los nombres de los campos `titulo`,
+  `descripcion` y `query` para que la vista `guardar_consulta` los procese.
+#}
 {% block title %}{% if consulta %}Editar consulta{% else %}Nueva consulta{% endif %}{% endblock %}
 
 {% block content %}

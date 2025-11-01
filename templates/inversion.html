@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{# Plantilla: Vista principal de inversión / censo bovino.
+  Contiene la UI para modo 'consulta' (interactivo) y 'historico' (gráficas por año).
+  No cambiar los ids de los contenedores (ej. #consulta-section, #series-data) ya que
+  el JavaScript depende de ellos. #}
 {% block title %}Inversión Ganadera por Departamento{% endblock %}
 
 {% block content %}
@@ -207,7 +211,8 @@
           <input type="hidden" name="query" id="gc_query" value=''>
           <!-- CAMBIO: Se añade un ID al contenedor para poder ocultarlo con JS -->
           <div id="guardar-consulta-container">
-            {% if lista_mejores_info and precios_departamentos %}
+            {# Ocultar el botón de guardar en modo 'historico' (control server-side) #}
+            {% if lista_mejores_info and precios_departamentos and mode != 'historico' %}
               <button type="button" id="btnGuardarConsulta" class="btn btn-outline-success">💾 Guardar consulta</button>
             {% endif %}
           </div>
