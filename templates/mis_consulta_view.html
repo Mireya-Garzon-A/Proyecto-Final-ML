@@ -5,15 +5,18 @@
 {% block title %}Ver consulta{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="text-success fw-bold">{{ consulta.titulo }}</h2>
-  <p class="text-muted">Creada: {{ consulta.created_at.strftime('%Y-%m-%d %H:%M') if consulta.created_at else '' }}</p>
+<div class="card shadow-lg border-0 mb-4 rounded-4">
+  <div class="card-body text-center py-3">
+    <h2 class="fw-bold text-success mb-1">{{ consulta.titulo }}</h2>
+    <p class="text-muted small mb-0">Creada: {{ consulta.created_at | format_colombia('%Y-%m-%d %H:%M') if consulta.created_at else '' }}</p>
+  </div>
+</div>
 
-  <div class="row">
-    <div class="col-md-7">
-      <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-success text-white fw-bold">📊 Resumen de la consulta</div>
-        <div class="card-body">
+<div class="row">
+  <div class="col-md-7">
+    <div class="card mb-3 shadow-sm border-success">
+      <div class="card-header bg-success text-white fw-bold">📊 Resumen de la consulta</div>
+      <div class="card-body">
           <h6 class="fw-semibold">Descripción</h6>
           <p class="text-muted">{{ consulta.descripcion or 'Sin descripción' }}</p>
 
@@ -30,7 +33,7 @@
             </div>
             <div class="col-md-3">
               <label class="form-label small">Fecha guardada</label>
-              <div class="form-control-plaintext">{{ consulta.created_at.strftime('%Y-%m-%d %H:%M') if consulta.created_at else '—' }}</div>
+              <div class="form-control-plaintext">{{ consulta.created_at | format_colombia('%Y-%m-%d %H:%M') if consulta.created_at else '—' }}</div>
             </div>
           </div>
 
@@ -85,37 +88,10 @@
 
         </div>
       </div>
-    </div>
 
-    <div class="col-md-5">
-      <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-primary text-white fw-bold">💰 Departamentos y Precios</div>
-        <div class="card-body">
-          {% if consulta_data and consulta_data.get('precios_departamentos') %}
-            <div class="table-responsive">
-              <table class="table table-sm table-hover mb-0">
-                <thead><tr><th>Departamento</th><th class="text-end">Precio</th></tr></thead>
-                <tbody>
-                  {% for p in consulta_data.get('precios_departamentos') %}
-                    <tr>
-                      <td>{{ p.get('departamento') or '' }}</td>
-                      <td class="text-end">{{ p.get('precio_str') or p.get('precio') or 'N/A' }} COP</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          {% else %}
-            <p class="text-muted">No hay precios asociados a esta consulta.</p>
-          {% endif %}
-        </div>
-      </div>
-      <div class="d-grid gap-2">
-        <a href="{{ url_for('perfil.mis_consultas') }}" class="btn btn-outline-secondary">Volver</a>
-      </div>
+    
+      
     </div>
   </div>
-  
-</div>
 {% endblock %}
 {% block scripts %}{% endblock %}

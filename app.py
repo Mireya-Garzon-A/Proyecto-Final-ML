@@ -13,6 +13,7 @@ from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
+import pytz
 
 from inversion import inversion_bp
 from acopio import acopio_bp
@@ -41,6 +42,33 @@ os.makedirs(os.path.dirname(db_path), exist_ok=True)
 # Formato de URI absoluto (tres slashes + path absoluto)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Filtro Jinja para formatear fechas en hora local de Colombia (America/Bogota)
+def format_colombia(value, fmt="%Y-%m-%d %H:%M"):
+    """Convierte un datetime (naive o timezone-aware) a la zona America/Bogota y lo formatea.
+
+    - Si el valor es None devuelve cadena vacía.
+    - Si el datetime es naive se asume que está en UTC.
+    - Usa pytz para asegurar compatibilidad con las dependencias del proyecto.
+    """
+    if not value:
+        return ''
+    try:
+        tz_target = pytz.timezone('America/Bogota')
+        # Si es naive, asumir UTC
+        if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+            value = pytz.UTC.localize(value)
+        local = value.astimezone(tz_target)
+        return local.strftime(fmt)
+    except Exception:
+        try:
+            # fallback simple
+            return value.strftime(fmt)
+        except Exception:
+            return str(value)
+
+# Registrar filtro en Jinja
+app.jinja_env.filters['format_colombia'] = format_colombia
 
 # Inicializar base de datos usando la instancia compartida
 from database import db

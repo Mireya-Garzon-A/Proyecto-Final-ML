@@ -5,66 +5,76 @@
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4 text-success">Mi Perfil</h2>
+<div class="card shadow-lg border-0 mb-4 rounded-4">
+    <div class="card-body text-center py-4">
+        <h2 class="fw-bold text-success mb-1">Mi Perfil</h2>
+        <p class="text-muted small mb-0">Actualiza tus datos de cuenta y cambia tu contraseña de forma segura.</p>
+    </div>
+</div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Datos de la cuenta</h5>
-                    <form method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
-                        </div>
-                        <button type="submit" name="update_profile" class="btn btn-success">Guardar cambios</button>
-                    </form>
-                </div>
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Cambiar contraseña</h5>
-                    <form method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña actual</label>
-                            <input type="password" name="current_password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Nueva contraseña</label>
-                            <input type="password" name="new_password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirmar nueva contraseña</label>
-                            <input type="password" name="confirm_password" class="form-control" required>
-                        </div>
-                        <button type="submit" name="change_password" class="btn btn-warning">Cambiar contraseña</button>
-                    </form>
-                </div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-header bg-success text-white fw-bold">🧾 Datos de la cuenta</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" name="update_profile" class="btn btn-outline-success">💾 Guardar cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    {# Botón para volver al inicio; el botón de administración aparece solo para administradores #}
-    <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">Volver al inicio</a>
-    {% if user.email == 'admin@example.com' or user.is_admin %}
-        <a href="{{ url_for('perfil.admin_users') }}" class="btn btn-danger ms-2">Administrar usuarios</a>
-    {% endif %}
+    <div class="col-md-6">
+        <div class="card h-100 border-warning shadow-sm">
+            <div class="card-header bg-warning text-dark fw-bold">🔒 Cambiar contraseña</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña actual</label>
+                        <input type="password" name="current_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nueva contraseña</label>
+                        <input type="password" name="new_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar nueva contraseña</label>
+                        <input type="password" name="confirm_password" class="form-control" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" name="change_password" class="btn btn-outline-warning">🔁 Cambiar contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <div class="col-12 text-end mt-2">
+        
+        {% if user.email == 'admin@example.com' or user.is_admin %}
+            <a href="{{ url_for('perfil.admin_users') }}" class="btn btn-danger ms-2">👥 Administrar usuarios</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
