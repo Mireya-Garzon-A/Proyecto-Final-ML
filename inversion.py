@@ -571,6 +571,20 @@ def inversion():
         except Exception:
             breed_table_html = ""
 
+        # Determinar modo para la UI: 'historico' cuando el año seleccionado
+        # es distinto al último año disponible; por defecto 'consulta'.
+        try:
+            mode = 'consulta'
+            if anio_sel and available_years:
+                try:
+                    latest_year = max(available_years)
+                except Exception:
+                    latest_year = available_years[-1] if available_years else None
+                if latest_year and str(anio_sel) != str(latest_year):
+                    mode = 'historico'
+        except Exception:
+            mode = 'consulta'
+
         return render_template('inversion.html',
                                departamentos=departamentos,
                                razas=df_raza['razas'].unique().tolist(),
@@ -597,6 +611,7 @@ def inversion():
                                lista_mejores_series=lista_mejores_series,
                                available_years=available_years,
                                anio_sel=anio_sel,
+                               mode=mode,
                                debug=current_app.debug,
                                input_error=input_error,
                                meses_recomendados_max=meses_recomendados_max if 'meses_recomendados_max' in locals() else 0,
