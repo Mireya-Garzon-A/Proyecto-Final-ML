@@ -62,7 +62,7 @@
                                 <i class="bi bi-person-gear me-1"></i> {{ session['usuario'] }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ url_for('perfil.mis_consultas') }}"><i class="bi bi-person-badge me-2"></i>Mi perfil</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.perfil') }}"><i class="bi bi-person-badge me-2"></i>Mi perfil</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('perfil.mis_consultas') }}"><i class="bi bi-database me-2"></i>Mis consultas</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-power me-2"></i>Cerrar sesión</a></li>
@@ -95,6 +95,32 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        {# Botón "Volver" presente en todas las páginas excepto la página de inicio (ruta 'inicio') #}
+        {% if request.path != url_for('inicio') %}
+            <div class="mb-3">
+                <button type="button" id="btn-volver" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Volver
+                </button>
+            </div>
+            <script>
+                (function(){
+                    const btn = document.getElementById('btn-volver');
+                    if(!btn) return;
+                    btn.addEventListener('click', function(){
+                        try{
+                            // Si hay historial previo, ir atrás; si no, redirigir al inicio
+                            if(window.history.length > 1){
+                                window.history.back();
+                            } else {
+                                window.location.href = "{{ url_for('inicio') }}";
+                            }
+                        } catch(e){
+                            window.location.href = "{{ url_for('inicio') }}";
+                        }
+                    });
+                })();
+            </script>
+        {% endif %}
         
         {% block content %}{% endblock %}
     </main>

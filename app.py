@@ -172,7 +172,8 @@ def session_timeout_handler():
 @app.route('/menu')
 @login_required
 def menu():
-    return render_template('menu.html')
+    # Redirigimos al inicio ya que la plantilla 'menu.html' se ha eliminado
+    return redirect(url_for('inicio'))
 
 # datos proyecto
 @app.route('/index1')
