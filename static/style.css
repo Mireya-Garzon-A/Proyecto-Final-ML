@@ -482,7 +482,7 @@ footer::before {
   position: relative;
   width: 100%;
   height: 220px; /* Banner más bajo */
-  background-image: url('/static/images/vaca2.jpg'); 
+  background-image: url('/static/images/vacas2.png'); 
   background-size: cover;
   background-position: center;
   display: flex;
@@ -542,3 +542,61 @@ footer::before {
     font-size: 1.2rem;
   }
 }
+
+
+/* Banner específico para el análisis */
+.hero-analisis {
+  background-image: url('/static/images/ordeño.png'); /* tu nueva imagen */
+}
+
+
+.hero-narrow {
+  background-size: cover;
+  background-position: center;
+  padding: 4rem 2rem;
+  color: white;
+  
+}
+
+.bg-gradient-prediccion {
+  background: linear-gradient(135deg, #e0f7fa, #ffffff); /* azul claro → blanco */
+}   
+
+.bg-gradient-precio {
+  background: linear-gradient(135deg, #cecaf1, #e2e1ef); /* azul → violeta */
+  padding: 2.5rem 1rem;
+}
+
+.hero-banner-precio {
+  background-image: url('/static/images/vacas3.png'); /* tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  height: 280px; /* ajusta según tu diseño */
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  background: rgba(0, 0, 0, 0.45); /* capa oscura para contraste */
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+}
+
+.banner-censo-bovino {
+  background-image: url('/static/images/vacas4.png'); /* tu imagen */
+  background-size: cover;
+  background-position: center;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-censo-bovino .card-body {
+  background: rgba(0, 0, 0, 0.45); /* capa oscura para contraste */
+  border-radius: 1rem;
+  width: 100%;
+  height: 100%;
+}
+
