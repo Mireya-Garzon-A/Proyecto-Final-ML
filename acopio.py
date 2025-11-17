@@ -136,7 +136,9 @@ def analisis_acopio():
     df_anio = df[df['AÑO'] == anio].copy()
 
     # Estadísticas
-    columnas_deptos = df.columns[2:]
+    # Excluir columnas agregadas/totalizadoras como 'NACIONAL' o 'TOTAL'
+    excluded_cols = {'NACIONAL', 'TOTAL'}
+    columnas_deptos = [c for c in df.columns[2:] if c not in excluded_cols]
     df_anio['TOTAL'] = df_anio[columnas_deptos].sum(axis=1)
     mes_max = df_anio.loc[df_anio['TOTAL'].idxmax()]
     mes_min = df_anio.loc[df_anio['TOTAL'].idxmin()]
@@ -168,18 +170,35 @@ def analisis_acopio():
 
     # Encontrar los meses con mayor y menor volumen
     resumen_mes = df[df['AÑO'] == anio].copy()
-    columnas_deptos = [col for col in df.columns if col not in ['AÑO', 'MES']]
+    # Excluir columnas agregadas/totalizadoras como 'NACIONAL' o 'TOTAL'
+    excluded_cols = {'NACIONAL', 'TOTAL'}
+    columnas_deptos = [col for col in df.columns if col not in ['AÑO', 'MES'] and col not in excluded_cols]
     resumen_mes['TOTAL'] = resumen_mes[columnas_deptos].sum(axis=1)
-    
+
     idx_max = resumen_mes['TOTAL'].idxmax()
     idx_min = resumen_mes['TOTAL'].idxmin()
-    
+
     mes_max_data = resumen_mes.loc[idx_max]
     mes_min_data = resumen_mes.loc[idx_min]
 
-    # Encontrar departamento con mayor y menor aporte para cada mes
-    dept_max = columnas_deptos[mes_max_data[columnas_deptos].argmax()]
-    dept_min = columnas_deptos[mes_min_data[columnas_deptos].argmin()]
+    # Encontrar departamento con mayor y menor aporte para cada mes,
+    # ignorando departamentos cuyo aporte sea 0 en ese mes.
+    contribs_max = mes_max_data[columnas_deptos]
+    contribs_min = mes_min_data[columnas_deptos]
+
+    # Filtrar sólo contribuciones positivas
+    contribs_max_pos = contribs_max[contribs_max > 0]
+    contribs_min_pos = contribs_min[contribs_min > 0]
+
+    if not contribs_max_pos.empty:
+        dept_max = contribs_max_pos.idxmax()
+    else:
+        dept_max = 'N/A'
+
+    if not contribs_min_pos.empty:
+        dept_min = contribs_min_pos.idxmin()
+    else:
+        dept_min = 'N/A'
 
     return render_template(
         'acopio.html',
