@@ -71,10 +71,12 @@
     </div>
 
     <div class="col-12 text-end mt-2">
-        
         {% if user.email == 'admin@example.com' or user.is_admin %}
             <a href="{{ url_for('perfil.admin_users') }}" class="btn btn-danger ms-2">👥 Administrar usuarios</a>
         {% endif %}
+        <a href="{{ url_for('perfil.suscripcion') }}" class="btn btn-primary ms-2">💳 Gestionar suscripción</a>
+
+        {# El enlace a la calculadora ahora está en el menú desplegable del usuario (base.html) #}
     </div>
 </div>
 {% endblock %}

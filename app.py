@@ -152,6 +152,8 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        plan = request.form.get('plan', 'free')
+        payment_method = request.form.get('payment_method', 'none')
 
         # Verificar si ya existe el usuario por email
         existing_user = User.query.filter_by(email=email).first()
@@ -161,6 +163,21 @@ def register():
 
         new_user = User(name=name, email=email)
         new_user.set_password(password)
+
+        # Si seleccionó un plan de pago, simulamos el cobro y asignamos rol temporal
+        if plan in ('pago1', 'pago2'):
+            # simulación: aceptar cualquier método y dar suscripción por 30 días
+            try:
+                new_user.role = 'pago1' if plan == 'pago1' else 'pago2'
+                new_user.subscription_expires = datetime.utcnow() + timedelta(days=30)
+            except Exception:
+                # si falla asignación, dejar en free
+                new_user.role = 'free'
+                new_user.subscription_expires = None
+        else:
+            new_user.role = 'free'
+            new_user.subscription_expires = None
+
         db.session.add(new_user)
         db.session.commit()
         flash('Usuario registrado correctamente. Por favor inicie sesión.', 'success')
@@ -228,6 +245,22 @@ def session_timeout_handler():
 
     # Actualizar last_activity para cada request válida
     session['last_activity'] = now_ts
+    # Verificar expiración de suscripción y degradar rol si corresponde
+    try:
+        if current_user.is_authenticated:
+            expires = getattr(current_user, 'subscription_expires', None)
+            if expires is not None:
+                # Si expiró, degradar a 'free'
+                try:
+                    if expires and expires < datetime.utcnow():
+                        current_user.role = 'free'
+                        current_user.subscription_expires = None
+                        db.session.commit()
+                        flash('Tu suscripción expiró y tu cuenta fue degradada a Free.', 'info')
+                except Exception:
+                    pass
+    except Exception:
+        pass
 
 # Menú principal (solo con sesión activa)
 @app.route('/menu')
@@ -248,6 +281,16 @@ def index2():
 # Crear la base de datos si no existe
 with app.app_context():
     db.create_all()
+    # Intentar añadir la columna subscription_expires si la DB antigua no la tiene
+    try:
+        # SQLite: ALTER TABLE solo permite ADD COLUMN
+        from sqlalchemy import text
+        conn = db.engine.connect()
+        conn.execute(text("ALTER TABLE blog_user ADD COLUMN subscription_expires DATETIME"))
+        conn.close()
+    except Exception:
+        # si ya existe o no se puede añadir, continuar
+        pass
 
 # Política de tratamiento de datos
 @app.route("/politica-datos")

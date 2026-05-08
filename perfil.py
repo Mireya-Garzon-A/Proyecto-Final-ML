@@ -13,7 +13,9 @@ from flask_login import login_required, current_user
 from models import User, Consulta
 from database import db
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
+import unicodedata
 
 perfil_bp = Blueprint('perfil', __name__)
 
@@ -74,12 +76,57 @@ def perfil():
     return render_template('perfil.html', user=current_user)
 
 
+@perfil_bp.route('/perfil/suscripcion', methods=['GET', 'POST'])
+@login_required
+def suscripcion():
+    """Gestión de la suscripción del usuario: cambio de plan y renovación."""
+    if request.method == 'POST':
+        action = request.form.get('action')
+        selected = request.form.get('plan')
+        pm = request.form.get('payment_method', 'none')
+        try:
+            if action == 'change_plan':
+                # aplicar cambio: asignar role y expiración si es pago
+                if selected in ('pago1', 'pago2'):
+                    current_user.role = selected
+                    current_user.subscription_expires = datetime.utcnow() + timedelta(days=30)
+                else:
+                    current_user.role = 'free'
+                    current_user.subscription_expires = None
+                db.session.commit()
+                flash('Plan actualizado correctamente.', 'success')
+            elif action == 'renew':
+                # renovar: extender 30 días desde ahora o desde expiración si existe
+                if current_user.subscription_expires:
+                    base = current_user.subscription_expires if current_user.subscription_expires > datetime.utcnow() else datetime.utcnow()
+                else:
+                    base = datetime.utcnow()
+                current_user.subscription_expires = base + timedelta(days=30)
+                # si era free y renueva, no cambiar role a menos que especificado
+                if current_user.role == 'free' and selected in ('pago1','pago2'):
+                    current_user.role = selected
+                db.session.commit()
+                flash('Suscripción renovada por 30 días.', 'success')
+        except Exception:
+            db.session.rollback()
+            flash('Ocurrió un error al procesar la suscripción.', 'danger')
+        return redirect(url_for('perfil.suscripcion'))
+
+    return render_template('perfil_suscripcion.html', user=current_user)
+
+
 @perfil_bp.route('/mis-consultas')
 @login_required
 def mis_consultas():
     """Página para mostrar las consultas guardadas del usuario.
     Actualmente muestra un listado vacío (placeholder). Más adelante se puede enlazar a la base de datos.
     """
+    # Permisos: solo usuarios con rol 'pago1' o 'pago2' o administradores pueden acceder
+    user_role = getattr(current_user, 'role', None)
+    if not (current_user.email == 'admin@example.com' or getattr(current_user, 'is_admin', False) or user_role in ('pago1', 'pago2')):
+        flash('Tu plan no permite acceder a Mis Consultas. Actualiza tu suscripción.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
     # Recuperar consultas del usuario
     consultas_guardadas = Consulta.query.filter_by(user_id=current_user.id).order_by(Consulta.created_at.desc()).all()
     return render_template('mis_consultas.html', consultas=consultas_guardadas)
@@ -396,6 +443,8 @@ def admin_toggle_admin(uid):
 
     try:
         u.is_admin = not bool(u.is_admin)
+        # sincronizar role para mantener consistencia
+        u.role = 'admin' if u.is_admin else (u.role if u.role != 'admin' else 'free')
         db.session.commit()
         estado = 'concedidos' if u.is_admin else 'revocados'
         flash(f'Privilegios de administrador {estado} para {u.email}.', 'success')
@@ -404,6 +453,80 @@ def admin_toggle_admin(uid):
         flash('Ocurrió un error al actualizar el rol. Revisa los logs.', 'danger')
 
     return redirect(url_for('perfil.admin_users'))
+
+
+@perfil_bp.route('/valor-venta', methods=['GET', 'POST'])
+@login_required
+def valor_venta():
+    """Calcular valor estimado de la leche almacenada por departamento.
+
+    Solo disponible para `pago2` y administradores.
+    """
+    user_role = getattr(current_user, 'role', None)
+    if not (current_user.email == 'admin@example.com' or getattr(current_user, 'is_admin', False) or user_role == 'pago2'):
+        flash('No tienes permiso para acceder a esta herramienta.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    # Usar el módulo `modelo_precio` para cargar y limpiar los datos de precios
+    try:
+        from modelo_precio import cargar_datos
+    except Exception:
+        flash('No se pudo cargar el módulo de análisis de precios.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    try:
+        df, departamentos = cargar_datos()
+    except Exception as e:
+        flash('No se pudo cargar los datos de precios: ' + str(e), 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    # Mapear nombres para presentación (restaurar acentos comunes).
+    # Usamos claves normalizadas (sin acentos, en mayúsculas) para evitar variantes.
+    pretty_map = {
+        'BOGOTA': 'Bogotá',
+        'NARINO': 'Nariño',
+        'NARIÑO': 'Nariño',
+        'NARIAO': 'Nariño',
+        'QUINDIO': 'Quindío',
+        'QUINDÍO': 'Quindío',
+        'QUINDAO': 'Quindío',
+        'VALLE DEL CAUCA': 'Valle del Cauca',
+        'NORTE DE SANTANDER': 'Norte de Santander',
+        'LA GUAJIRA': 'La Guajira',
+        'META': 'Meta',
+        'ANTIOQUIA': 'Antioquia',
+        'BOYACA': 'Boyacá',
+        'BOYACÁ': 'Boyacá',
+        'BOLAVAR': 'Bolívar',
+        'CARDOBA': 'Córdoba'
+    }
+
+    def _normalize_key(s):
+        if not s:
+            return s
+        k = str(s).strip().upper()
+        k = unicodedata.normalize('NFKD', k).encode('ASCII', 'ignore').decode('ASCII')
+        return k
+
+    departments_display = {d: pretty_map.get(_normalize_key(d), d.title()) for d in departamentos}
+
+    result = None
+    if request.method == 'POST':
+        try:
+            litros = float(request.form.get('litros', '0'))
+            departamento = request.form.get('departamento')
+            if departamento not in departamentos:
+                flash('Departamento inválido.', 'danger')
+                return redirect(url_for('perfil.valor_venta'))
+
+            col = df[departamento].dropna().astype(float)
+            precio_promedio = float(col.mean()) if not col.empty else 0.0
+            total = litros * precio_promedio
+            result = {'litros': litros, 'departamento': departamento, 'precio_promedio': precio_promedio, 'total': total}
+        except Exception as e:
+            flash('Error al calcular el valor. Verifica los datos ingresados. ' + str(e), 'danger')
+
+    return render_template('valor_venta.html', departments=departamentos, departments_display=departments_display, result=result)
 
 
 @perfil_bp.route('/admin/users/<int:uid>/delete', methods=['POST'])
@@ -433,5 +556,72 @@ def admin_delete_user(uid):
     except Exception:
         db.session.rollback()
         flash('Ocurrió un error al eliminar el usuario. Revisa los logs.', 'danger')
+
+    return redirect(url_for('perfil.admin_users'))
+
+
+@perfil_bp.route('/admin/users/<int:uid>/set-role', methods=['POST'])
+@login_required
+def admin_set_role(uid):
+    """Establecer el role de un usuario (solo administrador)."""
+    if not (current_user.email == 'admin@example.com' or getattr(current_user, 'is_admin', False)):
+        flash('No tienes permiso para realizar esta acción.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    u = User.query.get_or_404(uid)
+    # No permitir cambiar el role del admin principal
+    if u.email == 'admin@example.com':
+        flash('No puedes cambiar el rol del administrador principal.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    new_role = request.form.get('role', 'free')
+    if new_role not in ('free', 'pago1', 'pago2', 'admin'):
+        flash('Rol inválido.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    try:
+        u.role = new_role
+        u.is_admin = (new_role == 'admin')
+        db.session.commit()
+        flash(f'Rol actualizado a {new_role} para {u.email}.', 'success')
+    except Exception:
+        db.session.rollback()
+        flash('Ocurrió un error al actualizar el rol. Revisa los logs.', 'danger')
+
+    return redirect(url_for('perfil.admin_users'))
+
+
+@perfil_bp.route('/admin/users/create', methods=['POST'])
+@login_required
+def admin_create_user():
+    """Crear un nuevo usuario (solo administrador)."""
+    if not (current_user.email == 'admin@example.com' or getattr(current_user, 'is_admin', False)):
+        flash('No tienes permiso para realizar esta acción.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip().lower()
+    password = request.form.get('password', '').strip()
+    role = request.form.get('role', 'free')
+    is_admin = (role == 'admin')
+
+    if not name or not email or not password:
+        flash('Nombre, correo y contraseña son obligatorios.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    # Verificar unicidad del correo
+    if User.get_by_email(email):
+        flash('El correo ya está registrado.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    try:
+        new_u = User(name=name, email=email, is_admin=is_admin, role=role)
+        new_u.set_password(password)
+        db.session.add(new_u)
+        db.session.commit()
+        flash(f'Usuario {email} creado correctamente.', 'success')
+    except Exception:
+        db.session.rollback()
+        flash('Ocurrió un error al crear el usuario. Revisa los logs.', 'danger')
 
     return redirect(url_for('perfil.admin_users'))

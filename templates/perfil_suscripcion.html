@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Suscripción - Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">Gestión de Suscripción</div>
+  <div class="card-body">
+    <p>Plan actual: <strong>{{ user.role|capitalize }}</strong></p>
+    <p>Vence: <strong>{{ user.subscription_expires|format_colombia("%Y-%m-%d") if user.subscription_expires else 'N/A' }}</strong></p>
+
+    <hr>
+    <h5>Cambiar o renovar plan</h5>
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Selecciona un plan</label>
+        <select name="plan" class="form-select">
+          <option value="free" {% if user.role=='free' %}selected{% endif %}>Free — Limitado (con publicidad)</option>
+          <option value="pago1" {% if user.role=='pago1' %}selected{% endif %}>Básico (Pago 1) — más consultas</option>
+          <option value="pago2" {% if user.role=='pago2' %}selected{% endif %}>Premium (Pago 2) — sin limitaciones</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Método de pago</label>
+        <select name="payment_method" class="form-select">
+          <option value="tarjeta_credito">Tarjeta Crédito</option>
+          <option value="tarjeta_debito">Tarjeta Débito</option>
+          <option value="pse">PSE</option>
+          <option value="none">No aplicar</option>
+        </select>
+      </div>
+      <div class="d-flex gap-2">
+        <button name="action" value="change_plan" class="btn btn-primary">Aplicar cambio / Contratar</button>
+        <button name="action" value="renew" class="btn btn-outline-success">Renovar 30 días</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

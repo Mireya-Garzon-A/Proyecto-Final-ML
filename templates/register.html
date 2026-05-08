@@ -107,6 +107,45 @@
                                     según la Ley 1581 de 2012.
                                 </label>
                             </div>
+                            <!-- Planes disponibles -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-dark">Elige un plan</label>
+                                <div class="list-group">
+                                    <label class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Free</div>
+                                            <small class="text-muted">Limitaciones: acceso básico, límite en "Mis consultas" y anuncios.</small>
+                                        </div>
+                                        <input class="form-check-input mt-0" type="radio" name="plan" value="free" checked>
+                                    </label>
+                                    <label class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Básico (Pago 1)</div>
+                                            <small class="text-muted">Limitaciones: incluye más consultas, publicidad reducida (simulada).</small>
+                                        </div>
+                                        <input class="form-check-input mt-0" type="radio" name="plan" value="pago1">
+                                    </label>
+                                    <label class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Premium (Pago 2)</div>
+                                            <small class="text-muted">Sin limitaciones y sin publicidad.</small>
+                                        </div>
+                                        <input class="form-check-input mt-0" type="radio" name="plan" value="pago2">
+                                    </label>
+                                </div>
+                                <small class="text-muted">Nota: los pagos se procesan aquí para fines educativos y la suscripción dura 1 mes; luego el perfil volverá a Free automáticamente.</small>
+                            </div>
+
+                            <!-- Método de pago (simulación) -->
+                            <div class="mb-4">
+                                <label for="payment_method" class="form-label fw-semibold text-dark">Método de pago (simulación)</label>
+                                <select id="payment_method" name="payment_method" class="form-select">
+                                    <option value="none">No aplicar / Gratis</option>
+                                    <option value="tarjeta_credito">Tarjeta Crédito</option>
+                                    <option value="tarjeta_debito">Tarjeta Débito</option>
+                                    <option value="pse">PSE</option>
+                                </select>
+                            </div>
 
                             <!-- Botón de Registrar -->
                             <div class="d-grid gap-2 mb-4">

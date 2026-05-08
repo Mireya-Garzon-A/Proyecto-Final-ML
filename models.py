@@ -7,6 +7,7 @@ Proporciona métodos auxiliares para persistencia y utilidades básicas.
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
+from datetime import datetime
 
 class User(db.Model, UserMixin):
     __tablename__ = 'blog_user'
@@ -20,6 +21,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(256), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    # Rol del usuario: 'free', 'pago1', 'pago2', 'admin'
+    role = db.Column(db.String(20), default='free')
+    # Fecha de expiración de la suscripción (si aplica). UTC.
+    subscription_expires = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f'<User {self.email}>'

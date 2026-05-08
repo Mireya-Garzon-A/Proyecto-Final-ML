@@ -69,7 +69,13 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ url_for('perfil.perfil') }}"><i class="bi bi-person-badge me-2"></i>Mi perfil</a></li>
+                                {% if current_user.is_authenticated and (current_user.email == 'admin@example.com' or current_user.is_admin or current_user.role in ['pago1','pago2']) %}
                                 <li><a class="dropdown-item" href="{{ url_for('perfil.mis_consultas') }}"><i class="bi bi-database me-2"></i>Mis consultas</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.suscripcion') }}"><i class="bi bi-credit-card-2-front me-2"></i>Gestionar suscripción</a></li>
+                                {% if current_user.is_authenticated and (current_user.email == 'admin@example.com' or current_user.is_admin or current_user.role == 'pago2') %}
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.valor_venta') }}"><i class="bi bi-calculator me-2"></i>Valor estimado venta</a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-power me-2"></i>Cerrar sesión</a></li>
                             </ul>
