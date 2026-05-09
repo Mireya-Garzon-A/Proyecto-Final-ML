@@ -33,14 +33,20 @@ app.secret_key = 'clave_segura_para_sesion'
 # Configurar expiración de sesión por inactividad (30 minutos)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
-# Configuración de base de datos SQLite (usar la DB en el folder instance)
+# Configuración de base de datos: usar MySQL exclusivamente.
+# - Si existe la variable de entorno `MYSQL_DATABASE_URL` se usa tal cual.
+# - Si no existe, por conveniencia se conecta a XAMPP local por defecto
+#   con la base `del_campo_al_algoritomo` y usuario `root` sin contraseña.
 import os
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-# Asegurar que el directorio instance exista y usar ruta absoluta para evitar problemas con CWD
-db_path = os.path.join(BASE_DIR, 'instance', 'usuarios.db')
-os.makedirs(os.path.dirname(db_path), exist_ok=True)
-# Formato de URI absoluto (tres slashes + path absoluto)
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+mysql_url = os.environ.get('MYSQL_DATABASE_URL')
+if mysql_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url
+else:
+    # conexión por defecto a XAMPP en localhost
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        'mysql+pymysql://root:@localhost:3306/del_campo_al_algoritomo?charset=utf8mb4'
+    )
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Filtro Jinja para formatear fechas en hora local de Colombia (America/Bogota)
@@ -149,11 +155,20 @@ def register():
     GET: renderiza el formulario de registro.
     """
     if request.method == 'POST':
-        name = request.form['name']
+        # Nombres y apellidos separados
+        primer_nombre = request.form.get('primer_nombre')
+        segundo_nombre = request.form.get('segundo_nombre')
+        primer_apellido = request.form.get('primer_apellido')
+        segundo_apellido = request.form.get('segundo_apellido')
+        # Construir `name` para compatibilidad con otras partes del sistema
+        name = f"{primer_nombre} {' ' + segundo_nombre if segundo_nombre else ''} {primer_apellido} {' ' + segundo_apellido if segundo_apellido else ''}".strip()
         email = request.form['email']
         password = request.form['password']
         plan = request.form.get('plan', 'free')
         payment_method = request.form.get('payment_method', 'none')
+        tipo_documento = request.form.get('tipo_documento')
+        numero_documento = request.form.get('numero_documento')
+        telefono = request.form.get('telefono')
 
         # Verificar si ya existe el usuario por email
         existing_user = User.query.filter_by(email=email).first()
@@ -162,6 +177,14 @@ def register():
             return redirect(url_for('register'))
 
         new_user = User(name=name, email=email)
+        # Asignar campos adicionales de identificación
+        new_user.primer_nombre = primer_nombre
+        new_user.segundo_nombre = segundo_nombre
+        new_user.primer_apellido = primer_apellido
+        new_user.segundo_apellido = segundo_apellido
+        new_user.tipo_documento = tipo_documento
+        new_user.numero_documento = numero_documento
+        new_user.telefono = telefono
         new_user.set_password(password)
 
         # Si seleccionó un plan de pago, simulamos el cobro y asignamos rol temporal
@@ -280,17 +303,10 @@ def index2():
 
 # Crear la base de datos si no existe
 with app.app_context():
-    db.create_all()
-    # Intentar añadir la columna subscription_expires si la DB antigua no la tiene
-    try:
-        # SQLite: ALTER TABLE solo permite ADD COLUMN
-        from sqlalchemy import text
-        conn = db.engine.connect()
-        conn.execute(text("ALTER TABLE blog_user ADD COLUMN subscription_expires DATETIME"))
-        conn.close()
-    except Exception:
-        # si ya existe o no se puede añadir, continuar
-        pass
+    # Crear tablas en MySQL si no existen, excepto cuando se ejecutan scripts
+    # de mantenimiento/migración que establecen la variable SKIP_CREATE_ALL=1
+    if os.environ.get('SKIP_CREATE_ALL') != '1':
+        db.create_all()
 
 # Política de tratamiento de datos
 @app.route("/politica-datos")

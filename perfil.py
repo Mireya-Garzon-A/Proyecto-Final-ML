@@ -240,14 +240,62 @@ def guardar_consulta():
             for o in oldest:
                 o.delete()
 
+        # Extraer campos atómicos desde el payload para normalizar
+        raza_val = None
+        nv_val = None
+        litros_vaca = None
+        try:
+            raza_val = payload.get('raza') or payload.get('Raza') or None
+            nv_val = payload.get('num_vacas') or payload.get('numVacas') or None
+            if nv_val is not None:
+                try:
+                    nv_val = int(nv_val)
+                except Exception:
+                    nv_val = None
+            # intentar extraer litros_por_vaca si viene en payload
+            litros_vaca = payload.get('litros_por_vaca') or payload.get('litrosPorVaca') or None
+            if litros_vaca is not None:
+                try:
+                    litros_vaca = float(litros_vaca)
+                except Exception:
+                    litros_vaca = None
+        except Exception:
+            raza_val = nv_val = litros_vaca = None
+
         c = Consulta(
             user_id=current_user.id,
             titulo=titulo,
             descripcion=descripcion,
-            query_text=json.dumps(payload, ensure_ascii=False),
-            summary=json.dumps(prod_info, ensure_ascii=False) if prod_info else None,
+            raza=raza_val,
+            num_vacas=nv_val,
+            litros_por_vaca=litros_vaca,
         )
         c.save()
+
+        # Guardar query_text y summary en tablas normalizadas
+        from models import ConsultaQuery, ConsultaSummary, ConsultaPrecio
+        q = ConsultaQuery(consulta_id=c.id, query_text=json.dumps(payload, ensure_ascii=False))
+        q.save()
+        if prod_info is not None:
+            s = ConsultaSummary(consulta_id=c.id, summary=json.dumps(prod_info, ensure_ascii=False))
+            s.save()
+
+        # Guardar precios por departamento en tabla normalizada
+        precios = payload.get('precios_departamentos') or payload.get('precios') or []
+        if isinstance(precios, list):
+            for p in precios:
+                dept = p.get('departamento') or p.get('departamento') or ''
+                precio_val = None
+                try:
+                    precio_val = float(p.get('precio')) if p.get('precio') is not None else None
+                except Exception:
+                    precio_val = None
+                cp = ConsultaPrecio(consulta_id=c.id, departamento=dept, precio=precio_val)
+                try:
+                    cp.save()
+                except Exception:
+                    # si falla una fila, continuamos con las demás
+                    pass
         flash('Consulta guardada correctamente.', 'success')
         return redirect(url_for('perfil.mis_consultas'))
     except Exception:
