@@ -6,6 +6,7 @@
     --verde-pastel: #e9f5ee;
     --sombra-verde: rgba(16, 104, 75, 0.1);
     --gris-texto: #444444;
+    --font-adjust: 2pt;
 }
 
 /* --- MEJORAS GENERALES --- */
@@ -13,6 +14,11 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: linear-gradient(135deg, #f8fdf9 0%, #ffffff 100%);
     min-height: 100vh;
+}
+
+/* Ajuste global de fuente: sumar 2pt al tamaño raíz */
+html {
+    font-size: calc(100% + var(--font-adjust)) !important;
 }
 
 /* --- TÍTULO PRINCIPAL --- */
