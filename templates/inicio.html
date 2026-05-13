@@ -101,8 +101,7 @@
             <!-- Contenido -->
             <div class="col-md-6">
                 <div class="contextualizacion-contenido h-100 p-4 p-lg-5">
-                    <h3 class="titulo-seccion mb-4">Contexto de la Producción Lechera</h3>
-                    
+                    <h3 class="titulo-seccion mb-4">Contexto de la Producción Lechera</h3>                    
                     <div class="contextualizacion-texto">
                         <p class="mb-4">
                             La producción de leche cruda representa una de las principales actividades económicas 
@@ -264,34 +263,41 @@
         </p>
 
         <div class="row justify-content-center g-4">
-            <!-- Funcionalidad 1 - CON IMAGEN ORIGINAL -->
-            <div class="col-md-4">
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('acopio.analisis_acopio') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card">
-                        <img src="{{ url_for('static', filename='images/Imagen1.png') }}" 
-                             alt="Épocas de mayor acopio" 
-                             class="img-fluid mx-auto mb-3" 
-                             style="max-height: 80px;">
-                        <h5 class="card-title mb-2">Épocas de mayor acopio</h5>
-                        <p class="card-text fs-6">Visualiza los periodos del año con mayor volumen y mejor precio de la leche.</p>
-                        <small class="opacity-75"><i class="bi bi-clock-history me-1"></i>Análisis temporal</small>
-                    </div>
-                </a>
-                {% else %}
-                <div class="card h-100 shadow-sm text-center p-3 bg-success text-white zoom-card" 
-                     onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
-                     data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
-                    <img src="{{ url_for('static', filename='images/Imagen1.png') }}" 
-                         alt="Épocas de mayor acopio" 
-                         class="img-fluid mx-auto mb-3" 
-                         style="max-height: 80px;">
-                    <h5 class="card-title mb-2">Analisis de Acopio de leche Cruda </h5>
-                    <p class="card-text fs-6">Visualiza los periodos del año con mayor y menor  volumen de produccion de leche cruda y predicion de los siguientes seis meses</p>
-                    <small class="opacity-75"><i class="bi bi-clock-history me-1"></i>Análisis temporal</small>
-                </div>
-                {% endif %}
+           <div class="col-md-4">
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('acopio.analisis_acopio') }}" class="text-decoration-none">
+        <div class="card card-analisis h-100 shadow-sm text-center p-3 text-white zoom-card">
+            <div class="card-overlay"></div>
+            <div class="card-body position-relative">
+                <h5 class="card-title mb-2">Épocas de mayor acopio</h5>
+                <p class="card-text fs-6">
+                    Visualiza los periodos del año con mayor volumen y mejor precio de la leche.
+                </p>
+                <small class="opacity-75">
+                    <i class="bi bi-clock-history me-1"></i>Análisis temporal
+                </small>
             </div>
+        </div>
+    </a>
+    {% else %}
+    <div class="card card-analisis h-100 shadow-sm text-center p-3 text-white zoom-card" 
+         onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
+         data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
+        <div class="card-overlay"></div>
+        <div class="card-body position-relative">
+            <h5 class="card-title mb-2">Análisis de Acopio de leche Cruda</h5>
+            <p class="card-text fs-6">
+                Visualiza los periodos del año con mayor y menor volumen de producción de leche cruda 
+                y predicción de los siguientes seis meses.
+            </p>
+            <small class="opacity-75">
+                <i class="bi bi-clock-history me-1"></i>Análisis temporal
+            </small>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 
             <!-- Funcionalidad 2 - CON IMAGEN ORIGINAL -->
             <div class="col-md-4">
