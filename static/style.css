@@ -143,11 +143,11 @@ html {
 }
 
 .funcionalidades-container {
-    background: linear-gradient(135deg, var(--verde-pastel) 0%, #ffffff 100%);
+    background: linear-gradient(135deg, var(--verde-pastel) 0%, #c9be5d 100%);
     border-radius: 20px;
     padding: 3rem 2.5rem;
     box-shadow: 0 15px 35px rgba(16, 104, 75, 0.15);
-    border: 1px solid rgba(25, 135, 84, 0.2);
+    border: 8px solid #6B8E23; /* borde ancho verde oliva */
     position: relative;
     overflow: hidden;
 }
@@ -696,7 +696,7 @@ footer::before {
 }
 
 .card-analisis {
-    background-image: url('/static/images/Imagen01.png');
+    background-image: url('/static/images/ima01.png');
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -706,7 +706,7 @@ footer::before {
 }
 
 .card-precio {
-    background-image: url('/static/images/foto_ordeno.jpg');
+    background-image: url('/static/images/ima02.png');
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -716,7 +716,7 @@ footer::before {
 }
 
 .card-censo {
-    background-image: url('/static/images/Imagen2.jpg');
+    background-image: url('/static/images/ima03.png');
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -738,4 +738,46 @@ footer::before {
     z-index: 2; /* texto encima del overlay */
 }
 
+.card-leyenda {
+    background-image: url('/static/images/leyenda.png'); /* tu segunda imagen */
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
 
+.section-agua {
+    background-image: url('/static/images/campo.png'); /* tu imagen de agua */
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    position: relative;
+    color: #ffffff;
+}
+
+.titulo-box{
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
+    text-shadow: 2px 2px 8px black;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+.bg-olive {
+    background-color: #7fb71e !important; /* tono verde oliva */
+}
+.bg-darkblue {
+    background-color: #0D3B66 !important; /* azul oscuro elegante */
+}
+
+.titulo2-box {
+    background-image: url('/static/images/montana.png'); /* tu imagen */
+    background-size: cover;       /* que cubra todo el bloque */
+    background-position: center;  /* centrada */
+    border: 1px solid rgba(9, 204, 142, 0.349);
+    border-radius: 12px;
+    color: #fff;                  /* texto blanco para contraste */
+    text-shadow: 2px 2px 8px black;
+    padding: 20px;
+}

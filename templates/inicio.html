@@ -134,7 +134,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-success text-white text-center py-3">
+                    <div class="card-header bg-olive text-white text-center py-3">
                         <h4 class="mb-0"><i class="bi bi-images me-2"></i>Galería de la Producción Lechera</h4>
                     </div>
                     <div class="card-body p-0">
@@ -198,68 +198,49 @@
         </div>
     </div>
 
-    <!-- ODS 2, 8 y 9 -->
-    <div class="ods-container p-4 rounded-4 mb-5">
-        <h3 class="text-center mb-4 text-success">
-            <i class="bi bi-bullseye me-2"></i>Objetivos de Desarrollo Sostenible
-        </h3>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center zoom-card">
-                    <div class="mb-3">
-                        <img src="{{ url_for('static', filename='images/ods2.png') }}" alt="ODS 2: Hambre Cero" class="img-fluid" style="height: 80px;">
-                    </div>
-                    <h5 class="text-success mb-2">
-                        <i class="bi bi-egg-fried me-1"></i>ODS 2: Hambre Cero
-                    </h5>
-                    <p class="fs-6 text-muted">
-                        Promueve una agricultura sostenible y la seguridad alimentaria mediante herramientas tecnológicas 
-                        que fortalecen la productividad del sector lácteo.
-                    </p>
-                </div>
-            </div>
+    <!-- Informe de Calidad de Vida (Leyenda) -->
+<div class="ods-container p-4 rounded-4 mb-5 section-agua">
+   <!-- Título principal -->
+    <h3 class="text-center text-white p-3 rounded shadow titulo-box">
+        <i class="bi bi-bullseye me-2"></i>
+                    Desarrollo Económico y Competitividad
+    </h3>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center zoom-card">
-                    <div class="mb-3">
-                        <img src="{{ url_for('static', filename='images/0ds08.png') }}" alt="ODS 8: Trabajo decente y crecimiento económico" class="img-fluid" style="height: 80px;">
-                    </div>
-                    <h5 class="text-primary mb-2">
-                        <i class="bi bi-briefcase me-1"></i>ODS 8: Trabajo decente y crecimiento económico
-                    </h5>
-                    <p class="fs-6 text-muted">
-                        Fomenta el crecimiento económico sostenible y el trabajo decente mediante el uso de datos inteligentes, 
-                        fortaleciendo la competitividad del sector lácteo.
-                    </p>
-                </div>
-            </div>
+    <!-- Subtítulo -->
+    <h4 class="text-center mb-3 text-light">
+        <i class="bi bi-bar-chart-line me-1"></i>Informe de Calidad de Vida 2024
+    </h4>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 rounded-4 h-100 p-3 text-center zoom-card">
-                    <div class="mb-3">
-                        <img src="{{ url_for('static', filename='images/ods09.jpg') }}" alt="ODS 9: Industria, innovación e infraestructura" class="img-fluid" style="height: 80px;">
-                    </div>
-                    <h5 class="text-warning mb-2">
-                        <i class="bi bi-cpu me-1"></i>ODS 9: Industria, innovación e infraestructura
-                    </h5>
-                    <p class="fs-6 text-muted">
-                        Impulsa la innovación tecnológica en el sector agroindustrial mediante algoritmos de aprendizaje automático, 
-                        generando soluciones que transforman el campo colombiano.
-                    </p>
-                </div>
-            </div>
-        </div>
+    <!-- Imagen independiente -->
+    <div class="text-center mb-3">
+        <img src="{{ url_for('static', filename='images/leyenda.png') }}" 
+             alt="Informe de Calidad de Vida 2024" 
+             class="img-fluid rounded-3 shadow-sm">
     </div>
+
+    <!-- Texto descriptivo -->
+    <p class="fs-6 text-white text-center">
+        Consulta los indicadores socioeconómicos de Sabana Centro y su relación con la producción lechera.
+    </p>
+    <p class="fs-6 text-white text-center">
+        <small class="opacity-75"><i class="bi bi-bar-chart-line me-1"></i>Datos regionales</small>
+    </p>
+</div>
+
 
     <!-- Funcionalidades CON LAS IMÁGENES ORIGINALES -->
     <div class="funcionalidades-container rounded-4 mb-5">
-        <h3 class="mb-4 text-success text-center">
+        <h3 class="text-center text-white p-3 rounded shadow titulo2-box mb-4">
+            <strong>
             <i class="bi bi-lightbulb me-2"></i>Funcionalidades del Sistema
+            </strong>
         </h3>
         <p class="fs-6 text-center mb-4">
+            <strong>
             Explora el comportamiento de la producción de leche en Colombia usando datos públicos de la USP Leche. 
             Los usuarios pueden investigar periodos de mayor acopio, analizar la influencia de la raza y el departamento, 
             y recibir recomendaciones personalizadas.
+            </strong>
         </p>
 
         <div class="row justify-content-center g-4">
@@ -300,62 +281,67 @@
 
 
             <!-- Funcionalidad 2 - CON IMAGEN ORIGINAL -->
-            <div class="col-md-4">
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('precio.mostrar_precio') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm text-center p-3 bg-primary text-white zoom-card">
-                        <img src="{{ url_for('static', filename='images/foto_ordeno.jpg') }}" 
-                             alt="Influencia de raza y departamento" 
-                             class="img-fluid mx-auto mb-3" 
-                             style="max-height: 80px; border-radius: 8px;">
-                        <h5 class="card-title mb-2">Analisis de Precio</h5>
-                        <p class="card-text fs-6">Analiza comprtamiento de precio Nacional por año y visualiza prediccion de precio a 6 meses a nivel nacion y departamental.</p>
-                        <small class="opacity-75"><i class="bi bi-map me-1"></i>Análisis personalizadas</small>
-                    </div>
-                </a>
-                {% else %}
-                <div class="card h-100 shadow-sm text-center p-3 bg-primary text-white zoom-card" 
-                     onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
-                     data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
-                    <img src="{{ url_for('static', filename='images/foto_ordeno.jpg') }}" 
-                         alt="Influencia de raza y departamento" 
-                         class="img-fluid mx-auto mb-3" 
-                         style="max-height: 80px; border-radius: 8px;">
-                    <h5 class="card-title mb-2">Analisis de Precio</h5>
-                    <p class="card-text fs-6">AAnaliza comprtamiento de precio Nacional por año y visualiza prediccion de precio a 6 meses a nivel nacion y departamental..</p>
-                    <small class="opacity-75"><i class="bi bi-map me-1"></i>Análisis personalizadas</small>
-                </div>
-                {% endif %}
+        <div class="col-md-4">
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('precio.mostrar_precio') }}" class="text-decoration-none">
+        <div class="card card-precio h-100 shadow-sm text-center p-3 text-white zoom-card">
+            <div class="card-overlay"></div>
+            <div class="card-body position-relative">
+                <h5 class="card-title mb-2">Análisis de Precio</h5>
+                <p class="card-text fs-6">
+                    Analiza el comportamiento del precio nacional por año y visualiza la predicción a 6 meses a nivel nacional y departamental.
+                </p>
+                <small class="opacity-75"><i class="bi bi-currency-dollar me-1"></i>Análisis económico</small>
             </div>
-
+        </div>
+    </a>
+    {% else %}
+    <div class="card card-precio h-100 shadow-sm text-center p-3 text-white zoom-card" 
+         onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
+         data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
+        <div class="card-overlay"></div>
+        <div class="card-body position-relative">
+            <h5 class="card-title mb-2">Análisis de Precio</h5>
+            <p class="card-text fs-6">
+                Visualiza el comportamiento histórico del precio de la leche cruda y predicciones para los próximos meses.
+            </p>
+            <small class="opacity-75"><i class="bi bi-currency-dollar me-1"></i>Análisis económico</small>
+        </div>
+    </div>
+    {% endif %}
+</div>
+    
             <!-- Funcionalidad 3 - CON IMAGEN ORIGINAL -->
-            <div class="col-md-4">
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('inversion.inversion') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm text-center p-3 bg-warning text-dark zoom-card">
-                        <img src="{{ url_for('static', filename='images/Imagen2.jpg') }}" 
-                             alt="Recomendaciones personalizadas" 
-                             class="img-fluid mx-auto mb-3" 
-                             style="max-height: 80px; border-radius: 8px;">
-                        <h5 class="card-title mb-2">Censo Bovino</h5>
-                        <p class="card-text fs-6">Analiza el censo bovino y visualiza informacion de razas para invertir.</p>
-                        <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
-                    </div>
-                </a>
-                {% else %}
-                <div class="card h-100 shadow-sm text-center p-3 bg-warning text-dark zoom-card" 
-                     onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
-                     data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
-                    <img src="{{ url_for('static', filename='images/Imagen2.jpg') }}" 
-                         alt="Recomendaciones personalizadas" 
-                         class="img-fluid mx-auto mb-3" 
-                         style="max-height: 80px; border-radius: 8px;">
-                    <h5 class="card-title mb-2">Censo Bovino</h5>
-                    <p class="card-text fs-6">Analiza el censo bovino y visualiza informacion de razas para invertir</p>
-                    <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
-                </div>
-                {% endif %}
+             <div class="col-md-4">
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('inversion.inversion') }}" class="text-decoration-none">
+        <div class="card card-censo h-100 shadow-sm text-center p-3 text-white zoom-card">
+            <div class="card-overlay"></div>
+            <div class="card-body position-relative">
+                <h5 class="card-title mb-2">Censo Bovino</h5>
+                <p class="card-text fs-6">
+                    Analiza el censo bovino y visualiza información de razas para invertir.
+                </p>
+                <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
             </div>
+        </div>
+    </a>
+    {% else %}
+    <div class="card card-censo h-100 shadow-sm text-center p-3 text-white zoom-card" 
+         onclick="alert('Para acceder a esta información, debe iniciar sesión.')"
+         data-bs-toggle="tooltip" data-bs-title="Haz clic para más información">
+        <div class="card-overlay"></div>
+        <div class="card-body position-relative">
+            <h5 class="card-title mb-2">Censo Bovino</h5>
+            <p class="card-text fs-6">
+                Analiza el censo bovino y visualiza información de razas para invertir.
+            </p>
+            <small class="opacity-75"><i class="bi bi-robot me-1"></i>Machine Learning</small>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
         </div>
 
         <!-- Llamada a la acción (solo para visitantes no autenticados) -->
