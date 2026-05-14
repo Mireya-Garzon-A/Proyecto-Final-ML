@@ -333,57 +333,68 @@ def index2():
 
 # Crear la base de datos si no existe
 with app.app_context():
-    # Crear tablas en MySQL si no existen, excepto cuando se ejecutan scripts
-    # de mantenimiento/migración que establecen la variable SKIP_CREATE_ALL=1
+    # Crear tablas en la BD al arrancar, pero no fallar el arranque si la BD
+    # no está disponible (p. ej. durante despliegue). Se registra el error.
     if os.environ.get('SKIP_CREATE_ALL') != '1':
-        db.create_all()
-
-        # Seeder: cargar datos iniciales si las tablas están vacías
-        def seed_initial_data():
-            """Inserta datos iniciales (departamentos, admin) si la BD está vacía.
-
-            Esta función es segura para ejecutarse en arranques repetidos: sólo
-            inserta cuando las tablas relevantes están vacías.
-            """
+        try:
+            db.create_all()
+        except Exception as e:
+            # Registrar error y seguir adelante para que Gunicorn no muera
             try:
-                from models import Departamento, User
-                # Cargar departamentos si la tabla está vacía
-                if Departamento.query.first() is None:
-                    departamentos = [
-                        'Amazonas','Antioquia','Arauca','Atlántico','Bolívar','Boyacá','Caldas','Caquetá',
-                        'Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare',
-                        'Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo',
-                        'Quindío','Risaralda','San Andrés y Providencia','Santander','Sucre','Tolima',
-                        'Valle del Cauca','Vaupés','Vichada','Bogotá D.C.'
-                    ]
-                    for name in departamentos:
-                        d = Departamento(name=name)
-                        db.session.add(d)
-                    db.session.commit()
-
-                # Crear un usuario admin por defecto si no existe ninguno
-                if User.query.filter_by(is_admin=True).first() is None:
-                    admin_email = os.environ.get('DEFAULT_ADMIN_EMAIL', 'admin@example.com')
-                    admin_password = os.environ.get('DEFAULT_ADMIN_PASSWORD')
-                    if admin_password:
-                        admin = User(name='Administrador', email=admin_email, is_admin=True,
-                                     primer_nombre='Admin', primer_apellido='User')
-                        admin.set_password(admin_password)
-                        db.session.add(admin)
-                        db.session.commit()
+                import traceback
+                log_dir = os.path.join(Path(__file__).resolve().parent, 'instance')
+                os.makedirs(log_dir, exist_ok=True)
+                with open(os.path.join(log_dir, 'db_init_error.log'), 'a', encoding='utf-8') as f:
+                    f.write('\n--- DB INIT ERROR ---\n')
+                    f.write(traceback.format_exc())
             except Exception:
-                # No detener el arranque si el seeder falla; registrar opcionalmente
+                pass
+            # También emitir a stdout/stderr para que Render lo capture
+            import sys
+            print('WARNING: db.create_all() falló, continuar arranque. Error:', file=sys.stderr)
+            import traceback
+            traceback.print_exc()
+        else:
+            # Seeder: cargar datos iniciales si las tablas están vacías
+            def seed_initial_data():
                 try:
-                    log_dir = os.path.join(Path(__file__).resolve().parent, 'instance')
-                    os.makedirs(log_dir, exist_ok=True)
-                    with open(os.path.join(log_dir, 'seed_error.log'), 'a', encoding='utf-8') as f:
-                        import traceback
-                        f.write('\n--- SEED ERROR ---\n')
-                        f.write(traceback.format_exc())
-                except Exception:
-                    pass
+                    from models import Departamento, User
+                    # Cargar departamentos si la tabla está vacía
+                    if Departamento.query.first() is None:
+                        departamentos = [
+                            'Amazonas','Antioquia','Arauca','Atlántico','Bolívar','Boyacá','Caldas','Caquetá',
+                            'Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare',
+                            'Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo',
+                            'Quindío','Risaralda','San Andrés y Providencia','Santander','Sucre','Tolima',
+                            'Valle del Cauca','Vaupés','Vichada','Bogotá D.C.'
+                        ]
+                        for name in departamentos:
+                            d = Departamento(name=name)
+                            db.session.add(d)
+                        db.session.commit()
 
-        seed_initial_data()
+                    # Crear un usuario admin por defecto si no existe ninguno
+                    if User.query.filter_by(is_admin=True).first() is None:
+                        admin_email = os.environ.get('DEFAULT_ADMIN_EMAIL', 'admin@example.com')
+                        admin_password = os.environ.get('DEFAULT_ADMIN_PASSWORD')
+                        if admin_password:
+                            admin = User(name='Administrador', email=admin_email, is_admin=True,
+                                         primer_nombre='Admin', primer_apellido='User')
+                            admin.set_password(admin_password)
+                            db.session.add(admin)
+                            db.session.commit()
+                except Exception:
+                    try:
+                        log_dir = os.path.join(Path(__file__).resolve().parent, 'instance')
+                        os.makedirs(log_dir, exist_ok=True)
+                        with open(os.path.join(log_dir, 'seed_error.log'), 'a', encoding='utf-8') as f:
+                            import traceback
+                            f.write('\n--- SEED ERROR ---\n')
+                            f.write(traceback.format_exc())
+                    except Exception:
+                        pass
+
+            seed_initial_data()
 
 # Política de tratamiento de datos
 @app.route("/politica-datos")
