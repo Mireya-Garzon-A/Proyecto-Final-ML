@@ -30,6 +30,9 @@ import os
 # Inicialización
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
+# Exponer también `application` para compatibilidad con WSGI y scripts que
+# importen `application` (ej. pythonanywhere_wsgi.py, scripts/test_db_connection.py)
+application = app
 # Cargar variables de entorno desde .env en la raíz del proyecto (útil para desarrollo local)
 env_path = BASE_DIR / '.env'
 if env_path.exists():
