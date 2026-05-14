@@ -16,6 +16,7 @@ import json
 from datetime import datetime, timedelta
 import os
 import unicodedata
+from sqlalchemy import or_
 
 perfil_bp = Blueprint('perfil', __name__)
 
@@ -30,12 +31,12 @@ def perfil():
     - change_password: cambiar contraseña verificando la actual y la confirmación
     """
     if request.method == 'POST':
-        # Actualizar perfil (nombre y email)
+        # Actualizar perfil: permitir editar todos los datos personales del propio usuario
         if 'update_profile' in request.form:
+            # Campos básicos
             new_name = request.form.get('name', '').strip()
             new_email = request.form.get('email', '').strip().lower()
 
-            # Validaciones básicas
             if not new_name or not new_email:
                 flash('Nombre y correo no pueden estar vacíos.', 'danger')
                 return redirect(url_for('perfil.perfil'))
@@ -45,12 +46,35 @@ def perfil():
                 flash('El correo ya está registrado por otro usuario.', 'danger')
                 return redirect(url_for('perfil.perfil'))
 
+            # Asignar campos básicos
             current_user.name = new_name
             current_user.email = new_email
-            current_user.save()
-            # Actualizar la sesión para reflejar el nuevo nombre inmediatamente
-            session['usuario'] = current_user.name
-            flash('Datos actualizados correctamente.', 'success')
+
+            # Campos personales adicionales
+            fields = ['tipo_documento', 'numero_documento', 'primer_nombre', 'segundo_nombre',
+                      'primer_apellido', 'segundo_apellido', 'telefono', 'direccion', 'fecha_nacimiento']
+            for f in fields:
+                val = request.form.get(f)
+                if val is None:
+                    continue
+                # parsear fecha si corresponde
+                if f == 'fecha_nacimiento' and val:
+                    try:
+                        current_user.fecha_nacimiento = datetime.strptime(val, '%Y-%m-%d').date()
+                    except Exception:
+                        flash('Formato de fecha de nacimiento inválido. Use YYYY-MM-DD.', 'danger')
+                        return redirect(url_for('perfil.perfil'))
+                else:
+                    setattr(current_user, f, val.strip() if isinstance(val, str) else val)
+
+            try:
+                current_user.save()
+                session['usuario'] = current_user.name
+                flash('Datos actualizados correctamente.', 'success')
+            except Exception:
+                db.session.rollback()
+                flash('Ocurrió un error al guardar los datos. Revisa los logs.', 'danger')
+
             return redirect(url_for('perfil.perfil'))
 
         # Cambiar contraseña
@@ -437,8 +461,28 @@ def admin_users():
         flash('No tienes permiso para acceder a la administración.', 'danger')
         return redirect(url_for('perfil.perfil'))
 
-    users = User.query.order_by(User.id.asc()).all()
-    return render_template('admin_users.html', users=users)
+    # Soporta buscador por cualquier campo (parámetro GET `q`)
+    q = (request.args.get('q') or '').strip()
+    if q:
+        pattern = f"%{q}%"
+        filters = [
+            User.name.ilike(pattern),
+            User.email.ilike(pattern),
+            User.tipo_documento.ilike(pattern),
+            User.numero_documento.ilike(pattern),
+            User.primer_nombre.ilike(pattern),
+            User.segundo_nombre.ilike(pattern),
+            User.primer_apellido.ilike(pattern),
+            User.segundo_apellido.ilike(pattern),
+            User.telefono.ilike(pattern),
+            User.direccion.ilike(pattern),
+            User.role.ilike(pattern),
+        ]
+        users = User.query.filter(or_(*filters)).order_by(User.id.asc()).all()
+    else:
+        users = User.query.order_by(User.id.asc()).all()
+
+    return render_template('admin_users.html', users=users, q=q)
 
 
 @perfil_bp.route('/admin/users/<int:uid>/change-password', methods=['POST'])
@@ -671,5 +715,83 @@ def admin_create_user():
     except Exception:
         db.session.rollback()
         flash('Ocurrió un error al crear el usuario. Revisa los logs.', 'danger')
+
+    return redirect(url_for('perfil.admin_users'))
+
+
+@perfil_bp.route('/admin/users/<int:uid>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_edit_user(uid):
+    """Editar todos los datos de un usuario (solo administrador)."""
+    if not (current_user.email == 'admin@example.com' or getattr(current_user, 'is_admin', False)):
+        flash('No tienes permiso para acceder a la administración.', 'danger')
+        return redirect(url_for('perfil.perfil'))
+
+    u = User.query.get_or_404(uid)
+
+    # GET: mostrar formulario con campos completos
+    if request.method == 'GET':
+        return render_template('admin_edit_user.html', user=u)
+
+    # POST: actualizar datos
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip().lower()
+    if not name or not email:
+        flash('Nombre y correo son obligatorios.', 'danger')
+        return redirect(url_for('perfil.admin_edit_user', uid=uid))
+
+    # Verificar unicidad de email si cambió
+    if email != u.email and User.get_by_email(email):
+        flash('El correo ya está registrado por otro usuario.', 'danger')
+        return redirect(url_for('perfil.admin_edit_user', uid=uid))
+
+    # No permitir cambiar el rol/is_admin del administrador principal
+    if u.email == 'admin@example.com' and request.form.get('role') and request.form.get('role') != u.role:
+        flash('No puedes cambiar el rol del administrador principal.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    # Proteger cambios sobre el propio administrador desde aquí
+    requested_role = request.form.get('role')
+    requested_is_admin = True if request.form.get('is_admin') in ('1', 'on', 'true') else False
+    if u.id == current_user.id and (requested_is_admin != u.is_admin or (requested_role and requested_role != u.role)):
+        flash('No puedes cambiar tu propio rol o privilegios desde esta interfaz.', 'danger')
+        return redirect(url_for('perfil.admin_users'))
+
+    # Asignar campos públicos
+    u.name = name
+    u.email = email
+
+    # Campos personales y auditoría
+    fields = ['tipo_documento', 'numero_documento', 'primer_nombre', 'segundo_nombre',
+              'primer_apellido', 'segundo_apellido', 'telefono', 'direccion', 'fecha_nacimiento']
+    for f in fields:
+        val = request.form.get(f)
+        if val is None:
+            continue
+        if f == 'fecha_nacimiento' and val:
+            try:
+                u.fecha_nacimiento = datetime.strptime(val, '%Y-%m-%d').date()
+            except Exception:
+                flash('Formato de fecha inválido para fecha de nacimiento.', 'danger')
+                return redirect(url_for('perfil.admin_edit_user', uid=uid))
+        else:
+            setattr(u, f, val.strip() if isinstance(val, str) else val)
+
+    # Role y is_admin (solo admin puede cambiar)
+    if requested_role in ('free', 'pago1', 'pago2', 'admin'):
+        u.role = requested_role
+        u.is_admin = (requested_role == 'admin') or requested_is_admin
+
+    # Contraseña opcional
+    new_pwd = request.form.get('password', '').strip()
+    if new_pwd:
+        u.set_password(new_pwd)
+
+    try:
+        db.session.commit()
+        flash(f'Usuario {u.email} actualizado correctamente.', 'success')
+    except Exception:
+        db.session.rollback()
+        flash('Ocurrió un error al actualizar el usuario. Revisa los logs.', 'danger')
 
     return redirect(url_for('perfil.admin_users'))

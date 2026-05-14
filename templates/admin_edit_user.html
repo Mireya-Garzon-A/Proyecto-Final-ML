@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">Editar usuario: {{ user.email }}</div>
+  <div class="card-body">
+    <form method="post">
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Nombre</label>
+          <input name="name" class="form-control" value="{{ user.name }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Correo</label>
+          <input name="email" type="email" class="form-control" value="{{ user.email }}" required>
+        </div>
+      </div>
+
+      <hr>
+      <h6>Datos personales</h6>
+      <div class="row g-2">
+        <div class="col-md-4">
+          <label class="form-label">Tipo documento</label>
+          <input name="tipo_documento" class="form-control" value="{{ user.tipo_documento or '' }}">
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Número documento</label>
+          <input name="numero_documento" class="form-control" value="{{ user.numero_documento or '' }}">
+        </div>
+      </div>
+
+      <div class="row g-2 mt-2">
+        <div class="col-md-6">
+          <label class="form-label">Primer nombre</label>
+          <input name="primer_nombre" class="form-control" value="{{ user.primer_nombre or '' }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Segundo nombre</label>
+          <input name="segundo_nombre" class="form-control" value="{{ user.segundo_nombre or '' }}">
+        </div>
+      </div>
+
+      <div class="row g-2 mt-2">
+        <div class="col-md-6">
+          <label class="form-label">Primer apellido</label>
+          <input name="primer_apellido" class="form-control" value="{{ user.primer_apellido or '' }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Segundo apellido</label>
+          <input name="segundo_apellido" class="form-control" value="{{ user.segundo_apellido or '' }}">
+        </div>
+      </div>
+
+      <div class="row g-2 mt-2">
+        <div class="col-md-6">
+          <label class="form-label">Teléfono</label>
+          <input name="telefono" class="form-control" value="{{ user.telefono or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Dirección</label>
+          <input name="direccion" class="form-control" value="{{ user.direccion or '' }}">
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <label class="form-label">Fecha de nacimiento</label>
+        <input type="date" name="fecha_nacimiento" class="form-control" value="{{ user.fecha_nacimiento.isoformat() if user.fecha_nacimiento else '' }}">
+      </div>
+
+      <hr>
+      <h6>Seguridad y rol</h6>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Rol</label>
+          <select name="role" class="form-select">
+            <option value="free" {% if user.role=='free' %}selected{% endif %}>Free</option>
+            <option value="pago1" {% if user.role=='pago1' %}selected{% endif %}>Básico</option>
+            <option value="pago2" {% if user.role=='pago2' %}selected{% endif %}>Premium</option>
+            <option value="admin" {% if user.role=='admin' %}selected{% endif %}>Administrador</option>
+          </select>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin_chk" {% if user.is_admin %}checked{% endif %}>
+            <label class="form-check-label" for="is_admin_chk">Es administrador</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="form-label">Nueva contraseña (opcional)</label>
+        <input name="password" type="password" class="form-control" placeholder="Dejar en blanco para no cambiar">
+      </div>
+
+      <div class="mt-4 text-end">
+        <a href="{{ url_for('perfil.admin_users') }}" class="btn btn-outline-secondary">Cancelar</a>
+        <button class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -37,6 +37,50 @@
                         <label class="form-label">Correo electrónico</label>
                         <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
                     </div>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label">Tipo documento</label>
+                                                <input name="tipo_documento" class="form-control" value="{{ user.tipo_documento or '' }}">
+                                            </div>
+                                            <div class="col-md-8 mb-3">
+                                                <label class="form-label">Número documento</label>
+                                                <input name="numero_documento" class="form-control" value="{{ user.numero_documento or '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Primer nombre</label>
+                                                <input name="primer_nombre" class="form-control" value="{{ user.primer_nombre or '' }}" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Segundo nombre</label>
+                                                <input name="segundo_nombre" class="form-control" value="{{ user.segundo_nombre or '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Primer apellido</label>
+                                                <input name="primer_apellido" class="form-control" value="{{ user.primer_apellido or '' }}" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Segundo apellido</label>
+                                                <input name="segundo_apellido" class="form-control" value="{{ user.segundo_apellido or '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Teléfono</label>
+                                                <input name="telefono" class="form-control" value="{{ user.telefono or '' }}">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Dirección</label>
+                                                <input name="direccion" class="form-control" value="{{ user.direccion or '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                                <label class="form-label">Fecha de nacimiento</label>
+                                                <input type="date" name="fecha_nacimiento" class="form-control" value="{{ user.fecha_nacimiento.isoformat() if user.fecha_nacimiento else '' }}">
+                                        </div>
                     <div class="text-end">
                         <button type="submit" name="update_profile" class="btn btn-outline-success">💾 Guardar cambios</button>
                     </div>
