@@ -1,0 +1,9 @@
+# Ignorar base de datos SQLite y carpeta instance
+*.db
+instance/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/

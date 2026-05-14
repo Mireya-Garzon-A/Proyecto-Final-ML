@@ -29,17 +29,28 @@ import os
 # Inicialización
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
-app.secret_key = 'clave_segura_para_sesion'
+app.secret_key = os.environ.get('SECRET_KEY', 'clave_segura_para_sesion')  # 🔹 Usar variable de entorno
 # Configurar expiración de sesión por inactividad (30 minutos)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
-# Configuración de base de datos: usar MySQL exclusivamente.
-# - Si existe la variable de entorno `MYSQL_DATABASE_URL` se usa tal cual.
-# - Si no existe, por conveniencia se conecta a XAMPP local por defecto
-#   con la base `del_campo_al_algoritomo` y usuario `root` sin contraseña.
-import os
+# Configuración de base de datos:
+# - Si `PYTHONANYWHERE` == 'true' usamos SQLite en `instance/database.db`.
+# - Si existe `MYSQL_DATABASE_URL` lo respetamos (útil para despliegues con MySQL).
+# - Si no, por defecto local usamos la conexión a XAMPP/MySQL existente.
 mysql_url = os.environ.get('MYSQL_DATABASE_URL')
-if mysql_url:
+
+# Asegurar que la carpeta `instance` exista (necesaria para SQLite y logs)
+instance_dir = BASE_DIR / 'instance'
+try:
+    instance_dir.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
+pa_flag = os.environ.get('PYTHONANYWHERE', '').lower()
+if pa_flag == 'true':
+    sqlite_path = instance_dir / 'database.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{sqlite_path}"
+elif mysql_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url
 else:
     # conexión por defecto a XAMPP en localhost
@@ -330,3 +341,10 @@ app.register_blueprint(perfil_bp)
 # ✅ Ejecución de la app
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
+# =============================================================================
+# 🔹 COMPATIBILIDAD PYTHONANYWHERE (WSGI)
+# =============================================================================
+# Esta línea es requerida para que PythonAnywhere encuentre tu aplicación Flask.
+# El archivo WSGI debe importar 'application', no 'app'.
+application = app
