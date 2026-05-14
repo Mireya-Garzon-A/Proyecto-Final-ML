@@ -94,6 +94,28 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'].update({
 
 import logging
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+import sys
+
+# En entornos como Render (cuentas gratuitas) no puedes acceder a archivos en disco
+# fácilmente; emitir logs a stdout/stderr permite verlos desde el panel "Logs".
+root_logger = logging.getLogger()
+if not any(isinstance(h, logging.StreamHandler) for h in root_logger.handlers):
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s: %(message)s')
+    stream_handler.setFormatter(formatter)
+    root_logger.addHandler(stream_handler)
+root_logger.setLevel(logging.INFO)
+app.logger.handlers = root_logger.handlers
+app.logger.setLevel(logging.INFO)
+
+# Registrar excepciones no manejadas para que aparezcan en los logs de Render
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Log completo de la excepción
+    app.logger.exception('Unhandled exception:')
+    # Respuesta genérica (no exponer detalles en producción)
+    return ("Internal server error", 500)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
