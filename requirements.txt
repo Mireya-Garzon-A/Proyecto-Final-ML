@@ -8,3 +8,4 @@ SQLAlchemy>=2.0.0
 matplotlib>=3.6.0
 pytz>=2023.3
 werkzeug>=2.2.0
+scikit-learn>=1.2.2
