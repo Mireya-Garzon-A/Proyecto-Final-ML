@@ -66,6 +66,17 @@ else:
         'mysql+pymysql://root:@localhost:3306/del_campo_al_algoritomo?charset=utf8mb4'
     )
 
+# Recomendaciones de engine para entornos remotos (mejor logging y resiliencia)
+app.config.setdefault('SQLALCHEMY_ENGINE_OPTIONS', {})
+app.config['SQLALCHEMY_ENGINE_OPTIONS'].update({
+    'pool_pre_ping': True,
+    'pool_recycle': 280,
+    'pool_timeout': 30,
+})
+
+import logging
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Filtro Jinja para formatear fechas en hora local de Colombia (America/Bogota)
