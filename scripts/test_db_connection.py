@@ -44,8 +44,13 @@ if not url:
 
 print('Usando DATABASE_URL:', url)
 
+# Algunos DBAPI usan distinto nombre para el timeout; pymssql espera 'timeout'
+connect_args = {"connect_timeout": 10}
+if url and url.startswith('mssql+pymssql'):
+    connect_args = {"timeout": 10}
+
 try:
-    engine = create_engine(url, connect_args={"connect_timeout":10})
+    engine = create_engine(url, connect_args=connect_args)
     with engine.connect() as conn:
         r = conn.execute(text('SELECT 1')).scalar()
         print('Prueba SELECT 1 ->', r)

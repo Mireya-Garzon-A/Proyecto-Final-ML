@@ -14,6 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
 import pytz
+from dotenv import load_dotenv
 
 from inversion import inversion_bp
 from acopio import acopio_bp
@@ -29,6 +30,23 @@ import os
 # Inicialización
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'), static_folder=str(BASE_DIR / 'static'))
+# Cargar variables de entorno desde .env en la raíz del proyecto (útil para desarrollo local)
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    load_dotenv(dotenv_path=str(env_path))
+    try:
+        print(f'Loaded .env from {env_path}')
+    except Exception:
+        pass
+    # Strip accidental surrounding quotes from important env vars
+    for k in ('DATABASE_URL', 'MYSQL_DATABASE_URL', 'SECRET_KEY', 'PA_PROJECT_HOME', 'PA_VENV_PATH'):
+        v = os.environ.get(k)
+        if v and ((v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'"))):
+            os.environ[k] = v[1:-1]
+            try:
+                print(f'Stripped quotes for env var {k}')
+            except Exception:
+                pass
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_segura_para_sesion')  # 🔹 Usar variable de entorno
 # Configurar expiración de sesión por inactividad (30 minutos)
 app.permanent_session_lifetime = timedelta(minutes=30)
