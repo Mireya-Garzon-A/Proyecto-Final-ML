@@ -11,7 +11,7 @@ ruta, actualiza `venv_path` antes de pegar.
 import sys
 import os
 
-project_home = '/home/delcampoalalgortimo/Proyecto-Final-ML'
+project_home = os.environ.get('PA_PROJECT_HOME', '/home/delcampoalalgortimo/Proyecto-Final-ML')
 if project_home not in sys.path:
     sys.path.insert(0, project_home)
 
@@ -20,11 +20,18 @@ os.environ.setdefault('PYTHONANYWHERE', 'true')
 os.environ.setdefault('SECRET_KEY', os.environ.get('SECRET_KEY', 'pon_aqui_una_clave_segura'))
 
 # Activar virtualenv (ajusta si tu virtualenv está en otra ruta)
-venv_path = '/home/delcampoalalgortimo/venvs/proyecto-ml'
+venv_path = os.environ.get('PA_VENV_PATH', '/home/delcampoalalgortimo/venvs/proyecto-ml')
 activate_this = os.path.join(venv_path, 'bin', 'activate_this.py')
 if os.path.exists(activate_this):
     with open(activate_this) as f:
         exec(f.read(), dict(__file__=activate_this))
+else:
+    # En caso de que no exista activate_this.py (entornos modernos), intentar usar activate
+    activate_sh = os.path.join(venv_path, 'bin', 'activate')
+    if os.path.exists(activate_sh):
+        # No podemos "source" un shell script aquí, pero PythonAnywhere
+        # suele activar el venv automáticamente si se configura en el panel Web.
+        pass
 
 # Importar la aplicación WSGI
 from app import application
