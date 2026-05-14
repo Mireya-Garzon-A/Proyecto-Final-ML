@@ -110,12 +110,30 @@ app.logger.handlers = root_logger.handlers
 app.logger.setLevel(logging.INFO)
 
 # Registrar excepciones no manejadas para que aparezcan en los logs de Render
+from werkzeug.exceptions import HTTPException
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):
+    # If it's an HTTPException (404, 401, etc.), return it unchanged
+    if isinstance(e, HTTPException):
+        return e
     # Log completo de la excepción
     app.logger.exception('Unhandled exception:')
     # Respuesta genérica (no exponer detalles en producción)
     return ("Internal server error", 500)
+
+
+# Serve favicon if present, otherwise return empty 204 so it doesn't raise 500
+@app.route('/favicon.ico')
+def favicon():
+    try:
+        fav_path = os.path.join(app.static_folder or '', 'favicon.ico')
+        if os.path.exists(fav_path):
+            return app.send_static_file('favicon.ico')
+    except Exception:
+        app.logger.exception('Error serving favicon')
+    return ('', 204)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
