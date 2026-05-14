@@ -37,6 +37,10 @@ app.permanent_session_lifetime = timedelta(minutes=30)
 # - Si `PYTHONANYWHERE` == 'true' usamos SQLite en `instance/database.db`.
 # - Si existe `MYSQL_DATABASE_URL` lo respetamos (útil para despliegues con MySQL).
 # - Si no, por defecto local usamos la conexión a XAMPP/MySQL existente.
+# Prefer generic `DATABASE_URL` (used by Render) then `MYSQL_DATABASE_URL`.
+# WARNING: If you plan to use SQLite on Render note that the filesystem is
+# ephemeral between deploys — use an external DB for persistent data.
+database_url = os.environ.get('DATABASE_URL')
 mysql_url = os.environ.get('MYSQL_DATABASE_URL')
 
 # Asegurar que la carpeta `instance` exista (necesaria para SQLite y logs)
@@ -47,13 +51,17 @@ except Exception:
     pass
 
 pa_flag = os.environ.get('PYTHONANYWHERE', '').lower()
+# If running on PythonAnywhere, keep existing SQLite behavior (dev-friendly)
 if pa_flag == 'true':
     sqlite_path = instance_dir / 'database.db'
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{sqlite_path}"
+# Prefer DATABASE_URL (Render/Postgres/Heroku style), then MYSQL_DATABASE_URL
+elif database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 elif mysql_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url
 else:
-    # conexión por defecto a XAMPP en localhost
+    # conexión por defecto a XAMPP en localhost (solo para desarrollo local)
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         'mysql+pymysql://root:@localhost:3306/del_campo_al_algoritomo?charset=utf8mb4'
     )
