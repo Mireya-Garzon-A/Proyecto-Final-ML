@@ -139,9 +139,119 @@
 
     <!-- ==================== FOOTER ==================== -->
     <footer class="bg-dark text-white py-4 mt-5">
-        <!-- Elfsight Telegram Chat | Untitled Telegram Chat -->
-        <script src="https://elfsightcdn.com/platform.js" async></script>
-        <div class="elfsight-app-4cb7ac05-6734-42be-8311-0b54f2a2e1d7" data-elfsight-app-lazy></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <ul class="list-unstyled mb-2">
+                        <li><strong>Universidad De Cundinamarca</strong></li>
+                        <li>Ingeniería De Sistemas Y Computación</li>
+                        <li>Comunicación de Datos</li>
+                        <li>Proyecto Final - 2026</li>
+                    </ul>
+                    <small class="text-success">Del campo al Algoritmo - Explorando la Producción Lechera</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <ul class="list-unstyled mb-2">
+                        <li>
+                            <i class="bi bi-envelope me-2"></i>
+                            <a href="mailto:contacto@example.com" class="text-white text-decoration-none">contacto@example.com</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-geo-alt me-2"></i>
+                            Dirección: Autopista Chía - Cajicá | Sector "El Cuarenta" |
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone me-2"></i>
+                            <a href="tel:+573250123456" class="text-white text-decoration-none">+57 325 0123 456</a>
+                        </li>
+                    </ul>
+                    <small class="text-success">Contacta con nosotros</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Elfsight Telegram Chat (widget) -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-4cb7ac05-6734-42be-8311-0b54f2a2e1d7" data-elfsight-app-lazy></div>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+    </script>
+
+    <!-- Modal de aviso de expiración de sesión -->
+    <div class="modal fade" id="sessionExpiryModal" tabindex="-1" aria-labelledby="sessionExpiryLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sessionExpiryLabel">Su sesión está por expirar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p id="expiryMessage">Tu sesión expirará en <span id="expiryCountdown">120</span> segundos por inactividad.</p>
+            <p class="text-muted small">Si desea continuar trabajando, haga clic en "Extender sesión".</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="extendSessionBtn" class="btn btn-primary">Extender sesión</button>
+            <button type="button" id="logoutNowBtn" class="btn btn-outline-danger">Cerrar sesión ahora</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script para detectar inactividad del usuario y mostrar modal 2 minutos antes del cierre -->
+    <script>
+        (function(){
+            // Configuración
+            const TOTAL_INACTIVITY_MS = 30 * 60 * 1000; // 30 minutos
+            const WARNING_BEFORE_MS = 2 * 60 * 1000; // mostrar modal 2 minutos antes
+            const THROTTLE_KEEPALIVE_MS = 60 * 1000; // no enviar keepalive más de 1 vez por minuto
+
+            let inactivityTimer = null;
+            let warningTimer = null;
+            let lastKeepalive = 0;
+            let countdownInterval = null;
+
+            const modalEl = document.getElementById('sessionExpiryModal');
+            const expiryCountdownEl = document.getElementById('expiryCountdown');
+            const extendBtn = document.getElementById('extendSessionBtn');
+            const logoutNowBtn = document.getElementById('logoutNowBtn');
+
+            // Bootstrap modal instance
+            const bsModal = new bootstrap.Modal(modalEl, {keyboard: false, backdrop: 'static'});
+
+            function sendKeepalive(){
+                const now = Date.now();
+                if(now - lastKeepalive < THROTTLE_KEEPALIVE_MS) return Promise.resolve();
+                lastKeepalive = now;
+                return fetch('/keepalive', {method: 'POST', credentials: 'same-origin'})
+                    .catch(()=>{});
+            }
+
+            function clearTimers(){
+                if(inactivityTimer) { clearTimeout(inactivityTimer); inactivityTimer = null; }
+                if(warningTimer) { clearTimeout(warningTimer); warningTimer = null; }
+                if(countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            }
+
+            function startTimers(){
+                clearTimers();
+                // Programar advertencia
+                const timeToWarning = TOTAL_INACTIVITY_MS - WARNING_BEFORE_MS;
+                warningTimer = setTimeout(showWarningModal, timeToWarning);
+                // Programar cierre forzado si no hay interacción
+                inactivityTimer = setTimeout(function(){
+                    window.location.href = '/logout';
+                }, TOTAL_INACTIVITY_MS);
+            }
+
+            function showWarningModal(){
+                // Calcular segundos restantes
+                let remainingMs = TOTAL_INACTIVITY_MS - (Date.now() - (lastKeepalive || Date.now()));
+                if(remainingMs < 0) remainingMs = 0;
                 let remainingSec = Math.ceil(remainingMs / 1000);
                 expiryCountdownEl.textContent = remainingSec;
                 bsModal.show();
