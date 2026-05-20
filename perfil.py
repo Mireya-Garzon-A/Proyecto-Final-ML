@@ -750,11 +750,10 @@ def admin_edit_user(uid):
         flash('No puedes cambiar el rol del administrador principal.', 'danger')
         return redirect(url_for('perfil.admin_users'))
 
-    # Proteger cambios sobre el propio administrador desde aquí
+    # Proteger cambios sobre el propio administrador desde aquí: no permitir cambiar tu propio role
     requested_role = request.form.get('role')
-    requested_is_admin = True if request.form.get('is_admin') in ('1', 'on', 'true') else False
-    if u.id == current_user.id and (requested_is_admin != u.is_admin or (requested_role and requested_role != u.role)):
-        flash('No puedes cambiar tu propio rol o privilegios desde esta interfaz.', 'danger')
+    if u.id == current_user.id and (requested_role and requested_role != u.role):
+        flash('No puedes cambiar tu propio rol desde esta interfaz.', 'danger')
         return redirect(url_for('perfil.admin_users'))
 
     # Asignar campos públicos
@@ -777,10 +776,10 @@ def admin_edit_user(uid):
         else:
             setattr(u, f, val.strip() if isinstance(val, str) else val)
 
-    # Role y is_admin (solo admin puede cambiar)
+    # Role y is_admin (solo admin puede cambiar). is_admin se deriva únicamente del role.
     if requested_role in ('free', 'pago1', 'pago2', 'admin'):
         u.role = requested_role
-        u.is_admin = (requested_role == 'admin') or requested_is_admin
+        u.is_admin = (requested_role == 'admin')
 
     # Contraseña opcional
     new_pwd = request.form.get('password', '').strip()

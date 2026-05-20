@@ -77,14 +77,13 @@
             <option value="free" {% if user.role=='free' %}selected{% endif %}>Free</option>
             <option value="pago1" {% if user.role=='pago1' %}selected{% endif %}>Básico</option>
             <option value="pago2" {% if user.role=='pago2' %}selected{% endif %}>Premium</option>
+            {% if current_user.email == 'admin@example.com' %}
             <option value="admin" {% if user.role=='admin' %}selected{% endif %}>Administrador</option>
+            {% endif %}
           </select>
         </div>
         <div class="col-md-6 d-flex align-items-center">
-          <div class="form-check mt-2">
-            <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin_chk" {% if user.is_admin %}checked{% endif %}>
-            <label class="form-check-label" for="is_admin_chk">Es administrador</label>
-          </div>
+          <!-- El checkbox 'Es administrador' se elimina: el rol 'Administrador' controla is_admin -->
         </div>
       </div>
 

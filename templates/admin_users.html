@@ -31,7 +31,9 @@
             <option value="free">Free</option>
             <option value="pago1">Básico</option>
             <option value="pago2">Premium</option>
+            {% if current_user.email == 'admin@example.com' %}
             <option value="admin">Administrador</option>
+            {% endif %}
           </select>
         </div>
         <div class="col-sm-1 text-end">
@@ -86,7 +88,9 @@
                       <option value="free" {% if u.role=='free' %}selected{% endif %}>Free</option>
                       <option value="pago1" {% if u.role=='pago1' %}selected{% endif %}>Básico</option>
                       <option value="pago2" {% if u.role=='pago2' %}selected{% endif %}>Premium</option>
+                      {% if current_user.email == 'admin@example.com' %}
                       <option value="admin" {% if u.role=='admin' %}selected{% endif %}>Administrador</option>
+                      {% endif %}
                     </select>
                     <button class="btn btn-sm btn-outline-primary" type="submit">Guardar</button>
                   </form>
